@@ -115,3 +115,13 @@ watchlist:                    # §4.4
     value: 10
     source: "Plan §4.4: show top 10, sort by exposure, tie-break by confidence"
     verify: false
+
+secondary:                    # §3 A1 secondary signals (NSQ lookback lives in sop_controls QUALITY_HISTORY)
+  otd_window_months:
+    value: 3
+    source: "Assumption: OTD drop = mean OTD of last N months vs the N months before"
+    verify: true
+  cold_chain_window_days:
+    value: 90
+    source: "Assumption: count cold-chain excursions in the last N days"
+    verify: true
