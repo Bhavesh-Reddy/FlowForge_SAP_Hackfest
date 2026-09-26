@@ -78,7 +78,28 @@ exit_risk:                    # §4.3 sigmoid(a*(-headroom) + b/months_to_breach
     source: "Hand-set; tune once on the Para-19 backtest (§4.5), then freeze"
     verify: true
 
+  months_to_breach_floor:
+    value: 1.0
+    source: "Assumption: b/months_to_breach uses max(months_to_breach, floor) so a breach now stays finite"
+    verify: true
+  band_red:
+    value: 0.7
+    source: "Assumption: exit_risk >= this -> RED; tune on the Para-19 backtest (§4.5)"
+    verify: true
+  band_amber:
+    value: 0.4
+    source: "Assumption: exit_risk >= this -> AMBER; tune on the Para-19 backtest (§4.5)"
+    verify: true
+
 exposure:                     # §4.3 exposure = exit_risk * criticality * clamp((lead+requal)/max(cover,1), 0, 3)
+  lead_time_days:
+    value: 30
+    source: "Assumption: supplier lead time for a new order (replace with EKPO-derived value when available)"
+    verify: true
+  requal_days:
+    value: 60
+    source: "Assumption: days to qualify an alternate supplier (licence, samples, rate contract)"
+    verify: true
   cover_ratio_min:
     value: 0.0
     source: "Plan §4.3 clamp lower bound"
@@ -131,3 +152,23 @@ graph:                        # §3 A2/A4 correlated-risk check
     value: 0.2
     source: "Assumption: a country counts as a shared upstream origin only if it supplies >= this share of the API's imports"
     verify: true
+
+window:                       # §3 A3 exit-risk window from months_to_breach, adjusted by concentration
+  conc_shrink:
+    value: 0.5
+    source: "Assumption: window_lo = months_to_breach * (1 - conc_shrink * conc); window_hi = months_to_breach + DPCO para 21(2) notice"
+    verify: true
+
+forecast:                     # §3 A3 consumption forecast
+  min_months_for_ets:
+    value: 6
+    source: "Plan S06: fewer than 6 months of history -> moving average"
+    verify: false
+  moving_average_days:
+    value: 90
+    source: "Plan S06: 90-day moving average fallback"
+    verify: false
+  max_days_of_cover:
+    value: 3650
+    source: "Cap when forecast consumption is zero (keeps the number finite)"
+    verify: false
