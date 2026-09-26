@@ -1,0 +1,11 @@
+.env
+.env.*
+!.env.example
+.claude/settings.local.json
+data/raw/
+*.sqlite
+__pycache__/
+.venv/
+.pytest_cache/
+node_modules/
+*.log

@@ -1,0 +1,8 @@
+#!/bin/sh
+# Strips AI attribution lines from commit messages (team rule: no Claude co-author).
+# Enable once per clone:  git config core.hooksPath scripts/git-hooks
+msg_file="$1"
+tmp="$msg_file.tmp"
+grep -v -i -E '^(Co-Authored-By:.*(claude|anthropic)|.*Generated with \[?Claude Code|Claude-Session:)' "$msg_file" > "$tmp"
+mv "$tmp" "$msg_file"
+exit 0
