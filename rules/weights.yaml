@@ -125,3 +125,9 @@ secondary:                    # §3 A1 secondary signals (NSQ lookback lives in 
     value: 90
     source: "Assumption: count cold-chain excursions in the last N days"
     verify: true
+
+graph:                        # §3 A2/A4 correlated-risk check
+  shared_origin_min_share:
+    value: 0.2
+    source: "Assumption: a country counts as a shared upstream origin only if it supplies >= this share of the API's imports"
+    verify: true
