@@ -9,7 +9,8 @@ description: Working rules for the FlowForge repo (SAP Hackfest 2026, team PSGIT
 1. Read `docs/STATUS.md` (short by design). It says what is done, what is in progress, who owns what, and what is blocked.
 2. Do NOT read `docs/IMPLEMENTATION_PLAN.md` end to end. Grep for the section you need and read only that range:
    `Grep "^## §" docs/IMPLEMENTATION_PLAN.md` → pick the section → `Read` with offset/limit.
-   Section map: §1 problem & scope · §2 architecture · §3 agents (A1–A6 + human gate) · §4 scoring rules · §5 data sources · §6 HANA data model · §7 SAP tools mapping · §8 repo layout · §9 team split & timeline · §10 demo script · §11 risks · §12 deck fixes.
+   Section map: §1 problem & scope · §2 architecture · §3 agents (A1–A6 + human gate) · §4 scoring rules · §5 data sources · §6 HANA data model · §7 SAP tools mapping · §8 repo layout · §9 team split & timeline · §10 demo script · §11 risks · §12 deck fixes · §13 copy-paste stage prompts (S00–S13, reviewer 13.R, Git steps 13.0).
+   If the user pastes a stage prompt, follow it exactly, including the §13.0 Git steps. Stay within that stage's files.
 3. For agent inputs and outputs, read `agents/contracts.py` only. It is the single source of truth, so you don't need to open every agent file.
 4. Rules and thresholds live in `rules/*.yaml`. Change numbers there, not in code.
 
