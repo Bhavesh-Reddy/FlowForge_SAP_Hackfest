@@ -8,3 +8,6 @@
 - 2026-09-26 · GST on medicines stored as 5% (post Sep-2025 rate change), flagged verify · A5 price check uses ceiling + GST; confirm the rate per formulation
 - 2026-09-26 · ApprovalDecision rejects APPROVE/EDIT_APPROVE unless all 6 checklist items are ticked; REJECT needs a reason · enforce the human gate in the contract, not only in the UI
 - 2026-09-26 · Test fixtures load into SQLite as FF_FX_<FILE> tables via tests/conftest.py `fixture_db` · agent stages test offline without HANA
+- 2026-09-27 · A1 with no API cost data returns band AMBER, headroom NaN and low confidence · unknown is not safe; never invent a number
+- 2026-09-27 · A1 shock multiplies the whole API cost series (sustained level shift) · avoids a fake one-month slope in the trend
+- 2026-09-27 · A1 reads plan §6 names (FF_REF_*); offline tests expose fixtures under those names via tests/fixtures/ref_views.sql · agents code against one schema
