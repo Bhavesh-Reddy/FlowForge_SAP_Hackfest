@@ -225,12 +225,17 @@ class Scenario(_Model):
     supplier: str | None = None
     material: str | None = None
     qty: float = Field(ge=0)
-    unit_rate_inr: Money | None = None
+    unit_rate_inr: Money | None = Field(default=None, description="GST-inclusive rate the hospital pays per unit")
     cost: Money
     coverage_days: float = Field(ge=0)
     expiry_waste_risk: Share = 0.0
     correlated_risk_flag: bool = False
-    rank: int | None = Field(default=None, ge=1)
+    correlated_risk_reason: str | None = None
+    rank: int | None = Field(default=None, ge=1, description="None = rejected (not offered to the gate)")
+    plant: str | None = None
+    cold_chain: bool = False
+    residual_shelf_life_months: float | None = Field(default=None, ge=0)
+    substitute_formulation_id: str | None = Field(default=None, description="THERAPEUTIC_ALT: the substitute")
 
 
 # ---------------------------------------------------------------- A5

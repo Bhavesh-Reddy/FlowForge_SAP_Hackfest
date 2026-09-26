@@ -20,3 +20,8 @@
 - 2026-09-27 · A3 uses PAL only if SYS.AFL_AREAS has AFLPAL and hana-ml imports; PAL errors fall back to ETS · Day-1 PAL result unknown
 - 2026-09-27 · Exit window: lo = mtb·(1 − 0.5·conc), hi = mtb + DPCO para 21(2) notice; headroom < 0 with no trend → 0–6 months · flag before the notice would be filed
 - 2026-09-27 · Formulation with no hospital material → exposure 0, days_of_cover None · hospital isn't exposed to what it doesn't stock
+- 2026-09-27 · Scenario/PR unit rates are GST-inclusive; PO net prices are grossed up by GST; A5 checks rate ≤ ceiling × (1 + GST) · matches DPCO para 14 (ceiling excludes GST)
+- 2026-09-27 · A4 sizes each option separately with CP-SAT and ranks by cost + stock-out penalty; correlated alternates get rank None (reject) or a cost uplift (penalise), set in rules · one option per Scenario keeps the gate screen simple
+- 2026-09-27 · Current supplier = vendor of the latest PO for the material, else the top producer by market share · no supplier-offer table yet
+- 2026-09-27 · A5 severity comes from each check's on_fail in the YAML; "can't confirm" (unknown vendor, old NSQ, unknown shelf life) is WARN · rules drive outcomes, not code
+- 2026-09-27 · A4/A5 build on the S01 schema (db/schema.sql via ingest.load_hana); A1–A3 still write pre-S01 columns (needs a follow-up fix)

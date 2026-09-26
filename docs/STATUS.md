@@ -20,8 +20,8 @@ Updated: 2026-09-26 by Bhavesh
 | S03 | Cost/origin/NSQ/producers + synth hospital | B1 | todo |
 | S04 | A1 Margin Sentinel | B2 | merged |
 | S05 | A2 Dependency + graph | B2 | merged |
-| S06 | A3 Forecaster | B2 | PR open |
-| S07 | A4 Resilience + A5 Validator | B2 | todo |
+| S06 | A3 Forecaster | B2 | merged |
+| S07 | A4 Resilience + A5 Validator | B2 | PR open |
 | S08 | A6 Audit/Action + orchestrator | B3 | todo |
 | S09 | FastAPI + BTP deploy | B3 | todo |
 | S10 | Build Apps guide + fallback UI | B3 | todo |
