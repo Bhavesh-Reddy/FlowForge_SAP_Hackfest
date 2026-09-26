@@ -15,7 +15,7 @@ Updated: 2026-09-26 by Bhavesh
 | ID | Stage | Owner | State |
 |---|---|---|---|
 | S00 | Bootstrap | B2 | merged |
-| S01 | HANA schema + Day-1 checks | B1 | todo |
+| S01 | HANA schema + Day-1 checks | B1 | PR open |
 | S02 | NPPA + NLEM ingest | B1 | todo |
 | S03 | Cost/origin/NSQ/producers + synth hospital | B1 | todo |
 | S04 | A1 Margin Sentinel | B2 | merged |
@@ -34,4 +34,4 @@ Updated: 2026-09-26 by Bhavesh
 - BTP trial region, and can CF reach HANA eu10?
 
 ## Day-1 check results
-- HANA from laptop: ?  | HANA from CF: ?  | Graph: ?  | PAL: ?  | API Hub key: ?
+- 2026-09-27 laptop: HANA connect PASS · create/drop table PASS  | HANA from CF: ?  | Graph: PASS (CREATE GRAPH WORKSPACE allowed)  | PAL: AFLPAL installed, execute role AFL__SYS_AFL_AFLPAL_EXECUTE NOT granted (ask organisers; else statsmodels fallback)  | API Hub key: ?
