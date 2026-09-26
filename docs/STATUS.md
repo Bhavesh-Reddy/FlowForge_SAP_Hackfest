@@ -34,4 +34,4 @@ Updated: 2026-09-26 by Bhavesh
 - BTP trial region, and can CF reach HANA eu10?
 
 ## Day-1 check results
-- 2026-09-27 laptop: HANA connect PASS · create/drop table PASS  | HANA from CF: ?  | Graph: PASS (CREATE GRAPH WORKSPACE allowed)  | PAL: AFLPAL installed, execute role AFL__SYS_AFL_AFLPAL_EXECUTE NOT granted (ask organisers; else statsmodels fallback)  | API Hub key: ?
+- 2026-09-27 laptop: HANA connect PASS · create/drop table PASS  | HANA from CF: ?  | Graph: PASS (CREATE GRAPH WORKSPACE allowed)  | PAL: BLOCKED (user has only PUBLIC; PAL call fails with [258] insufficient privilege; organisers won't grant) → A3 uses statsmodels  | API Hub key: ?
