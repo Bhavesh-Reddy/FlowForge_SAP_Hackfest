@@ -1,0 +1,26 @@
+# Regulatory constants and A5 regulatory checks (plan §3 A5, §4). Every constant is {value, source, verify}.
+version: "0.1.0"
+
+constants:
+  gst_rate_medicines:
+    value: 0.05
+    source: "GST on most scheduled formulations (5% after the Sep-2025 rate change; was 12%). Ceiling prices exclude GST"
+    verify: true
+  discontinuation_notice_months:
+    value: 6
+    source: "DPCO 2013 para 21(2): six-month notice before discontinuing a scheduled formulation"
+    verify: true
+
+checks:
+  - id: PRICE_COMPLIANCE
+    name: "Price compliance"
+    rule: "unit rate <= ceiling price + GST (ceiling excludes GST)"
+    source: "DPCO 2013 para 14"
+    verify: true
+    on_fail: FAIL
+  - id: SCHEDULED_STATUS
+    name: "Scheduled status"
+    rule: "formulation is in Schedule I (NLEM 2022) and the ceiling S.O. number is on record"
+    source: "DPCO 2013 Schedule I"
+    verify: false
+    on_fail: FAIL

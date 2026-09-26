@@ -1,0 +1,77 @@
+# Hospital SOP / control-point checks for A5 (plan §3 A5). Every param is {value, source, verify}.
+version: "0.1.0"
+
+checks:
+  - id: SUPPLIER_LICENCE
+    name: "Supplier licence"
+    rule: "vendor master has a valid drug licence number and GST; not blacklisted"
+    source: "SOP §5, CP-04"
+    verify: false
+    on_fail: FAIL
+  - id: QUALITY_HISTORY
+    name: "Quality history"
+    rule: "no NSQ alert for this manufacturer/formulation in the lookback window (WARN if older)"
+    source: "CDSCO NSQ alerts"
+    verify: false
+    on_fail: FAIL
+    params:
+      nsq_lookback_months:
+        value: 12
+        source: "Plan §3 A5: last 12 months"
+        verify: false
+  - id: SHELF_LIFE
+    name: "Shelf life"
+    rule: "offered residual shelf life >= hospital minimum"
+    source: "SOP §13, CP-07"
+    verify: false
+    on_fail: FAIL
+    params:
+      min_residual_months:
+        value: 12
+        source: "Plan §3 A5: default 12 months, configurable"
+        verify: true
+  - id: EXPIRY_WASTE
+    name: "Expiry waste"
+    rule: "projected expired qty at end of horizon <= max share"
+    source: "SOP §23"
+    verify: false
+    on_fail: FAIL
+    params:
+      max_expired_share:
+        value: 0.05
+        source: "Plan §3 A5: <= 5%"
+        verify: false
+  - id: BUDGET
+    name: "Budget"
+    rule: "PR value <= department budget remaining; value > threshold needs a second approver"
+    source: "SOP §10"
+    verify: false
+    on_fail: FAIL
+    params:
+      second_approver_threshold_inr:
+        value: 100000
+        source: "Placeholder; take the real threshold from the hospital SOP"
+        verify: true
+  - id: STORAGE
+    name: "Storage"
+    rule: "cold-chain items fit available fridge capacity"
+    source: "SOP §20, CP-08"
+    verify: false
+    on_fail: FAIL
+  - id: ROL_ROQ
+    name: "ROL/ROQ sanity"
+    rule: "resulting stock <= max-stock x buffer factor"
+    source: "SOP §7, CP-02"
+    verify: false
+    on_fail: WARN
+    params:
+      max_stock_buffer_factor:
+        value: 1.2
+        source: "Placeholder buffer factor over max-stock"
+        verify: true
+  - id: CLINICAL
+    name: "Clinical sign-off"
+    rule: "a therapeutic substitute always needs a pharmacist/clinician sign-off"
+    source: "Formulary policy"
+    verify: false
+    on_fail: WARN

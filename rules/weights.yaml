@@ -1,0 +1,117 @@
+# Scoring constants (plan §4). Every leaf is {value, source, verify}.
+# verify: true = assumption or unconfirmed wording; confirm before the finale.
+version: "0.1.0"
+
+margin:                       # §4.1 A1 margin headroom
+  retailer_margin:
+    value: 0.16
+    source: "DPCO 2013 para 4 basis (PTR = CP / (1 + retailer_margin))"
+    verify: true
+  wholesaler_margin:
+    value: 0.10
+    source: "Assumption, configurable (realisation = PTR / (1 + wholesaler_margin))"
+    verify: true
+  api_cost_median_months:
+    value: 3
+    source: "Plan §4.1: TradeStat unit value, 3-month moving median"
+    verify: false
+  trend_window_min_months:
+    value: 6
+    source: "Plan §4.1: OLS slope over the last 6-12 months"
+    verify: false
+  trend_window_max_months:
+    value: 12
+    source: "Plan §4.1: OLS slope over the last 6-12 months"
+    verify: false
+
+bands:                        # §4.1 signal bands
+  red_headroom_pct:
+    value: 0.05
+    source: "Plan §4.1: headroom < 5% -> RED"
+    verify: false
+  red_months_to_breach:
+    value: 6
+    source: "Plan §4.1: months_to_breach <= 6 -> RED (aligns with DPCO para 21(2) notice)"
+    verify: false
+  amber_headroom_pct:
+    value: 0.15
+    source: "Plan §4.1: headroom < 15% -> AMBER"
+    verify: false
+  amber_months_to_breach:
+    value: 12
+    source: "Plan §4.1: months_to_breach <= 12 -> AMBER"
+    verify: false
+
+concentration:                # §4.2 conc = 0.5/n + 0.3*HHI + 0.2*top_origin_share, clamp [0,1]
+  w_inv_producers:
+    value: 0.5
+    source: "Plan §4.2"
+    verify: false
+  w_hhi:
+    value: 0.3
+    source: "Plan §4.2"
+    verify: false
+  w_top_origin_share:
+    value: 0.2
+    source: "Plan §4.2"
+    verify: false
+
+exit_risk:                    # §4.3 sigmoid(a*(-headroom) + b/months_to_breach + c*conc + d*nsq + e*otd)
+  a_neg_headroom:
+    value: 8.0
+    source: "Hand-set; tune once on the Para-19 backtest (§4.5), then freeze"
+    verify: true
+  b_inv_months_to_breach:
+    value: 3.0
+    source: "Hand-set; tune once on the Para-19 backtest (§4.5), then freeze"
+    verify: true
+  c_concentration:
+    value: 2.0
+    source: "Hand-set; tune once on the Para-19 backtest (§4.5), then freeze"
+    verify: true
+  d_nsq_recent:
+    value: 1.0
+    source: "Hand-set; tune once on the Para-19 backtest (§4.5), then freeze"
+    verify: true
+  e_otd_drop:
+    value: 1.0
+    source: "Hand-set; tune once on the Para-19 backtest (§4.5), then freeze"
+    verify: true
+
+exposure:                     # §4.3 exposure = exit_risk * criticality * clamp((lead+requal)/max(cover,1), 0, 3)
+  cover_ratio_min:
+    value: 0.0
+    source: "Plan §4.3 clamp lower bound"
+    verify: false
+  cover_ratio_max:
+    value: 3.0
+    source: "Plan §4.3 clamp upper bound"
+    verify: false
+  days_of_cover_floor:
+    value: 1
+    source: "Plan §4.3 max(days_of_cover, 1)"
+    verify: false
+
+criticality:                  # §4.3 VED weights
+  V:
+    value: 1.0
+    source: "Plan §4.3 VED: Vital"
+    verify: false
+  E:
+    value: 0.6
+    source: "Plan §4.3 VED: Essential"
+    verify: false
+  D:
+    value: 0.3
+    source: "Plan §4.3 VED: Desirable"
+    verify: false
+  nlem_core_multiplier:
+    value: 1.2
+    source: "Plan §4.3: x1.2 if NLEM core/primary level"
+    verify: false
+
+watchlist:                    # §4.4
+  top_n:
+    value: 10
+    source: "Plan §4.4: show top 10, sort by exposure, tie-break by confidence"
+    verify: false
