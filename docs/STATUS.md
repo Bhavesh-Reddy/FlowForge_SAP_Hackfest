@@ -14,7 +14,7 @@ Updated: 2026-09-26 by Bhavesh
 ## Stages (plan §13). Edit only your own row: todo → in progress → PR open → merged
 | ID | Stage | Owner | State |
 |---|---|---|---|
-| S00 | Bootstrap | B2 | todo |
+| S00 | Bootstrap | B2 | PR open |
 | S01 | HANA schema + Day-1 checks | B1 | todo |
 | S02 | NPPA + NLEM ingest | B1 | todo |
 | S03 | Cost/origin/NSQ/producers + synth hospital | B1 | todo |
