@@ -52,12 +52,25 @@ checks:
         value: 100000
         source: "Placeholder; take the real threshold from the hospital SOP"
         verify: true
+      budget_remaining_inr:
+        value: 500000
+        source: "Placeholder department budget remaining; replace with the hospital budget ledger"
+        verify: true
   - id: STORAGE
     name: "Storage"
     rule: "cold-chain items fit available fridge capacity"
     source: "SOP §20, CP-08"
     verify: false
     on_fail: FAIL
+    params:
+      cold_free_capacity_units:
+        value: 20000
+        source: "Placeholder free fridge capacity (units) across locations"
+        verify: true
+      ambient_free_capacity_units:
+        value: 200000
+        source: "Placeholder free ambient store capacity (units)"
+        verify: true
   - id: ROL_ROQ
     name: "ROL/ROQ sanity"
     rule: "resulting stock <= max-stock x buffer factor"
@@ -69,9 +82,19 @@ checks:
         value: 1.2
         source: "Placeholder buffer factor over max-stock"
         verify: true
+      max_stock_days:
+        value: 120
+        source: "Placeholder max-stock level = forecast daily consumption x this many days"
+        verify: true
   - id: CLINICAL
     name: "Clinical sign-off"
     rule: "a therapeutic substitute always needs a pharmacist/clinician sign-off"
     source: "Formulary policy"
     verify: false
     on_fail: WARN
+
+defaults:                     # draft PR fields not held in any table yet
+  purchasing_group:
+    value: "P01"
+    source: "Placeholder S/4 purchasing group for pharmacy"
+    verify: true

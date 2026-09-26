@@ -172,3 +172,45 @@ forecast:                     # §3 A3 consumption forecast
     value: 3650
     source: "Cap when forecast consumption is zero (keeps the number finite)"
     verify: false
+
+resilience:                   # §3 A4 option sizing (CP-SAT)
+  stockout_penalty_multiplier:
+    value: 20
+    source: "Assumption: unmet unit costs this many times the ceiling price in the objective"
+    verify: true
+  expiry_margin_days:
+    value: 30
+    source: "Assumption: safety margin before expiry (qty <= daily x (shelf life - margin) - usable stock)"
+    verify: true
+  default_moq_units:
+    value: 100
+    source: "Placeholder MOQ when no supplier offer is on record"
+    verify: true
+  alt_price_premium:
+    value: 0.10
+    source: "Assumption: alternate supplier price = current net rate x (1 + premium) when it has no PO history"
+    verify: true
+  offered_shelf_life_months:
+    value: 24
+    source: "Assumption: residual shelf life on delivery when no offer is on record"
+    verify: true
+  rebalance_handling_inr_per_unit:
+    value: 0.05
+    source: "Assumption: internal transfer handling cost per unit"
+    verify: true
+  default_horizon_days:
+    value: 90
+    source: "Assumption: cover horizon when A3 gives no exit window"
+    verify: true
+  max_horizon_days:
+    value: 365
+    source: "Assumption: cap on the cover horizon (don't stockpile for years)"
+    verify: true
+  correlated_risk_action:
+    value: "reject"
+    source: "Plan §3 A4: reject or penalise an alternate that shares API origin/KSM; 'reject' or 'penalise'"
+    verify: true
+  correlated_risk_penalty:
+    value: 0.25
+    source: "Assumption: objective uplift for a correlated alternate when action = penalise"
+    verify: true

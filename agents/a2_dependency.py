@@ -69,8 +69,14 @@ def _key(vertex_id: str) -> str:
 
 
 def load_edges(db: Db) -> pd.DataFrame:
-    """All edges from FF_G_E; builds them in memory from the source tables if FF_G_E is absent or empty."""
-    edges = try_query(db, "SELECT SRC, DST, REL, WEIGHT, IS_PROXY FROM FF_G_E")
+    """All edges from FF_G_E; builds them in memory from the source tables if FF_G_E is absent, empty,
+    or lacks WEIGHT / IS_PROXY (the S01 db/schema.sql shape)."""
+    try:
+        edges = try_query(db, "SELECT SRC, DST, REL, WEIGHT, IS_PROXY FROM FF_G_E")
+    except Exception as exc:  # sqlite "no such column" / HANA "invalid column name"
+        if "column" not in str(exc).lower():
+            raise
+        edges = None
     if edges is None or edges.empty:
         from ingest.build_graph import build_edges
 
