@@ -11,3 +11,7 @@
 - 2026-09-27 · A1 with no API cost data returns band AMBER, headroom NaN and low confidence · unknown is not safe; never invent a number
 - 2026-09-27 · A1 shock multiplies the whole API cost series (sustained level shift) · avoids a fake one-month slope in the trend
 - 2026-09-27 · A1 reads plan §6 names (FF_REF_*); offline tests expose fixtures under those names via tests/fixtures/ref_views.sql · agents code against one schema
+- 2026-09-27 · FF_G_E adds WEIGHT and IS_PROXY to the §6 (ID, SRC, DST, REL) shape · shares and data quality come from the graph alone, so the HANA and NetworkX paths agree
+- 2026-09-27 · A2 uses HANA Graph only if SYS.GRAPH_WORKSPACES shows FF_SUPPLY_GRAPH valid, else NetworkX · Day-1 Graph result is still unknown
+- 2026-09-27 · A manufacturer inherits its formulations' API origins in shares_upstream; origin counts only at ≥ graph.shared_origin_min_share · no manufacturer-level sourcing data
+- 2026-09-27 · No known producer → HHI 1.0 and 1/n term 1.0 (max concentration) · unknown is not safe
