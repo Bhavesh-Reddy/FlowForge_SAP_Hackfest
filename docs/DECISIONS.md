@@ -15,3 +15,8 @@
 - 2026-09-27 · A2 uses HANA Graph only if SYS.GRAPH_WORKSPACES shows FF_SUPPLY_GRAPH valid, else NetworkX · Day-1 Graph result is still unknown
 - 2026-09-27 · A manufacturer inherits its formulations' API origins in shares_upstream; origin counts only at ≥ graph.shared_origin_min_share · no manufacturer-level sourcing data
 - 2026-09-27 · No known producer → HHI 1.0 and 1/n term 1.0 (max concentration) · unknown is not safe
+- 2026-09-27 · A3 run(signals, deps, ctx) takes A1/A2 outputs from the orchestrator · agents never call each other
+- 2026-09-27 · A3 cause = largest positive term inside the §4.3 sigmoid (conc split into producers vs origin); positive headroom is a protective term, never a cause; once headroom < 0 the months-to-breach term counts as CEILING_BELOW_COST · explainable cause chips
+- 2026-09-27 · A3 uses PAL only if SYS.AFL_AREAS has AFLPAL and hana-ml imports; PAL errors fall back to ETS · Day-1 PAL result unknown
+- 2026-09-27 · Exit window: lo = mtb·(1 − 0.5·conc), hi = mtb + DPCO para 21(2) notice; headroom < 0 with no trend → 0–6 months · flag before the notice would be filed
+- 2026-09-27 · Formulation with no hospital material → exposure 0, days_of_cover None · hospital isn't exposed to what it doesn't stock

@@ -19,8 +19,8 @@ Updated: 2026-09-26 by Bhavesh
 | S02 | NPPA + NLEM ingest | B1 | todo |
 | S03 | Cost/origin/NSQ/producers + synth hospital | B1 | todo |
 | S04 | A1 Margin Sentinel | B2 | merged |
-| S05 | A2 Dependency + graph | B2 | PR open |
-| S06 | A3 Forecaster | B2 | todo |
+| S05 | A2 Dependency + graph | B2 | merged |
+| S06 | A3 Forecaster | B2 | PR open |
 | S07 | A4 Resilience + A5 Validator | B2 | todo |
 | S08 | A6 Audit/Action + orchestrator | B3 | todo |
 | S09 | FastAPI + BTP deploy | B3 | todo |
