@@ -62,15 +62,29 @@ def placeholders(ids: Sequence[Any]) -> str:
     return ", ".join("?" for _ in ids)
 
 
-def load_fixture_db() -> Db:
-    """In-memory SQLite with the SYNTH test fixtures exposed under plan §6 names (tests and --fixtures CLIs)."""
+def load_fixture_db(as_of: str | None = None) -> Db:
+    """In-memory SQLite with the S01 schema + views, seeded from the SYNTH test fixtures (tests and --fixtures CLIs).
+
+    The fixture CSVs carry no ceiling effective date (the S01 adapter uses FETCHED_AT), so it is set before the
+    first cost month; otherwise every earlier month would correctly have no ceiling and A1 could not trend.
+    """
     from agents.ctx import Settings, get_db
-    from tests.conftest import FIXTURES, load_fixtures
+    from ingest import load_hana as lh
+    from tests.conftest import FIXTURES
 
     db = get_db(Settings(db_backend="sqlite"), sqlite_path=":memory:")
-    load_fixtures(db)
-    sql = "\n".join(l for l in (FIXTURES / "ref_views.sql").read_text(encoding="utf-8").splitlines()
-                    if not l.lstrip().startswith("--"))
-    for stmt in filter(str.strip, sql.split(";")):
-        db.execute(stmt)
+    lh.create_objects(db)
+    lh.seed(db, [FIXTURES])
+    db.execute("UPDATE FF_REF_CEILING_PRICE SET EFFECTIVE_FROM = ? WHERE SOURCE = ?", (FIXTURE_CEILING_FROM, "FIXTURE_S00"))
+    if as_of:
+        db.execute("INSERT INTO FF_CFG_PARAM (NAME, DATE_VALUE) VALUES ('AS_OF_DATE', ?)", (as_of,))
     return db
+
+
+FIXTURE_CEILING_FROM = "2025-04-01"
+
+
+def table_columns(db: Db, table: str) -> set[str] | None:
+    """Upper-case column names of a table/view, or None if it doesn't exist."""
+    df = try_query(db, f"SELECT * FROM {table} WHERE 1 = 0")
+    return None if df is None else {str(c).upper() for c in df.columns}

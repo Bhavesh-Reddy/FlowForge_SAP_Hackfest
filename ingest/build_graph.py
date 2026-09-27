@@ -7,7 +7,8 @@ Edges point downstream, from supply towards the ward:
     FORM -STOCKED_AS-> MATERIAL  MATERIAL -ISSUED_TO(qty)-> WARD   (MSEG 201/261, ward = KOSTL)
 Edges carry WEIGHT and IS_PROXY so A2's metrics and data quality come from the graph alone.
 
-Idempotent: every build replaces the full contents. On HANA, run db/graph.sql first (`--ddl`).
+Idempotent: every build replaces the full contents. Tables come from db/schema.sql (S01);
+`--ddl` (re)creates the HANA Graph workspace from db/graph.sql.
     python -m ingest.build_graph [--ddl] [--fixtures]
 """
 from __future__ import annotations
@@ -17,18 +18,12 @@ from pathlib import Path
 
 import pandas as pd
 
-from agents.common import try_query
+from agents.common import table_columns, try_query
 from agents.ctx import Db
 
 VERTEX_TYPES = ("KSM", "API", "COUNTRY", "MANUFACTURER", "FORMULATION", "MATERIAL", "WARD")
 ISSUE_MOVEMENTS = ("201", "261")
 GRAPH_SQL = Path(__file__).resolve().parent.parent / "db" / "graph.sql"
-
-SQLITE_DDL = (
-    "CREATE TABLE IF NOT EXISTS FF_G_V (ID TEXT PRIMARY KEY, TYPE TEXT NOT NULL, LABEL TEXT)",
-    "CREATE TABLE IF NOT EXISTS FF_G_E (ID TEXT PRIMARY KEY, SRC TEXT NOT NULL, DST TEXT NOT NULL, "
-    "REL TEXT NOT NULL, WEIGHT REAL, IS_PROXY TEXT)",
-)
 
 
 def vid(vtype: str, key: object) -> str:
@@ -102,32 +97,33 @@ def build_edges(db: Db) -> tuple[pd.DataFrame, pd.DataFrame]:
 
 
 def run_ddl(db: Db) -> None:
-    """Create FF_G_V / FF_G_E (and on HANA the graph workspace). Safe to re-run."""
-    if db.backend == "sqlite":
-        for stmt in SQLITE_DDL:
-            db.execute(stmt)
+    """(Re)create the HANA Graph workspace over FF_G_V / FF_G_E (tables come from db/schema.sql). HANA only."""
+    if db.backend != "hana":
         return
     sql = "\n".join(l for l in GRAPH_SQL.read_text(encoding="utf-8").splitlines() if not l.lstrip().startswith("--"))
     for stmt in filter(str.strip, sql.split(";")):
         try:
             db.execute(stmt)
-        except Exception as exc:  # DROP of a missing object on first run
-            if not stmt.strip().upper().startswith("DROP"):
+        except Exception:
+            if not stmt.strip().upper().startswith("DROP"):  # DROP of a missing workspace on first run
                 raise
-            del exc
 
 
 def build(db: Db) -> tuple[int, int]:
-    """Replace FF_G_V / FF_G_E with a fresh build. Returns (n_vertices, n_edges)."""
-    if db.backend == "sqlite":
-        run_ddl(db)
+    """Replace FF_G_V / FF_G_E with a fresh build. Returns (n_vertices, n_edges).
+
+    Writes WEIGHT / IS_PROXY only if FF_G_E has them (S01 schema currently doesn't; A2 then rebuilds in memory).
+    """
     vdf, edf = build_edges(db)
+    cols = table_columns(db, "FF_G_E") or set()
+    ecols = ["ID", "SRC", "DST", "REL"] + [c for c in ("WEIGHT", "IS_PROXY") if c in cols]
     db.execute("DELETE FROM FF_G_E")
     db.execute("DELETE FROM FF_G_V")
     db.executemany("INSERT INTO FF_G_V (ID, TYPE, LABEL) VALUES (?, ?, ?)",
                    vdf.astype(object).where(vdf.notna(), None).itertuples(index=False))
-    db.executemany("INSERT INTO FF_G_E (ID, SRC, DST, REL, WEIGHT, IS_PROXY) VALUES (?, ?, ?, ?, ?, ?)",
-                   edf.astype(object).where(edf.notna(), None).itertuples(index=False))
+    e = edf[ecols]
+    db.executemany(f"INSERT INTO FF_G_E ({', '.join(ecols)}) VALUES ({', '.join('?' for _ in ecols)})",
+                   e.astype(object).where(e.notna(), None).itertuples(index=False))
     return len(vdf), len(edf)
 
 
@@ -136,7 +132,7 @@ def main(argv: list[str] | None = None) -> int:
     from agents.ctx import get_db
 
     p = argparse.ArgumentParser(prog="python -m ingest.build_graph", description="Build FF_G_V / FF_G_E")
-    p.add_argument("--ddl", action="store_true", help="(re)create the graph tables and, on HANA, the workspace")
+    p.add_argument("--ddl", action="store_true", help="(re)create the HANA Graph workspace (HANA only)")
     p.add_argument("--fixtures", action="store_true", help="build from the SYNTH test fixtures in memory")
     a = p.parse_args(argv)
     with (load_fixture_db() if a.fixtures else get_db()) as db:
