@@ -1,0 +1,21 @@
+FORM_ID,MOLECULE,FORMULATION,EVENT_GROUP,ORDER_DATE,OLD_CEILING,NEW_CEILING,PCT_CHANGE,SO_NUMBER,SOURCE_URL,VERIFY,NOTE
+ANTI-TETANUS-IMMUNOGLOBU-D77E974E,Anti-Tetanus Immunoglobulin,As licensed (250 IU),2026-06,2026-06-11,1274.68,1912.02,50.00,S.O. 3005(E) dated 11.06.2026,https://nppa.gov.in/storage/uploads/tender/anti-tetanus-8787c4422856beb6644c1da23d7fd15b.pdf,false,
+ANTI-TETANUS-IMMUNOGLOBU-7F67B0A3,Anti-Tetanus Immunoglobulin,As licensed (500 IU),2026-06,2026-06-11,1920.79,2881.19,50.00,S.O. 3005(E) dated 11.06.2026,https://nppa.gov.in/storage/uploads/tender/anti-tetanus-8787c4422856beb6644c1da23d7fd15b.pdf,false,
+BCG-VACCINE-961273DA,BCG Vaccine,As licensed,2026-06,2026-06-11,8.20,9.89,20.61,S.O. 3006(E) dated 11.06.2026,https://nppa.gov.in/storage/uploads/tender/bcg-vaccine-6bc1c11c39cca0a0e8994f99b99a5e1d.pdf,false,
+MEASLES-RUBELLA-VACCINE-167F0074,Measles Rubella Vaccine,As licensed,2026-06,2026-06-11,72.90,87.93,20.62,S.O. 3006(E) dated 11.06.2026,https://nppa.gov.in/storage/uploads/tender/bcg-vaccine-6bc1c11c39cca0a0e8994f99b99a5e1d.pdf,false,
+MEASLES-VACCINE-94806A0B,Measles Vaccine,As licensed,2026-06,2026-06-11,51.40,62.00,20.62,S.O. 3006(E) dated 11.06.2026,https://nppa.gov.in/storage/uploads/tender/bcg-vaccine-6bc1c11c39cca0a0e8994f99b99a5e1d.pdf,false,
+CARBOPLATIN-49C2E049,Carboplatin,Injection 10 mg/ml,2026-06,2026-06-11,60.49,90.74,50.01,S.O. 3004(E) dated 11.06.2026,https://nppa.gov.in/storage/uploads/tender/cisplatin-aa1ee6fd3965d662b8f4bdb981783485.pdf,false,
+CISPLATIN-1C3AF2A6,Cisplatin,Injection 1 mg/ml,2026-06,2026-06-11,7.26,10.89,50.00,S.O. 3004(E) dated 11.06.2026,https://nppa.gov.in/storage/uploads/tender/cisplatin-aa1ee6fd3965d662b8f4bdb981783485.pdf,false,
+,Benzylpenicillin,,2024-10,,,,,,https://www.pib.gov.in/PressReleseDetailm.aspx?PRID=2064747,true,"§4.5: ~11 formulations of 8 drugs, ~+50%. Confirm S.O. no., date, formulations and % from the NPPA order"
+,Atropine,,2024-10,,,,,,https://www.pib.gov.in/PressReleseDetailm.aspx?PRID=2064747,true,"§4.5: ~11 formulations of 8 drugs, ~+50%. Confirm S.O. no., date, formulations and % from the NPPA order"
+,Streptomycin,,2024-10,,,,,,https://www.pib.gov.in/PressReleseDetailm.aspx?PRID=2064747,true,"§4.5: ~11 formulations of 8 drugs, ~+50%. Confirm S.O. no., date, formulations and % from the NPPA order"
+,Salbutamol,,2024-10,,,,,,https://www.pib.gov.in/PressReleseDetailm.aspx?PRID=2064747,true,"§4.5: ~11 formulations of 8 drugs, ~+50%. Confirm S.O. no., date, formulations and % from the NPPA order"
+,Pilocarpine,,2024-10,,,,,,https://www.pib.gov.in/PressReleseDetailm.aspx?PRID=2064747,true,"§4.5: ~11 formulations of 8 drugs, ~+50%. Confirm S.O. no., date, formulations and % from the NPPA order"
+,Cefadroxil,,2024-10,,,,,,https://www.pib.gov.in/PressReleseDetailm.aspx?PRID=2064747,true,"§4.5: ~11 formulations of 8 drugs, ~+50%. Confirm S.O. no., date, formulations and % from the NPPA order"
+,Desferrioxamine,,2024-10,,,,,,https://www.pib.gov.in/PressReleseDetailm.aspx?PRID=2064747,true,"§4.5: ~11 formulations of 8 drugs, ~+50%. Confirm S.O. no., date, formulations and % from the NPPA order"
+,Lithium carbonate,,2024-10,,,,,,https://www.pib.gov.in/PressReleseDetailm.aspx?PRID=2064747,true,"§4.5: ~11 formulations of 8 drugs, ~+50%. Confirm S.O. no., date, formulations and % from the NPPA order"
+,BCG vaccine,,2019-12,,,,,,,true,"§4.5: ~21 formulations (examples only). Confirm the full list, S.O. no., date and % from the NPPA order"
+,Chloroquine,,2019-12,,,,,,,true,"§4.5: ~21 formulations (examples only). Confirm the full list, S.O. no., date and % from the NPPA order"
+,Dapsone,,2019-12,,,,,,,true,"§4.5: ~21 formulations (examples only). Confirm the full list, S.O. no., date and % from the NPPA order"
+,Metronidazole,,2019-12,,,,,,,true,"§4.5: ~21 formulations (examples only). Confirm the full list, S.O. no., date and % from the NPPA order"
+,Ascorbic acid (Vitamin C),,2019-12,,,,,,,true,"§4.5: ~21 formulations (examples only). Confirm the full list, S.O. no., date and % from the NPPA order"
