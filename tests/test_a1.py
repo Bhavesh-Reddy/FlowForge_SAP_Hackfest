@@ -1,3 +1,4 @@
+import json
 import math
 from types import SimpleNamespace
 
@@ -5,6 +6,7 @@ import pytest
 
 from agents import a1_margin_sentinel as a1
 from agents.contracts import DataTag, RunContext, SignalBand
+from ingest import load_hana as lh
 
 
 @pytest.fixture
@@ -62,11 +64,11 @@ def test_runcontext_shock_is_used(db, rules):
 
 
 def test_missing_cost_gives_low_data_quality_not_crash(db, rules):
-    for t in ("FORMULATIONS", "BOM_ASSUMPTION", "API_COST_MONTHLY"):
-        db.execute(f"UPDATE FF_FX_{t} SET IS_PROXY = 'REAL'")
+    for t in ("FF_REF_CEILING_PRICE", "FF_REF_FORM_API", "FF_REF_BOM_ASSUMPTION", "FF_REF_API_COST_MONTHLY"):
+        db.execute(f"UPDATE {t} SET IS_PROXY = 'REAL'")
     before = {s.formulation_id: s for s in a1.run([], _ctx(db, rules, dry_run=True))}
     assert before["F001"].data_quality.confidence == 0.75  # ceiling, BOM, API cost REAL; no WPI
-    db.execute("DELETE FROM FF_FX_API_COST_MONTHLY WHERE API_ID = ?", ("A01",))
+    db.execute("DELETE FROM FF_REF_API_COST_MONTHLY WHERE API_ID = ?", ("A01",))
     after = {s.formulation_id: s for s in a1.run([], _ctx(db, rules, dry_run=True))}
     f1 = after["F001"]
     assert f1.data_quality.confidence < before["F001"].data_quality.confidence
@@ -89,40 +91,58 @@ def test_unknown_formulation(db, rules):
 
 def test_writes_ff_ag_signal(db, rules):
     sigs = a1.run(["F001", "F003"], _ctx(db, rules))
-    rows = db.query("SELECT RUN_ID, FORM_ID, BAND, HEADROOM_PCT, AS_OF_MONTH FROM FF_AG_SIGNAL ORDER BY FORM_ID")
+    rows = db.query("SELECT RUN_ID, FORM_ID, BAND, HEADROOM_PCT, DATA_TAGS_JSON FROM FF_AG_SIGNAL ORDER BY FORM_ID")
     assert rows["RUN_ID"].unique().tolist() == ["t-run"]
     assert rows["FORM_ID"].tolist() == ["F001", "F003"]
     assert rows.iloc[0]["HEADROOM_PCT"] == pytest.approx(sigs[0].headroom_pct)
-    assert rows.iloc[0]["AS_OF_MONTH"] == "2026-09"
+    assert json.loads(rows.iloc[0]["DATA_TAGS_JSON"])["api_cost"] == "SYNTH"
 
 
 def test_dry_run_writes_nothing(db, rules):
     a1.run(["F001"], _ctx(db, rules, dry_run=True))
-    assert db.query("SELECT name FROM sqlite_master WHERE name = 'FF_AG_SIGNAL'").empty
+    assert int(db.query("SELECT COUNT(*) AS N FROM FF_AG_SIGNAL").iloc[0]["N"]) == 0
+
+
+def put(db, table, rows):
+    t = lh.schema_tables()[table]
+    prov = {"SOURCE": "test", "IS_PROXY": "SYNTH"} if t.has_provenance else {}
+    lh.upsert_rows(db, t, [{**r, **prov} for r in rows])
 
 
 def test_secondary_signals(db, rules):
-    db.execute("CREATE TABLE FF_REF_NSQ_ALERT (MONTH TEXT, DRUG TEXT, BATCH TEXT, MANUFACTURER_ID TEXT, REASON TEXT)")
-    db.executemany("INSERT INTO FF_REF_NSQ_ALERT VALUES (?, ?, ?, ?, ?)", [
-        ("2026-05", "Amoxicillin Capsules IP 500 mg", "B1", "M01", "Dissolution"),
-        ("2024-01", "Amoxicillin Capsules IP 500 mg", "B0", "M02", "Assay"),       # outside 12 months
-        ("2026-06", "Paracetamol Tablets", "B2", "M01", "Assay"),                  # other drug
+    put(db, "FF_REF_NSQ_ALERT", [
+        {"ALERT_ID": "N1", "MONTH": "2026-05-01", "DRUG": "Amoxicillin Capsules IP 500 mg", "BATCH": "B1",
+         "MANUFACTURER_ID": "M01", "FORM_ID": "F001"},
+        {"ALERT_ID": "N2", "MONTH": "2024-01-01", "DRUG": "Amoxicillin Capsules IP 500 mg", "BATCH": "B0",
+         "MANUFACTURER_ID": "M02", "FORM_ID": "F001"},                                   # outside 12 months
+        {"ALERT_ID": "N3", "MONTH": "2026-06-01", "DRUG": "Paracetamol Tablets", "BATCH": "B2",
+         "MANUFACTURER_ID": "M01", "FORM_ID": "F003"},                                   # other formulation
+        {"ALERT_ID": "N4", "MONTH": "2026-07-01", "DRUG": "Amoxicillin Capsules", "BATCH": "B3",
+         "MANUFACTURER_ID": "M03", "FORM_ID": None},                                     # matched via producer
     ])
-    db.execute("CREATE TABLE FF_V_SUPPLIER_OTD (LIFNR TEXT, MATNR TEXT, MONTH TEXT, OTD_PCT REAL)")
-    db.executemany("INSERT INTO FF_V_SUPPLIER_OTD VALUES (?, ?, ?, ?)", [
-        ("V1", "MAT-0001", m, v) for m, v in
-        [("2026-04", 95), ("2026-05", 94), ("2026-06", 96), ("2026-07", 80), ("2026-08", 78), ("2026-09", 82)]])
-    db.execute("CREATE TABLE FF_MM_COLDCHAIN (LOCATION TEXT, TS TEXT, TEMP_C REAL, EXCURSION_FLAG TEXT)")
-    db.executemany("INSERT INTO FF_MM_COLDCHAIN VALUES (?, ?, ?, ?)", [
-        ("CENT", "2026-09-10T03:00:00", 11.2, "Y"), ("CENT", "2026-01-10T03:00:00", 10.0, "Y"),
-        ("CENT", "2026-09-11T03:00:00", 5.0, "N"), ("OTHER", "2026-09-12T03:00:00", 12.0, "Y")])
+    # OTD: 6 monthly PO lines; first 3 on time, last 3 late by 10 days -> drop 100 pts
+    for k, month in enumerate(("04", "05", "06", "07", "08", "09")):
+        eindt = f"2026-{month}-05"
+        gr = eindt if k < 3 else f"2026-{month}-15"
+        put(db, "FF_MM_EKKO", [{"EBELN": f"PO{k}", "LIFNR": "V1", "BEDAT": f"2026-{month}-01"}])
+        put(db, "FF_MM_EKPO", [{"EBELN": f"PO{k}", "EBELP": 10, "MATNR": "MAT-0001", "WERKS": "H001", "MENGE": 100,
+                                "EINDT": eindt}])
+        put(db, "FF_MM_MSEG", [{"MBLNR": f"50{k}", "MJAHR": 2026, "ZEILE": 1, "BWART": "101", "MATNR": "MAT-0001",
+                                "WERKS": "H001", "MENGE": 100, "BUDAT": gr, "EBELN": f"PO{k}", "EBELP": 10}])
+    put(db, "FF_MM_COLDCHAIN", [
+        {"LOCATION": "CENT", "TS": "2026-09-10T03:00:00", "TEMP_C": 11.2, "EXCURSION_FLAG": 1},
+        {"LOCATION": "CENT", "TS": "2026-01-10T03:00:00", "TEMP_C": 10.0, "EXCURSION_FLAG": 1},
+        {"LOCATION": "CENT", "TS": "2026-09-11T03:00:00", "TEMP_C": 5.0, "EXCURSION_FLAG": 0},
+        {"LOCATION": "OTHER", "TS": "2026-09-12T03:00:00", "TEMP_C": 12.0, "EXCURSION_FLAG": 1}])
     [f1] = a1.run(["F001"], _ctx(db, rules, dry_run=True))
     by = {x.kind: x for x in f1.secondary_signals}
-    assert by["NSQ"].value == 1 and "CDSCO" in by["NSQ"].note
-    assert by["OTD"].value == pytest.approx(15.0) and "FF_V_SUPPLIER_OTD" in by["OTD"].note
+    assert by["NSQ"].value == 2 and "CDSCO" in by["NSQ"].note
+    assert by["OTD"].value == pytest.approx(100.0) and "FF_V_SUPPLIER_OTD" in by["OTD"].note
     assert by["COLD_CHAIN"].value == 1
+    [f2] = a1.run(["F002"], _ctx(db, rules, dry_run=True))
+    assert f2.secondary_signals == []  # N4 (M03, no FORM_ID) matches F001 via producer M03; M03 does not make F002
     [f3] = a1.run(["F003"], _ctx(db, rules, dry_run=True))
-    assert f3.secondary_signals == []
+    assert [x.kind for x in f3.secondary_signals] == ["NSQ"] and f3.secondary_signals[0].value == 1
 
 
 def test_missing_optional_tables_are_skipped(db, rules):

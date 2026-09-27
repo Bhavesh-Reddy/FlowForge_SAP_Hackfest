@@ -25,3 +25,7 @@
 - 2026-09-27 · Current supplier = vendor of the latest PO for the material, else the top producer by market share · no supplier-offer table yet
 - 2026-09-27 · A5 severity comes from each check's on_fail in the YAML; "can't confirm" (unknown vendor, old NSQ, unknown shelf life) is WARN · rules drive outcomes, not code
 - 2026-09-27 · A4/A5 build on the S01 schema (db/schema.sql via ingest.load_hana); A1–A3 still write pre-S01 columns (needs a follow-up fix)
+- 2026-09-27 · db/schema.sql (S01) is the only DDL; agents write only its columns and never create tables · one schema for HANA and SQLite
+- 2026-09-27 · A1 computes the OTD drop monthly from EKPO/EKKO/MSEG with the FF_V_SUPPLIER_OTD logic · the view is a lifetime figure per vendor
+- 2026-09-27 · A3 uses FF_V_DAYS_OF_COVER only when run as_of = FF_V_ASOF, else the same FEFO logic in Python · no look-ahead in backtests
+- 2026-09-27 · Agent tests load fixtures through ingest.load_hana (ref_views.sql removed); fixture ceilings get EFFECTIVE_FROM 2025-04-01 · the fixture CSV has no effective date

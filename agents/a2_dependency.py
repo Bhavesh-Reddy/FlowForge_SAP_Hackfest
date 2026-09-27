@@ -22,7 +22,7 @@ from typing import Any, Sequence
 import networkx as nx
 import pandas as pd
 
-from agents.common import AgentCtx, placeholders, resolve_ctx, try_query, worst_tag
+from agents.common import AgentCtx, placeholders, resolve_ctx, table_columns, try_query, worst_tag
 from agents.contracts import DataQuality, DataTag, DependencyProfile
 from agents.ctx import Db
 from agents.rules import Rules
@@ -44,17 +44,11 @@ CYPHER = {
 }
 CYPHER_SQL = "SELECT SRC, DST, REL, WEIGHT, IS_PROXY FROM OPENCYPHER_TABLE(GRAPH WORKSPACE " + WORKSPACE + " QUERY '{q}')"
 
-DEPENDENCY_DDL_SQLITE = """
-CREATE TABLE IF NOT EXISTS FF_AG_DEPENDENCY (
-  RUN_ID TEXT NOT NULL, FORM_ID TEXT NOT NULL, N_PRODUCERS_MIN INTEGER, HHI REAL,
-  TOP_ORIGIN_COUNTRY TEXT, TOP_ORIGIN_SHARE REAL, CONCENTRATION REAL,
-  AFFECTED_MATERIALS_JSON TEXT, AFFECTED_WARDS_JSON TEXT, CONFIDENCE REAL, TAGS_JSON TEXT,
-  GRAPH_ENGINE TEXT, CREATED_AT TEXT, PRIMARY KEY (RUN_ID, FORM_ID)
-)"""
-DEPENDENCY_COLS = (
+DEPENDENCY_COLS = (  # S01 db/schema.sql
     "RUN_ID", "FORM_ID", "N_PRODUCERS_MIN", "HHI", "TOP_ORIGIN_COUNTRY", "TOP_ORIGIN_SHARE", "CONCENTRATION",
-    "AFFECTED_MATERIALS_JSON", "AFFECTED_WARDS_JSON", "CONFIDENCE", "TAGS_JSON", "GRAPH_ENGINE", "CREATED_AT",
+    "AFFECTED_MATERIALS_JSON", "AFFECTED_WARDS_JSON", "CONFIDENCE", "DATA_TAGS_JSON", "CREATED_AT",
 )
+WEIGHTED_EDGE_COLS = {"WEIGHT", "IS_PROXY"}
 
 
 def fid_vertex(form_id: str) -> str:
@@ -68,15 +62,16 @@ def _key(vertex_id: str) -> str:
 # ---------------------------------------------------------------- graph access
 
 
+def weighted_edges(db: Db) -> bool:
+    """FF_G_E carries WEIGHT and IS_PROXY (needed for shares and data quality from the graph alone)."""
+    cols = table_columns(db, "FF_G_E")
+    return cols is not None and WEIGHTED_EDGE_COLS <= cols
+
+
 def load_edges(db: Db) -> pd.DataFrame:
     """All edges from FF_G_E; builds them in memory from the source tables if FF_G_E is absent, empty,
-    or lacks WEIGHT / IS_PROXY (the S01 db/schema.sql shape)."""
-    try:
-        edges = try_query(db, "SELECT SRC, DST, REL, WEIGHT, IS_PROXY FROM FF_G_E")
-    except Exception as exc:  # sqlite "no such column" / HANA "invalid column name"
-        if "column" not in str(exc).lower():
-            raise
-        edges = None
+    or lacks WEIGHT / IS_PROXY (the current S01 db/schema.sql shape)."""
+    edges = try_query(db, "SELECT SRC, DST, REL, WEIGHT, IS_PROXY FROM FF_G_E") if weighted_edges(db) else None
     if edges is None or edges.empty:
         from ingest.build_graph import build_edges
 
@@ -253,15 +248,13 @@ def shares_upstream(a: str, b: str, ctx: Any, graph: nx.DiGraph | None = None) -
 # ---------------------------------------------------------------- run
 
 
-def _write(db: Db, profiles: list[DependencyProfile], engine: str) -> None:
-    if db.backend == "sqlite":
-        db.execute(DEPENDENCY_DDL_SQLITE)
+def _write(db: Db, profiles: list[DependencyProfile]) -> None:
     now = datetime.now(timezone.utc).isoformat(timespec="seconds")
     rows = [
         (p.run_id, p.formulation_id, p.n_producers_min, p.hhi, p.top_origin_country, p.top_origin_share,
          p.concentration, json.dumps(p.affected_materials), json.dumps(p.affected_wards),
          p.data_quality.confidence if p.data_quality else None,
-         json.dumps({k: v.value for k, v in (p.data_quality.tags if p.data_quality else {}).items()}), engine, now)
+         json.dumps({k: v.value for k, v in (p.data_quality.tags if p.data_quality else {}).items()}), now)
         for p in profiles
     ]
     db.executemany(f"INSERT INTO FF_AG_DEPENDENCY ({', '.join(DEPENDENCY_COLS)}) "
@@ -272,7 +265,7 @@ def pick_engine(db: Db, engine: str = "auto") -> str:
     if engine not in ("auto", "hana", "networkx"):
         raise ValueError(f"engine must be auto, hana or networkx, got {engine!r}")
     if engine == "auto":
-        return "hana" if hana_graph_available(db) else "networkx"
+        return "hana" if hana_graph_available(db) and weighted_edges(db) else "networkx"
     return engine
 
 
@@ -290,7 +283,7 @@ def run(form_ids: Sequence[str], ctx: Any, engine: str = "auto") -> list[Depende
         hoods = [neighbourhood_nx(g, f) for f in ids]
     profiles = [profile_from_edges(f, h, c.run.run_id, c.rules) for f, h in zip(ids, hoods)]
     if not c.run.dry_run and profiles:
-        _write(c.db, profiles, eng)
+        _write(c.db, profiles)
     return profiles
 
 

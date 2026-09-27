@@ -40,17 +40,9 @@ CAUSE_ORDER = (
     CauseCode.SINGLE_ORIGIN_API, CauseCode.QUALITY_NSQ, CauseCode.SUPPLIER_OTD_DROP,
 )
 
-FORECAST_DDL_SQLITE = """
-CREATE TABLE IF NOT EXISTS FF_AG_FORECAST (
-  RUN_ID TEXT NOT NULL, FORM_ID TEXT NOT NULL, EXIT_RISK_BAND TEXT NOT NULL, EXIT_RISK REAL, EXPOSURE REAL,
-  WINDOW_MONTHS_LO REAL, WINDOW_MONTHS_HI REAL, DAYS_OF_COVER REAL, STOCKOUT_DATE_IF_EXIT TEXT,
-  CAUSE_CODE TEXT NOT NULL, CAUSE_FACTS_JSON TEXT, CONFIDENCE REAL, CONSUMPTION_METHOD TEXT, CREATED_AT TEXT,
-  PRIMARY KEY (RUN_ID, FORM_ID)
-)"""
-FORECAST_COLS = (
+FORECAST_COLS = (  # S01 db/schema.sql; the consumption method is in CAUSE_FACTS_JSON
     "RUN_ID", "FORM_ID", "EXIT_RISK_BAND", "EXIT_RISK", "EXPOSURE", "WINDOW_MONTHS_LO", "WINDOW_MONTHS_HI",
-    "DAYS_OF_COVER", "STOCKOUT_DATE_IF_EXIT", "CAUSE_CODE", "CAUSE_FACTS_JSON", "CONFIDENCE",
-    "CONSUMPTION_METHOD", "CREATED_AT",
+    "DAYS_OF_COVER", "STOCKOUT_DATE_IF_EXIT", "CAUSE_CODE", "CAUSE_FACTS_JSON", "CONFIDENCE", "CREATED_AT",
 )
 
 
@@ -264,19 +256,40 @@ def _hospital(db: Db, form_id: str, materials: list[str], as_of: date, rules: Ru
     veds = [str(v).upper() for v in (mara["VED"] if mara is not None else []) if v]
     ved = next((v for v in ("V", "E", "D") if v in veds), None)  # most critical material wins
 
-    view = try_query(db, f"SELECT MATNR, USABLE_QTY FROM FF_V_DAYS_OF_COVER WHERE MATNR IN ({placeholders(mats)})", mats)
-    if view is not None:
-        usable, src = float(view["USABLE_QTY"].astype(float).sum()), "FF_V_DAYS_OF_COVER"
-    else:
-        b = db.query(f"SELECT MATNR, CLABS, VFDAT, QUARANTINE FROM FF_MM_MCHB WHERE MATNR IN ({placeholders(mats)})", mats)
-        ok = (pd.to_datetime(b["VFDAT"].astype(str)).dt.date > as_of) & (b["QUARANTINE"].astype(str).str.upper() != "Y")
-        usable, src = float(b.loc[ok, "CLABS"].astype(float).sum()), "FF_MM_MCHB (non-expired, non-quarantined)"
-
     issues = try_query(db, f"SELECT MATNR, BWART, MENGE, BUDAT FROM FF_MM_MSEG WHERE MATNR IN ({placeholders(mats)})", mats)
     if issues is None:
         issues = pd.DataFrame(columns=["MATNR", "BWART", "MENGE", "BUDAT"])
     issues = issues[issues["BWART"].astype(str).isin(ISSUE_MOVEMENTS)].assign(MENGE=lambda d: d["MENGE"].astype(float))
-    return _Hospital(mats, ved, usable, src, forecast_consumption(issues, as_of, rules, use_pal))
+    consumption = forecast_consumption(issues, as_of, rules, use_pal)
+
+    view_as_of = try_query(db, "SELECT AS_OF FROM FF_V_ASOF")
+    same_day = view_as_of is not None and len(view_as_of) and str(view_as_of.iloc[0, 0])[:10] == as_of.isoformat()
+    view = try_query(db, f"SELECT MATNR, USABLE_QTY FROM FF_V_DAYS_OF_COVER WHERE MATNR IN ({placeholders(mats)})",
+                     mats) if same_day else None
+    if view is not None:
+        usable, src = float(view["USABLE_QTY"].astype(float).sum()), "FF_V_DAYS_OF_COVER"
+    else:  # run as-of differs from the view's FF_CFG_PARAM date (e.g. a backtest): same FEFO logic here
+        b = db.query(f"SELECT MATNR, LGORT, CHARG, CLABS, VFDAT FROM FF_MM_MCHB WHERE MATNR IN ({placeholders(mats)})",
+                     mats)
+        usable, src = fefo_usable(b, as_of, consumption.daily), "FF_MM_MCHB (FEFO, unrestricted, non-expired)"
+    return _Hospital(mats, ved, usable, src, consumption)
+
+
+def fefo_usable(batches: pd.DataFrame, as_of: date, daily: float | None) -> float:
+    """Unrestricted (CLABS), non-expired stock that can be consumed before it expires, first-expiry-first-out.
+
+    Mirrors FF_V_BATCH_FEFO: usable = min(CLABS, max(0, daily × days_to_expiry − qty ahead in the queue)).
+    """
+    if batches.empty:
+        return 0.0
+    b = batches.assign(Q=batches["CLABS"].astype(float), EXP=pd.to_datetime(batches["VFDAT"].astype(str)).dt.date)
+    b = b[(b["Q"] > 0) & (b["EXP"] > as_of)].sort_values(["EXP", "LGORT", "CHARG"])
+    total, ahead = 0.0, 0.0
+    for r in b.itertuples():
+        q = r.Q if not daily or daily <= 0 else min(r.Q, max(0.0, daily * (r.EXP - as_of).days - ahead))
+        total += q
+        ahead += r.Q
+    return total
 
 
 def _reference(db: Db, form_ids: list[str]) -> dict[str, dict[str, Any]]:
@@ -376,14 +389,11 @@ def assess(sig: RiskSignal, dep: DependencyProfile, hosp: _Hospital, ref: dict[s
 
 
 def _write(db: Db, forecasts: list[Forecast]) -> None:
-    if db.backend == "sqlite":
-        db.execute(FORECAST_DDL_SQLITE)
     now = datetime.now(timezone.utc).isoformat(timespec="seconds")
     rows = [
         (f.run_id, f.formulation_id, f.exit_risk_band.value, f.exit_risk, f.exposure, f.window_months_lo,
          f.window_months_hi, f.days_of_cover, f.stockout_date_if_exit.isoformat() if f.stockout_date_if_exit else None,
-         f.cause_code.value, json.dumps(f.cause_facts), f.confidence,
-         f.cause_facts["consumption_method"]["value"], now)
+         f.cause_code.value, json.dumps(f.cause_facts), f.confidence, now)
         for f in forecasts
     ]
     db.executemany(f"INSERT INTO FF_AG_FORECAST ({', '.join(FORECAST_COLS)}) VALUES ({placeholders(FORECAST_COLS)})", rows)

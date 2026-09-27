@@ -21,7 +21,7 @@ Updated: 2026-09-26 by Bhavesh
 | S04 | A1 Margin Sentinel | B2 | merged |
 | S05 | A2 Dependency + graph | B2 | merged |
 | S06 | A3 Forecaster | B2 | merged |
-| S07 | A4 Resilience + A5 Validator | B2 | PR open |
+| S07 | A4 Resilience + A5 Validator | B2 | merged |
 | S08 | A6 Audit/Action + orchestrator | B3 | todo |
 | S09 | FastAPI + BTP deploy | B3 | todo |
 | S10 | Build Apps guide + fallback UI | B3 | todo |
@@ -30,6 +30,8 @@ Updated: 2026-09-26 by Bhavesh
 | S13 | Integration + demo hardening | Bhavesh | todo |
 
 ## Blocked / open questions
+- S12 blocked on S02 + S03 (no data/seed/para19_events.csv, no historical price/cost series)
+- S01: add FF_G_E.WEIGHT (DOUBLE) + IS_PROXY (NVARCHAR(8)) so A2 can use HANA Graph (see PR feat/harnish-s01-align)
 - Does the shared HANA allow CREATE GRAPH WORKSPACE / PAL?
 - BTP trial region, and can CF reach HANA eu10?
 

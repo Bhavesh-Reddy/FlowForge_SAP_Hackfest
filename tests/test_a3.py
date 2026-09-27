@@ -1,3 +1,4 @@
+import json
 import math
 from datetime import date
 from types import SimpleNamespace
@@ -89,13 +90,14 @@ def test_fewer_producers_ranks_higher_all_else_equal(rules):
 
 def test_fewer_producers_ranks_first_in_run(db, rules):
     # Give F002 its own material with the same stock and issues as F001's, so only the producer count differs.
-    db.execute("INSERT INTO FF_FX_MARA SELECT 'MAT-0002', MAKTX, 'F002', MEINS, VED, COLD_CHAIN, SOURCE, SOURCE_URL, "
-               "FETCHED_AT, IS_PROXY FROM FF_FX_MARA WHERE MATNR = 'MAT-0001'")
-    for t in ("MCHB", "MSEG"):
-        cols = [c for c in db.query(f"SELECT * FROM FF_FX_{t} LIMIT 1").columns if c != "MATNR"]
-        db.execute(f"INSERT INTO FF_FX_{t} (MATNR, {', '.join(cols)}) SELECT 'MAT-0002', {', '.join(cols)} "
-                   f"FROM FF_FX_{t} WHERE MATNR = 'MAT-0001'")
-    db.execute("UPDATE FF_FX_FORMULATIONS SET CEILING_PRICE_INR = '1.25' WHERE FORMULATION_ID = 'F001'")
+    for t, key in (("FF_MM_MARA", "MATNR"), ("FF_MM_MCHB", "MATNR"), ("FF_MM_MSEG", "MBLNR")):
+        cols = [c for c in db.query(f"SELECT * FROM {t} WHERE 1 = 0").columns if c not in ("MATNR", "FORM_ID", key)]
+        new_key = "" if key == "MATNR" else f"'X' || {key}, "
+        extra_cols = "" if key == "MATNR" else f"{key}, "
+        form = ("FORM_ID, ", "'F002', ") if t == "FF_MM_MARA" else ("", "")
+        db.execute(f"INSERT INTO {t} (MATNR, {extra_cols}{form[0]}{', '.join(cols)}) "
+                   f"SELECT 'MAT-0002', {new_key}{form[1]}{', '.join(cols)} FROM {t} WHERE MATNR = 'MAT-0001'")
+    db.execute("UPDATE FF_REF_CEILING_PRICE SET CEILING_PRICE = 1.25 WHERE FORM_ID = 'F001'")
     signals = [sig("F001", h=0.12, trend=-0.005, mtb=24), sig("F002", h=0.12, trend=-0.005, mtb=24)]
     deps = [dep(rules, "F001", n=4), dep(rules, "F002", n=2)]
     out = a3.run(signals, deps, _ctx(db, rules, dry_run=True))
@@ -160,11 +162,20 @@ def test_no_history(rules):
     assert c.method == "NONE" and c.daily is None
 
 
-def test_days_of_cover_view_used_when_present(db, rules):
-    db.execute("CREATE TABLE FF_V_DAYS_OF_COVER (MATNR TEXT, USABLE_QTY REAL)")
-    db.execute("INSERT INTO FF_V_DAYS_OF_COVER VALUES ('MAT-0001', 500)")
+def test_days_of_cover_view_used_when_as_of_matches(db, rules):
+    db.execute("INSERT INTO FF_CFG_PARAM (NAME, DATE_VALUE) VALUES ('AS_OF_DATE', ?)", (AS_OF.isoformat(),))
     h = a3._hospital(db, "F001", [], AS_OF, rules, use_pal=False)
-    assert h.usable_qty == 500 and h.usable_source == "FF_V_DAYS_OF_COVER"
+    assert h.usable_source == "FF_V_DAYS_OF_COVER" and h.usable_qty == 8000
+    other = a3._hospital(db, "F001", [], date(2026, 8, 15), rules, use_pal=False)  # e.g. a backtest month
+    assert other.usable_source.startswith("FF_MM_MCHB (FEFO")
+
+
+def test_fefo_excludes_stock_that_expires_before_use():
+    b = pd.DataFrame({"LGORT": ["A", "B"], "CHARG": ["1", "2"], "CLABS": [1000, 1000],
+                      "VFDAT": ["2026-10-06", "2027-12-31"]})
+    # 10 days to first expiry at 50/day -> only 500 of batch 1 usable; batch 2 fully usable
+    assert a3.fefo_usable(b, AS_OF, 50.0) == 1500
+    assert a3.fefo_usable(b, AS_OF, None) == 2000
 
 
 def test_zero_consumption_is_capped(rules):
@@ -183,5 +194,6 @@ def test_end_to_end_on_fixtures_writes_forecast(db, rules):
     assert by["F002"].exposure == 0 and by["F003"].exposure == 0  # no hospital material mapped
     assert by["F001"].cause_facts["days_of_cover"]["value"] == pytest.approx(8000 / (9120 / 90), abs=1e-3)
     assert by["F001"].confidence == 0.0  # all fixtures SYNTH
-    rows = db.query("SELECT FORM_ID, CAUSE_CODE, CONSUMPTION_METHOD FROM FF_AG_FORECAST WHERE RUN_ID = ?", ("t-a3",))
-    assert len(rows) == 3 and set(rows["CONSUMPTION_METHOD"]) == {"MA90", "NONE"}
+    rows = db.query("SELECT FORM_ID, CAUSE_CODE, CAUSE_FACTS_JSON FROM FF_AG_FORECAST WHERE RUN_ID = ?", ("t-a3",))
+    methods = {json.loads(f)["consumption_method"]["value"] for f in rows["CAUSE_FACTS_JSON"]}
+    assert len(rows) == 3 and methods == {"MA90", "NONE"}

@@ -20,12 +20,12 @@ import uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from decimal import Decimal
-from pathlib import Path
 from typing import Any, Sequence
 
 import numpy as np
 import pandas as pd
 
+from agents.common import AgentCtx, load_fixture_db, placeholders, resolve_ctx, to_tag, try_query, worst_tag
 from agents.contracts import DataQuality, DataTag, RiskSignal, RunContext, SecondarySignal, SignalBand
 from agents.ctx import Db
 from agents.rules import Rules, load_rules
@@ -34,54 +34,17 @@ AGENT = "A1"
 WPI_SERIES = "MANUFACTURED_PRODUCTS"
 # Inputs that count towards data_quality (share tagged REAL).
 DQ_INPUTS = ("ceiling_price", "bom", "api_cost", "wpi")
-_TAG_ORDER = {DataTag.REAL: 0, DataTag.PROXY: 1, DataTag.SYNTH: 2}
-_MISSING_TABLE = ("no such table", "invalid table name", "259")
 
-SIGNAL_DDL_SQLITE = """
-CREATE TABLE IF NOT EXISTS FF_AG_SIGNAL (
-  RUN_ID TEXT NOT NULL, FORM_ID TEXT NOT NULL, AS_OF_MONTH TEXT, BAND TEXT NOT NULL,
-  HEADROOM_PCT REAL, HEADROOM_TREND REAL, MONTHS_TO_BREACH REAL,
-  REALISATION_INR REAL, UNIT_COST_INR REAL, API_COST_MULTIPLIER REAL,
-  SECONDARY_JSON TEXT, CONFIDENCE REAL, TAGS_JSON TEXT, CREATED_AT TEXT,
-  PRIMARY KEY (RUN_ID, FORM_ID)
-)"""
-SIGNAL_COLS = (
-    "RUN_ID", "FORM_ID", "AS_OF_MONTH", "BAND", "HEADROOM_PCT", "HEADROOM_TREND", "MONTHS_TO_BREACH",
-    "REALISATION_INR", "UNIT_COST_INR", "API_COST_MULTIPLIER", "SECONDARY_JSON", "CONFIDENCE",
-    "TAGS_JSON", "CREATED_AT",
+SIGNAL_COLS = (  # S01 db/schema.sql
+    "RUN_ID", "FORM_ID", "BAND", "HEADROOM_PCT", "HEADROOM_TREND", "MONTHS_TO_BREACH", "REALISATION_INR",
+    "UNIT_COST_INR", "SECONDARY_SIGNALS_JSON", "CONFIDENCE", "DATA_TAGS_JSON", "CREATED_AT",
 )
 
 
 # ---------------------------------------------------------------- helpers
 
-
-def to_tag(raw: Any) -> DataTag:
-    """Normalise an IS_PROXY / tag cell to a DataTag. Unknown or empty counts as SYNTH (least trusted)."""
-    s = str(raw).strip().upper() if raw is not None else ""
-    if s in ("REAL", "N", "0", "FALSE"):
-        return DataTag.REAL
-    if s in ("PROXY", "Y", "1", "TRUE"):
-        return DataTag.PROXY
-    return DataTag.SYNTH
-
-
-def worst_tag(values: Sequence[Any]) -> DataTag:
-    tags = [to_tag(v) for v in values]
-    return max(tags, key=_TAG_ORDER.__getitem__) if tags else DataTag.SYNTH
-
-
-def _try_query(db: Db, sql: str, params: Sequence[Any] = ()) -> pd.DataFrame | None:
-    """Run a query; return None if the table/view doesn't exist yet (optional inputs)."""
-    try:
-        return db.query(sql, params)
-    except Exception as exc:  # sqlite3.OperationalError / hdbcli ProgrammingError
-        if any(m in str(exc).lower() for m in _MISSING_TABLE):
-            return None
-        raise
-
-
-def _in(ids: Sequence[str]) -> str:
-    return ", ".join("?" for _ in ids)
+_try_query = try_query
+_in = placeholders
 
 
 def _month(series: pd.Series) -> pd.Series:
@@ -92,19 +55,11 @@ def _money(x: float | None) -> Decimal | None:
     return None if x is None or not math.isfinite(x) else Decimal(f"{x:.4f}")
 
 
-@dataclass
-class _Ctx:
-    db: Db
-    rules: Rules
-    run: RunContext
+_Ctx = AgentCtx
 
 
-def _resolve_ctx(ctx: Any) -> _Ctx:
-    """Accept a Db, or any object with .db and optional .rules / .run (RunContext)."""
-    db = ctx if isinstance(ctx, Db) else ctx.db
-    rules = getattr(ctx, "rules", None) or load_rules()
-    run = getattr(ctx, "run", None) or RunContext(run_id=f"a1-{uuid.uuid4().hex[:12]}")
-    return _Ctx(db, rules, run)
+def _resolve_ctx(ctx: Any) -> AgentCtx:
+    return resolve_ctx(ctx, "a1")
 
 
 # ---------------------------------------------------------------- core maths (§4.1)
@@ -202,34 +157,44 @@ def _secondary(db: Db, form_id: str, as_of: pd.Period, rules: Rules) -> list[Sec
     lookback = int(rules.param("QUALITY_HISTORY", "nsq_lookback_months"))
     nsq = _try_query(
         db,
-        "SELECT n.MONTH, n.MANUFACTURER_ID, n.DRUG FROM FF_REF_NSQ_ALERT n "
+        "SELECT n.ALERT_ID, n.MONTH, n.IS_PROXY FROM FF_REF_NSQ_ALERT n WHERE n.FORM_ID = ? "
+        "UNION SELECT n.ALERT_ID, n.MONTH, n.IS_PROXY FROM FF_REF_NSQ_ALERT n "
         "JOIN FF_REF_PRODUCER p ON p.MANUFACTURER_ID = n.MANUFACTURER_ID "
         "JOIN FF_REF_FORMULATION f ON f.FORM_ID = p.FORM_ID "
-        "WHERE p.FORM_ID = ? AND UPPER(n.DRUG) LIKE '%' || UPPER(f.GENERIC) || '%'",
-        (form_id,))
+        "WHERE n.FORM_ID IS NULL AND p.FORM_ID = ? AND UPPER(n.DRUG) LIKE '%' || UPPER(f.GENERIC) || '%'",
+        (form_id, form_id))
     if nsq is not None and len(nsq):
         m = _month(nsq["MONTH"])
         recent = nsq[(m > as_of - lookback) & (m <= as_of)]
         if len(recent):
             out.append(SecondarySignal(
-                kind="NSQ", value=float(len(recent)), tag=DataTag.REAL,
-                note=f"CDSCO NSQ (FF_REF_NSQ_ALERT): {len(recent)} alert(s) for producers of {form_id} "
+                kind="NSQ", value=float(len(recent)), tag=worst_tag(recent["IS_PROXY"].tolist()),
+                note=f"CDSCO NSQ (FF_REF_NSQ_ALERT): {len(recent)} alert(s) for {form_id} or its producers "
                      f"in the last {lookback} months"))
 
+    # Monthly OTD with the FF_V_SUPPLIER_OTD logic (GR 101 date <= EINDT), which the view only gives as a
+    # lifetime figure per vendor. Month = the PO line's delivery date (EINDT).
     w = int(rules.value("weights", "secondary.otd_window_months"))
     otd = _try_query(
         db,
-        "SELECT o.MONTH, o.OTD_PCT FROM FF_V_SUPPLIER_OTD o "
-        "JOIN FF_MM_MARA a ON a.MATNR = o.MATNR WHERE a.FORM_ID = ?", (form_id,))
+        "SELECT p.EINDT, g.GR_DATE, p.IS_PROXY FROM FF_MM_EKPO p "
+        "JOIN FF_MM_MARA a ON a.MATNR = p.MATNR "
+        "JOIN (SELECT EBELN, EBELP, MIN(BUDAT) AS GR_DATE FROM FF_MM_MSEG "
+        "      WHERE BWART = '101' AND EBELN IS NOT NULL GROUP BY EBELN, EBELP) g "
+        "  ON g.EBELN = p.EBELN AND g.EBELP = p.EBELP "
+        "WHERE a.FORM_ID = ?", (form_id,))
     if otd is not None and len(otd):
-        otd = otd.assign(_M=_month(otd["MONTH"])).query("_M <= @as_of")
-        monthly = otd.groupby("_M")["OTD_PCT"].mean().sort_index()
+        gr = pd.to_datetime(otd["GR_DATE"].astype(str))
+        due = pd.to_datetime(otd["EINDT"].astype(str))
+        lines = otd.assign(_M=due.dt.to_period("M"), ON_TIME=(gr <= due).astype(float) * 100)
+        lines = lines[(gr.dt.to_period("M") <= as_of) & (lines["_M"] <= as_of)]
+        monthly = lines.groupby("_M")["ON_TIME"].mean().sort_index()
         if len(monthly) >= 2 * w:
             drop = float(monthly.iloc[-2 * w:-w].mean() - monthly.iloc[-w:].mean())
             if drop > 0:
                 out.append(SecondarySignal(
-                    kind="OTD", value=round(drop, 4), tag=DataTag.SYNTH,
-                    note=f"FF_V_SUPPLIER_OTD: on-time delivery down {drop:.1f} pts "
+                    kind="OTD", value=round(drop, 4), tag=worst_tag(lines["IS_PROXY"].tolist()),
+                    note=f"FF_MM_EKPO/MSEG (FF_V_SUPPLIER_OTD logic): on-time delivery down {drop:.1f} pts "
                          f"(last {w} months vs previous {w})"))
 
     days = int(rules.value("weights", "secondary.cold_chain_window_days"))
@@ -325,18 +290,16 @@ def _evaluate(form_id: str, inp: _Inputs, c: _Ctx, api_cost_multiplier: float
     return sig, extra
 
 
-def _write(db: Db, sigs: list[RiskSignal], extras: list[dict[str, Any]], mult: float) -> None:
-    if db.backend == "sqlite":
-        db.execute(SIGNAL_DDL_SQLITE)
+def _write(db: Db, sigs: list[RiskSignal]) -> None:
     now = datetime.now(timezone.utc).isoformat(timespec="seconds")
     num = (lambda x: None if x is None or (isinstance(x, float) and not math.isfinite(x)) else x)
     money = (lambda d: None if d is None else (float(d) if db.backend == "sqlite" else d))
     rows = [
-        (s.run_id, s.formulation_id, e["as_of"], s.band.value, num(s.headroom_pct), num(s.headroom_trend),
-         num(s.months_to_breach), money(s.realisation_inr), money(s.unit_cost_inr), mult,
+        (s.run_id, s.formulation_id, s.band.value, num(s.headroom_pct), num(s.headroom_trend),
+         num(s.months_to_breach), money(s.realisation_inr), money(s.unit_cost_inr),
          json.dumps([x.model_dump(mode="json") for x in s.secondary_signals]),
          s.data_quality.confidence, json.dumps({k: v.value for k, v in s.data_quality.tags.items()}), now)
-        for s, e in zip(sigs, extras)
+        for s in sigs
     ]
     db.executemany(f"INSERT INTO FF_AG_SIGNAL ({', '.join(SIGNAL_COLS)}) VALUES ({_in(SIGNAL_COLS)})", rows)
 
@@ -359,29 +322,19 @@ def run(form_ids: Sequence[str], ctx: Any, api_cost_multiplier: float = 1.0) -> 
     results = [_evaluate(f, inp, c, api_cost_multiplier) for f in ids]
     sigs = [s for s, _ in results]
     if not c.run.dry_run:
-        _write(c.db, sigs, [e for _, e in results], api_cost_multiplier)
+        _write(c.db, sigs)
     return sigs
 
 
 # ---------------------------------------------------------------- CLI
 
 
-def _fixture_db() -> Db:
-    """In-memory SQLite with the SYNTH test fixtures exposed under §6 names."""
-    from agents.ctx import Settings, get_db
-    from tests.conftest import FIXTURES, load_fixtures
-
-    db = get_db(Settings(db_backend="sqlite"), sqlite_path=":memory:")
-    load_fixtures(db)
-    sql = "\n".join(l for l in (FIXTURES / "ref_views.sql").read_text(encoding="utf-8").splitlines()
-                    if not l.lstrip().startswith("--"))
-    for stmt in filter(str.strip, sql.split(";")):
-        db.execute(stmt)
-    return db
+_fixture_db = load_fixture_db
 
 
 def _has_reference(db: Db) -> bool:
-    return _try_query(db, "SELECT FORM_ID FROM FF_REF_CEILING_PRICE WHERE 1 = 0") is not None
+    df = _try_query(db, "SELECT COUNT(*) AS N FROM FF_REF_CEILING_PRICE")
+    return df is not None and int(df.iloc[0, 0]) > 0
 
 
 def format_table(sigs: list[RiskSignal]) -> str:
@@ -409,7 +362,7 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     db = _fixture_db() if a.fixtures else get_db()
     if not a.fixtures and db.backend == "sqlite" and not _has_reference(db):
-        print("[a1] no FF_REF_* tables in data/flowforge.sqlite; using SYNTH test fixtures in memory")
+        print("[a1] no reference data in data/flowforge.sqlite; using SYNTH test fixtures in memory")
         db.close()
         db = _fixture_db()
     run_ctx = RunContext(run_id=f"a1-cli-{uuid.uuid4().hex[:8]}", dry_run=a.dry_run)

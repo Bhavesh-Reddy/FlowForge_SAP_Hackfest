@@ -20,11 +20,25 @@ def _ctx(db, rules, **run):
     return SimpleNamespace(db=db, rules=rules, run=RunContext(run_id="t-a2", **run))
 
 
+def add_weight_cols(db):
+    """Simulate the proposed S01 change: FF_G_E gains WEIGHT and IS_PROXY."""
+    db.execute("ALTER TABLE FF_G_E ADD COLUMN WEIGHT REAL")
+    db.execute("ALTER TABLE FF_G_E ADD COLUMN IS_PROXY TEXT")
+
+
 def _by_form(profiles):
     return {p.formulation_id: p for p in profiles}
 
 
+def test_graph_build_on_s01_shape_writes_topology_only(db, rules):
+    nv, ne = build(db)
+    assert ne == int(db.query("SELECT COUNT(*) AS N FROM FF_G_E").iloc[0]["N"]) and not a2.weighted_edges(db)
+    [f1] = a2.run(["F001"], _ctx(db, rules, dry_run=True))  # rebuilt in memory with weights
+    assert f1.hhi == pytest.approx(0.415)
+
+
 def test_graph_build_types_and_idempotent(db):
+    add_weight_cols(db)
     nv, ne = build(db)
     assert (nv, ne) == build(db)  # rebuild replaces, doesn't duplicate
     types = set(db.query("SELECT DISTINCT TYPE FROM FF_G_V")["TYPE"])
@@ -51,7 +65,7 @@ def test_profiles_on_fixtures(db, rules):
 
 
 def test_equal_shares_when_market_share_missing(db, rules):
-    db.execute("UPDATE FF_FX_PRODUCERS SET MARKET_SHARE = NULL WHERE FORMULATION_ID = ?", ("F001",))
+    db.execute("UPDATE FF_REF_PRODUCER SET MARKET_SHARE = NULL WHERE FORM_ID = ?", ("F001",))
     [f1] = a2.run(["F001"], _ctx(db, rules, dry_run=True), engine="networkx")
     assert f1.hhi == pytest.approx(1 / 3)
 
@@ -63,19 +77,20 @@ def test_unknown_formulation(db, rules):
 
 
 def test_confidence_counts_real_inputs(db, rules):
-    db.execute("UPDATE FF_FX_APIS SET IS_PROXY = 'REAL'")
+    db.execute("UPDATE FF_REF_API_ORIGIN SET IS_PROXY = 'REAL'")
     [f1] = a2.run(["F001"], _ctx(db, rules, dry_run=True), engine="networkx")
     assert f1.data_quality.tags["api_origin"] is DataTag.REAL and f1.data_quality.confidence == 0.5
 
 
 def test_writes_ff_ag_dependency(db, rules):
     a2.run(["F001", "F002"], _ctx(db, rules), engine="networkx")
-    rows = db.query("SELECT RUN_ID, FORM_ID, N_PRODUCERS_MIN, GRAPH_ENGINE FROM FF_AG_DEPENDENCY ORDER BY FORM_ID")
+    rows = db.query("SELECT RUN_ID, FORM_ID, N_PRODUCERS_MIN, DATA_TAGS_JSON FROM FF_AG_DEPENDENCY ORDER BY FORM_ID")
     assert rows["FORM_ID"].tolist() == ["F001", "F002"] and set(rows["RUN_ID"]) == {"t-a2"}
-    assert rows["N_PRODUCERS_MIN"].tolist() == [3, 2] and set(rows["GRAPH_ENGINE"]) == {"networkx"}
+    assert rows["N_PRODUCERS_MIN"].tolist() == [3, 2] and '"producers": "SYNTH"' in rows.iloc[0]["DATA_TAGS_JSON"]
 
 
 def test_uses_ff_g_e_when_built(db, rules):
+    add_weight_cols(db)
     build(db)
     db.execute("DELETE FROM FF_G_E WHERE SRC = ?", ("MANUFACTURER:M03",))  # graph tables are the source of truth
     [f1] = a2.run(["F001"], _ctx(db, rules, dry_run=True), engine="networkx")
@@ -119,9 +134,15 @@ class FakeHanaDb:
 
 
 def test_hana_and_networkx_paths_identical(db, rules):
+    add_weight_cols(db)
     build(db)
     fake = FakeHanaDb(db)
     assert a2.pick_engine(fake) == "hana" and a2.pick_engine(db) == "networkx"
+    db.execute("DROP TABLE FF_G_E")  # S01 shape without weights: HANA Graph is not used
+    db.execute("CREATE TABLE FF_G_E (ID TEXT PRIMARY KEY, SRC TEXT, DST TEXT, REL TEXT)")
+    assert a2.pick_engine(fake) == "networkx"
+    add_weight_cols(db)
+    build(db)
     hana = a2.run(["F001", "F002", "F003"], _ctx(fake, rules, dry_run=True))
     netx = a2.run(["F001", "F002", "F003"], _ctx(db, rules, dry_run=True), engine="networkx")
     assert fake.cypher_calls == 12
@@ -145,23 +166,19 @@ def test_two_producers_share_one_api_origin(db, rules):
 
 
 def test_different_origins_not_shared(db, rules):
-    db.execute("UPDATE FF_FX_APIS SET TOP_ORIGIN_COUNTRY = 'IN' WHERE API_ID = ?", ("A02",))
+    db.execute("UPDATE FF_REF_API_ORIGIN SET COUNTRY = 'IN' WHERE API_ID = ?", ("A02",))
     s = a2.shares_upstream("F001", "F003", _ctx(db, rules))
     assert not s and s.countries == [] and s.apis == []
 
 
 def test_minor_origin_below_threshold_ignored(db, rules):
-    db.execute("UPDATE FF_FX_APIS SET TOP_ORIGIN_SHARE = '0.1' WHERE API_ID = ?", ("A02",))
+    db.execute("UPDATE FF_REF_API_ORIGIN SET SHARE = 0.1 WHERE API_ID = ?", ("A02",))
     assert not a2.shares_upstream("F001", "F003", _ctx(db, rules))
 
 
 def test_shared_ksm(db, rules):
-    db.execute("DROP VIEW FF_REF_API")
-    db.execute("CREATE TABLE FF_REF_API (API_ID TEXT, NAME TEXT, HS8 TEXT, KSM_ID TEXT, IS_PROXY TEXT)")
-    db.executemany("INSERT INTO FF_REF_API VALUES (?, ?, ?, ?, ?)",
-                   [("A01", "Amoxicillin trihydrate", "29411030", "K-6APA", "SYNTH"),
-                    ("A02", "Paracetamol", "29242930", "K-6APA", "SYNTH")])
-    db.execute("UPDATE FF_FX_APIS SET TOP_ORIGIN_COUNTRY = 'IN' WHERE API_ID = ?", ("A02",))
+    db.execute("UPDATE FF_REF_API SET KSM_ID = 'K-6APA'")
+    db.execute("UPDATE FF_REF_API_ORIGIN SET COUNTRY = 'IN' WHERE API_ID = ?", ("A02",))
     s = a2.shares_upstream("F001", "F003", _ctx(db, rules))
     assert s and s.ksms == ["K-6APA"] and s.countries == []
     _, edges = build_edges(db)
