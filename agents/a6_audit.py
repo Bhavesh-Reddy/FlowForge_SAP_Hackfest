@@ -166,7 +166,7 @@ def data_sources(db: Db, tables: Iterable[str]) -> list[DataSourceRef]:
             log.warning("[a6] no provenance for %s: %s", t, exc)
             continue
         for r in (df.to_dict(orient="records") if df is not None else []):
-            refs.append(DataSourceRef(source=f"{t}:{r['SOURCE']}", source_url=r["SOURCE_URL"] or None,
+            refs.append(DataSourceRef(source=f"{t}:{r['SOURCE']}", source_url=_nz(r["SOURCE_URL"]),
                                       fetched_at=_as_dt(r["FETCHED_AT"]), is_proxy=to_tag(r["IS_PROXY"])))
     return refs
 

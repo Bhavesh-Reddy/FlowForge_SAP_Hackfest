@@ -68,6 +68,13 @@ def test_deleted_row_is_detected(db):
     assert not chk.ok and chk.broken_at == 1
 
 
+def test_data_sources_tolerate_mixed_null_urls(db):
+    # Real seed data mixes rows with and without SOURCE_URL; pandas turns the NULLs into NaN.
+    db.execute("UPDATE FF_REF_FORMULATION SET SOURCE_URL = 'https://nppa.gov.in/x' WHERE FORM_ID = 'F001'")
+    refs = a6.data_sources(db, ["FF_REF_FORMULATION"])
+    assert {r.source_url for r in refs} == {"https://nppa.gov.in/x", None}
+
+
 def test_rule_versions_hash_the_yaml(rules):
     v = a6.rule_file_versions(rules)
     assert set(v) >= {"dpco", "sop_controls", "weights"}
