@@ -12,6 +12,7 @@ ortools
 statsmodels
 pdfplumber
 openpyxl
+matplotlib
 requests
 anthropic
 pytest
