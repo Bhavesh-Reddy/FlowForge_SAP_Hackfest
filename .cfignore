@@ -1,0 +1,15 @@
+# Never upload secrets or local data to Cloud Foundry (docs/deploy.md).
+.env
+.env.*
+.git/
+.github/
+.claude/
+.venv/
+__pycache__/
+.pytest_cache/
+*.sqlite
+data/
+reports/
+docs/
+ui/
+tests/fixtures/*.json

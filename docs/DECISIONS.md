@@ -36,3 +36,7 @@
 - 2026-09-27 · Recommendation id = A4 scenario id (<run_id>:<form_id>:<nn>); A6 stores the S/4 PR JSON in FF_AG_ACTION (added to db/schema.sql) · FF_MM_EBAN has no payload column
 - 2026-09-27 · Orchestrator --dry-run writes nothing: agents skip their tables and the audit chain is built and verified in memory · safe on the shared HANA
 - 2026-09-27 · Second approver re-evaluated on the edited PR value (qty × rate > BUDGET threshold), not only A5's flag · an edit can't dodge level 2
+- 2026-09-27 · API: /scenario/shock is an A1-only what-if that writes nothing (38 tracked formulations in ~7 s); /run is the full A1→A5 pipeline, max 50 formulations; empty form_ids = tracked set (formulations with a BOM assumption) · fast demo slider, light on the shared HANA
+- 2026-09-27 · API opens one DB connection per request (hdbcli/sqlite connections are not thread-safe); /health never touches the DB · a HANA outage can't make CF restart-loop the app
+- 2026-09-27 · CF creds come from the user-provided service ff-hana (VCAP_SERVICES), filling only unset env vars; values are typed at the cf prompt, never on the command line · no secrets in repo, manifest or shell history
+- 2026-09-27 · /approvals/pending shows only gate items of each formulation's latest run, with the level (1/2) still needed; snoozed items return after snooze_days · reruns don't leave stale approvals

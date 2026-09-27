@@ -1,0 +1,20 @@
+# SAP BTP Cloud Foundry (trial) manifest for the FlowForge API. Steps: docs/deploy.md.
+# Secrets never go here: HANA creds + APP_API_KEY come from the user-provided service ff-hana.
+applications:
+  - name: flowforge-api
+    memory: 512M
+    disk_quota: 2G
+    instances: 1
+    buildpacks:
+      - python_buildpack
+    command: uvicorn api.main:app --host 0.0.0.0 --port $PORT
+    health-check-type: http
+    health-check-http-endpoint: /health
+    timeout: 180
+    random-route: true
+    services:
+      - ff-hana
+    env:
+      DB_BACKEND: hana
+      HANA_PORT: "443"
+      LLM_PROVIDER: none
