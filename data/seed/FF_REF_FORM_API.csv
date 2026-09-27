@@ -1,0 +1,37 @@
+FORM_ID,API_ID,API_MG_PER_UNIT,SOURCE,SOURCE_URL,FETCHED_AT,IS_PROXY
+BENZYL-PENICILLIN-86CA1B40,API-BENZYLPENICILLIN,599,rules/bom_defaults.yaml: 10 lakh IU / ~1670 IU per mg benzylpenicillin sodium [VERIFY],,2026-09-27T00:00:00Z,PROXY
+ATROPINE-6BCEA471,API-ATROPINE,0.6,rules/bom_defaults.yaml: label 0.6 mg/mL atropine sulphate,,2026-09-27T00:00:00Z,PROXY
+STREPTOMYCIN-4A70DA8C,API-STREPTOMYCIN,938,rules/bom_defaults.yaml: label 750 mg base x 1.25 sulphate factor [VERIFY],,2026-09-27T00:00:00Z,PROXY
+STREPTOMYCIN-D2FA81E6,API-STREPTOMYCIN,1250,rules/bom_defaults.yaml: label 1000 mg base x 1.25 sulphate factor [VERIFY],,2026-09-27T00:00:00Z,PROXY
+SALBUTAMOL-F30AE0F7,API-SALBUTAMOL,2.4,rules/bom_defaults.yaml: label 2 mg base x 1.2 sulphate factor [VERIFY],,2026-09-27T00:00:00Z,PROXY
+SALBUTAMOL-4E228030,API-SALBUTAMOL,4.8,rules/bom_defaults.yaml: label 4 mg base x 1.2 sulphate factor [VERIFY],,2026-09-27T00:00:00Z,PROXY
+SALBUTAMOL-98EC1949,API-SALBUTAMOL,6.0,rules/bom_defaults.yaml: label 5 mg/mL base x 1.2 sulphate factor [VERIFY],,2026-09-27T00:00:00Z,PROXY
+PILOCARPINE-9BF60519,API-PILOCARPINE,20,rules/bom_defaults.yaml: label 2% w/v = 20 mg/mL,,2026-09-27T00:00:00Z,PROXY
+CEFADROXIL-6BAADD66,API-CEFADROXIL,525,rules/bom_defaults.yaml: label 500 mg x 1.05 monohydrate factor [VERIFY],,2026-09-27T00:00:00Z,PROXY
+DESFERRIOXAMINE-D4E309B9,API-DESFERRIOXAMINE,500,rules/bom_defaults.yaml: label 500 mg deferoxamine mesylate,,2026-09-27T00:00:00Z,PROXY
+LITHIUM-2AA5768E,API-LITHIUM-CARBONATE,300,rules/bom_defaults.yaml: label 300 mg lithium carbonate,,2026-09-27T00:00:00Z,PROXY
+CHLOROQUINE-0E9C6F84,API-CHLOROQUINE,242,rules/bom_defaults.yaml: label 150 mg base x 1.61 phosphate factor [VERIFY],,2026-09-27T00:00:00Z,PROXY
+DAPSONE-9EAD7BD9,API-DAPSONE,100,rules/bom_defaults.yaml: label 100 mg,,2026-09-27T00:00:00Z,PROXY
+METRONIDAZOLE-013A41E8,API-METRONIDAZOLE,400,rules/bom_defaults.yaml: label 400 mg,,2026-09-27T00:00:00Z,PROXY
+ASCORBIC-ACID-VITAMINC-76AF4E47,API-ASCORBIC-ACID,500,rules/bom_defaults.yaml: label 500 mg,,2026-09-27T00:00:00Z,PROXY
+CARBOPLATIN-49C2E049,API-CARBOPLATIN,10,rules/bom_defaults.yaml: label 10 mg/mL,,2026-09-27T00:00:00Z,PROXY
+CISPLATIN-1C3AF2A6,API-CISPLATIN,1,rules/bom_defaults.yaml: label 1 mg/mL,,2026-09-27T00:00:00Z,PROXY
+AMOXICILLIN-0D6327FE,API-AMOXICILLIN,574,rules/bom_defaults.yaml: label 500 mg base x 1.148 trihydrate factor (as the S00 fixture),,2026-09-27T00:00:00Z,PROXY
+AMPICILLIN-0FB71DE1,API-AMPICILLIN,532,rules/bom_defaults.yaml: label 500 mg base x 1.063 sodium factor [VERIFY],,2026-09-27T00:00:00Z,PROXY
+GENTAMICIN-BC45877A,API-GENTAMICIN,67.8,rules/bom_defaults.yaml: label 40 mg/mL base / ~0.59 potency of gentamicin sulphate [VERIFY],,2026-09-27T00:00:00Z,PROXY
+CO-TRIMOXAZOLE-SULPHAMET-933D8B76,API-SULFAMETHOXAZOLE,400,rules/bom_defaults.yaml: label 400 mg,,2026-09-27T00:00:00Z,PROXY
+CO-TRIMOXAZOLE-SULPHAMET-933D8B76,API-TRIMETHOPRIM,80,rules/bom_defaults.yaml: label 80 mg,,2026-09-27T00:00:00Z,PROXY
+DOXYCYCLINE-565014F8,API-DOXYCYCLINE,115,rules/bom_defaults.yaml: label 100 mg base x 1.15 hyclate factor [VERIFY],,2026-09-27T00:00:00Z,PROXY
+ADRENALINE-6742CFF2,API-ADRENALINE,1.82,rules/bom_defaults.yaml: label 1 mg/mL base x 1.82 bitartrate factor [VERIFY],,2026-09-27T00:00:00Z,PROXY
+OXYTOCIN-8920711D,API-OXYTOCIN,0.0167,rules/bom_defaults.yaml: label 10 IU/mL / ~600 IU per mg [VERIFY],,2026-09-27T00:00:00Z,PROXY
+HEPARIN-5C85406B,API-HEPARIN,27.8,rules/bom_defaults.yaml: label 5000 IU/mL / ~180 IU per mg heparin sodium [VERIFY],,2026-09-27T00:00:00Z,PROXY
+ISONIAZID-807E2A29,API-ISONIAZID,300,rules/bom_defaults.yaml: label 300 mg,,2026-09-27T00:00:00Z,PROXY
+RIFAMPICIN-582E5DF4,API-RIFAMPICIN,450,rules/bom_defaults.yaml: label 450 mg,,2026-09-27T00:00:00Z,PROXY
+PYRAZINAMIDE-922547E8,API-PYRAZINAMIDE,500,rules/bom_defaults.yaml: label 500 mg,,2026-09-27T00:00:00Z,PROXY
+PRIMAQUINE-425B0622,API-PRIMAQUINE,13.2,rules/bom_defaults.yaml: label 7.5 mg base x 1.76 phosphate factor [VERIFY],,2026-09-27T00:00:00Z,PROXY
+QUININE-0C5A96AE,API-QUININE,300,rules/bom_defaults.yaml: label 300 mg/mL quinine dihydrochloride,,2026-09-27T00:00:00Z,PROXY
+DIGOXIN-905411CD,API-DIGOXIN,0.25,rules/bom_defaults.yaml: label 0.25 mg,,2026-09-27T00:00:00Z,PROXY
+AMLODIPINE-B4311439,API-AMLODIPINE,6.94,rules/bom_defaults.yaml: label 5 mg base x 1.39 besylate factor [VERIFY],,2026-09-27T00:00:00Z,PROXY
+ISOSORBIDE-DINITRATE-9935B6B6,API-ISDN,5,rules/bom_defaults.yaml: label 5 mg isosorbide dinitrate (diluted API priced per kg of ISDN) [VERIFY],,2026-09-27T00:00:00Z,PROXY
+FUROSEMIDE-AB0E6076,API-FUROSEMIDE,10,rules/bom_defaults.yaml: label 10 mg/mL,,2026-09-27T00:00:00Z,PROXY
+BUDESONIDE-F59CE74F,API-BUDESONIDE,0.5,rules/bom_defaults.yaml: label 0.5 mg/mL,,2026-09-27T00:00:00Z,PROXY

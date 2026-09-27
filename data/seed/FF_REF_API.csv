@@ -1,0 +1,34 @@
+API_ID,NAME,HS8,KSM_ID,SOURCE,SOURCE_URL,FETCHED_AT,IS_PROXY
+API-BENZYLPENICILLIN,Benzylpenicillin sodium,29411010,,"data/seed/api_hs8.csv (HS mapping, confidence LOW)",,2026-09-27T00:00:00Z,PROXY
+API-ATROPINE,Atropine sulphate,29397990,,"data/seed/api_hs8.csv (HS mapping, confidence LOW)",,2026-09-27T00:00:00Z,PROXY
+API-STREPTOMYCIN,Streptomycin sulphate,29412000,,"data/seed/api_hs8.csv (HS mapping, confidence MEDIUM)",,2026-09-27T00:00:00Z,PROXY
+API-SALBUTAMOL,Salbutamol sulphate,29225090,,"data/seed/api_hs8.csv (HS mapping, confidence LOW)",,2026-09-27T00:00:00Z,PROXY
+API-PILOCARPINE,Pilocarpine nitrate,29397990,,"data/seed/api_hs8.csv (HS mapping, confidence LOW)",,2026-09-27T00:00:00Z,PROXY
+API-CEFADROXIL,Cefadroxil monohydrate,29419090,,"data/seed/api_hs8.csv (HS mapping, confidence LOW)",,2026-09-27T00:00:00Z,PROXY
+API-DESFERRIOXAMINE,Deferoxamine mesylate,29280090,,"data/seed/api_hs8.csv (HS mapping, confidence LOW)",,2026-09-27T00:00:00Z,PROXY
+API-LITHIUM-CARBONATE,Lithium carbonate,28369100,,"data/seed/api_hs8.csv (HS mapping, confidence MEDIUM)",,2026-09-27T00:00:00Z,PROXY
+API-CHLOROQUINE,Chloroquine phosphate,29334900,,"data/seed/api_hs8.csv (HS mapping, confidence LOW)",,2026-09-27T00:00:00Z,PROXY
+API-DAPSONE,Dapsone,29309099,,"data/seed/api_hs8.csv (HS mapping, confidence LOW)",,2026-09-27T00:00:00Z,PROXY
+API-METRONIDAZOLE,Metronidazole,29332990,,"data/seed/api_hs8.csv (HS mapping, confidence LOW)",,2026-09-27T00:00:00Z,PROXY
+API-ASCORBIC-ACID,Ascorbic acid,29362700,,"data/seed/api_hs8.csv (HS mapping, confidence MEDIUM)",,2026-09-27T00:00:00Z,PROXY
+API-CARBOPLATIN,Carboplatin,28439019,,"data/seed/api_hs8.csv (HS mapping, confidence LOW)",,2026-09-27T00:00:00Z,PROXY
+API-CISPLATIN,Cisplatin,28439019,,"data/seed/api_hs8.csv (HS mapping, confidence LOW)",,2026-09-27T00:00:00Z,PROXY
+API-AMOXICILLIN,Amoxicillin trihydrate,29411030,,"data/seed/api_hs8.csv (HS mapping, confidence MEDIUM)",,2026-09-27T00:00:00Z,PROXY
+API-AMPICILLIN,Ampicillin sodium,29411020,,"data/seed/api_hs8.csv (HS mapping, confidence MEDIUM)",,2026-09-27T00:00:00Z,PROXY
+API-GENTAMICIN,Gentamicin sulphate,29419090,,"data/seed/api_hs8.csv (HS mapping, confidence LOW)",,2026-09-27T00:00:00Z,PROXY
+API-SULFAMETHOXAZOLE,Sulfamethoxazole,29359090,,"data/seed/api_hs8.csv (HS mapping, confidence LOW)",,2026-09-27T00:00:00Z,PROXY
+API-TRIMETHOPRIM,Trimethoprim,29335990,,"data/seed/api_hs8.csv (HS mapping, confidence LOW)",,2026-09-27T00:00:00Z,PROXY
+API-DOXYCYCLINE,Doxycycline hyclate,29413090,,"data/seed/api_hs8.csv (HS mapping, confidence LOW)",,2026-09-27T00:00:00Z,PROXY
+API-ADRENALINE,Adrenaline bitartrate,29379090,,"data/seed/api_hs8.csv (HS mapping, confidence LOW)",,2026-09-27T00:00:00Z,PROXY
+API-OXYTOCIN,Oxytocin,29371900,,"data/seed/api_hs8.csv (HS mapping, confidence LOW)",,2026-09-27T00:00:00Z,PROXY
+API-HEPARIN,Heparin sodium,30019091,,"data/seed/api_hs8.csv (HS mapping, confidence LOW)",,2026-09-27T00:00:00Z,PROXY
+API-ISONIAZID,Isoniazid,29333990,,"data/seed/api_hs8.csv (HS mapping, confidence LOW)",,2026-09-27T00:00:00Z,PROXY
+API-RIFAMPICIN,Rifampicin,29419090,,"data/seed/api_hs8.csv (HS mapping, confidence LOW)",,2026-09-27T00:00:00Z,PROXY
+API-PYRAZINAMIDE,Pyrazinamide,29339990,,"data/seed/api_hs8.csv (HS mapping, confidence LOW)",,2026-09-27T00:00:00Z,PROXY
+API-PRIMAQUINE,Primaquine phosphate,29334900,,"data/seed/api_hs8.csv (HS mapping, confidence LOW)",,2026-09-27T00:00:00Z,PROXY
+API-QUININE,Quinine dihydrochloride,29392010,,"data/seed/api_hs8.csv (HS mapping, confidence LOW)",,2026-09-27T00:00:00Z,PROXY
+API-DIGOXIN,Digoxin,29389090,,"data/seed/api_hs8.csv (HS mapping, confidence LOW)",,2026-09-27T00:00:00Z,PROXY
+API-AMLODIPINE,Amlodipine besylate,29333990,,"data/seed/api_hs8.csv (HS mapping, confidence LOW)",,2026-09-27T00:00:00Z,PROXY
+API-ISDN,Isosorbide dinitrate (diluted),29329990,,"data/seed/api_hs8.csv (HS mapping, confidence LOW)",,2026-09-27T00:00:00Z,PROXY
+API-FUROSEMIDE,Furosemide,29359090,,"data/seed/api_hs8.csv (HS mapping, confidence LOW)",,2026-09-27T00:00:00Z,PROXY
+API-BUDESONIDE,Budesonide,29372900,,"data/seed/api_hs8.csv (HS mapping, confidence LOW)",,2026-09-27T00:00:00Z,PROXY

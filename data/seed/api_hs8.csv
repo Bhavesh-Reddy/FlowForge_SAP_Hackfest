@@ -1,0 +1,42 @@
+FORM_ID,GENERIC,API_ID,API_NAME,HS6,HS8,CONFIDENCE,NOTE
+BENZYL-PENICILLIN-86CA1B40,Benzyl Penicillin,API-BENZYLPENICILLIN,Benzylpenicillin sodium,294110,29411010,LOW,HS6 = penicillins; 8-digit line not confirmed on TradeStat
+ATROPINE-6BCEA471,Atropine,API-ATROPINE,Atropine sulphate,293979,29397990,LOW,HS6 = other vegetable alkaloids; shared 'other' line
+STREPTOMYCIN-4A70DA8C,Streptomycin,API-STREPTOMYCIN,Streptomycin sulphate,294120,29412000,MEDIUM,HS6 = streptomycins (dedicated subheading); 8-digit not confirmed
+STREPTOMYCIN-D2FA81E6,Streptomycin,API-STREPTOMYCIN,Streptomycin sulphate,294120,29412000,MEDIUM,HS6 = streptomycins (dedicated subheading); 8-digit not confirmed
+SALBUTAMOL-F30AE0F7,Salbutamol,API-SALBUTAMOL,Salbutamol sulphate,292250,29225090,LOW,HS6 = amino-alcohol-phenols; shared 'other' line
+SALBUTAMOL-4E228030,Salbutamol,API-SALBUTAMOL,Salbutamol sulphate,292250,29225090,LOW,HS6 = amino-alcohol-phenols; shared 'other' line
+SALBUTAMOL-98EC1949,Salbutamol,API-SALBUTAMOL,Salbutamol sulphate,292250,29225090,LOW,HS6 = amino-alcohol-phenols; shared 'other' line
+PILOCARPINE-9BF60519,Pilocarpine,API-PILOCARPINE,Pilocarpine nitrate,293979,29397990,LOW,HS6 = other vegetable alkaloids; shared 'other' line
+CEFADROXIL-6BAADD66,Cefadroxil,API-CEFADROXIL,Cefadroxil monohydrate,294190,29419090,LOW,HS6 = other antibiotics; shared 'other' line
+DESFERRIOXAMINE-D4E309B9,Desferrioxamine,API-DESFERRIOXAMINE,Deferoxamine mesylate,292800,29280090,LOW,HS6 = hydrazine/hydroxylamine derivatives; classification not confirmed
+LITHIUM-2AA5768E,Lithium,API-LITHIUM-CARBONATE,Lithium carbonate,283691,28369100,MEDIUM,HS6 = lithium carbonates (dedicated subheading)
+BCG-VACCINE-961273DA,BCG Vaccine,,,300241,,N/A,biological (vaccine): no single API; cost model not applied
+CHLOROQUINE-0E9C6F84,Chloroquine,API-CHLOROQUINE,Chloroquine phosphate,293349,29334900,LOW,HS6 = quinoline ring compounds; shared line
+DAPSONE-9EAD7BD9,Dapsone,API-DAPSONE,Dapsone,293090,29309099,LOW,HS6 = other organo-sulphur compounds; shared 'other' line
+METRONIDAZOLE-013A41E8,Metronidazole,API-METRONIDAZOLE,Metronidazole,293329,29332990,LOW,HS6 = imidazole ring compounds; shared line
+ASCORBIC-ACID-VITAMINC-76AF4E47,Ascorbic Acid (Vitaminc),API-ASCORBIC-ACID,Ascorbic acid,293627,29362700,MEDIUM,HS6 = vitamin C (dedicated subheading)
+MEASLES-RUBELLA-VACCINE-167F0074,Measles Rubella Vaccine,,,300241,,N/A,biological (vaccine): no single API; cost model not applied
+MEASLES-VACCINE-94806A0B,Measles Vaccine,,,300241,,N/A,biological (vaccine): no single API; cost model not applied
+ANTI-TETANUS-IMMUNOGLOBU-D77E974E,Anti-Tetanus Immunoglobulin,,,300213,,N/A,biological (immunoglobulin): no single API; cost model not applied
+ANTI-TETANUS-IMMUNOGLOBU-7F67B0A3,Anti-Tetanus Immunoglobulin,,,300213,,N/A,biological (immunoglobulin): no single API; cost model not applied
+CARBOPLATIN-49C2E049,Carboplatin,API-CARBOPLATIN,Carboplatin,284390,28439019,LOW,HS6 = other precious-metal compounds; shared line
+CISPLATIN-1C3AF2A6,Cisplatin,API-CISPLATIN,Cisplatin,284390,28439019,LOW,HS6 = other precious-metal compounds; shared line
+AMOXICILLIN-0D6327FE,Amoxicillin,API-AMOXICILLIN,Amoxicillin trihydrate,294110,29411030,MEDIUM,HS6 = penicillins; amoxicillin has its own 8-digit line (same code as the S00 fixture)
+AMPICILLIN-0FB71DE1,Ampicillin,API-AMPICILLIN,Ampicillin sodium,294110,29411020,MEDIUM,HS6 = penicillins; ampicillin has its own 8-digit line
+GENTAMICIN-BC45877A,Gentamicin,API-GENTAMICIN,Gentamicin sulphate,294190,29419090,LOW,HS6 = other antibiotics; shared 'other' line
+CO-TRIMOXAZOLE-SULPHAMET-933D8B76,Co-Trimoxazole,API-SULFAMETHOXAZOLE,Sulfamethoxazole,293590,29359090,LOW,combination: first API; HS6 = sulphonamides
+CO-TRIMOXAZOLE-SULPHAMET-933D8B76,Co-Trimoxazole,API-TRIMETHOPRIM,Trimethoprim,293359,29335990,LOW,combination: second API; HS6 = pyrimidine ring compounds
+DOXYCYCLINE-565014F8,Doxycycline,API-DOXYCYCLINE,Doxycycline hyclate,294130,29413090,LOW,HS6 = tetracyclines; 8-digit line not confirmed
+ADRENALINE-6742CFF2,Adrenaline,API-ADRENALINE,Adrenaline bitartrate,293790,29379090,LOW,HS6 = other hormones; shared 'other' line
+OXYTOCIN-8920711D,Oxytocin,API-OXYTOCIN,Oxytocin,293719,29371900,LOW,HS6 = other polypeptide hormones; shared line
+HEPARIN-5C85406B,Heparin,API-HEPARIN,Heparin sodium,300190,30019091,LOW,HS6 = other animal-origin substances; 8-digit not confirmed
+ISONIAZID-807E2A29,Isoniazid,API-ISONIAZID,Isoniazid,293339,29333990,LOW,HS6 = pyridine ring compounds; shared 'other' line
+RIFAMPICIN-582E5DF4,Rifampicin,API-RIFAMPICIN,Rifampicin,294190,29419090,LOW,HS6 = other antibiotics; shared 'other' line
+PYRAZINAMIDE-922547E8,Pyrazinamide,API-PYRAZINAMIDE,Pyrazinamide,293399,29339990,LOW,HS6 = other N-heterocyclic compounds; shared 'other' line
+PRIMAQUINE-425B0622,Primaquine,API-PRIMAQUINE,Primaquine phosphate,293349,29334900,LOW,HS6 = quinoline ring compounds; shared line
+QUININE-0C5A96AE,Quinine,API-QUININE,Quinine dihydrochloride,293920,29392010,LOW,HS6 = cinchona alkaloids; 8-digit not confirmed
+DIGOXIN-905411CD,Digoxin,API-DIGOXIN,Digoxin,293890,29389090,LOW,HS6 = other glycosides; shared 'other' line
+AMLODIPINE-B4311439,Amlodipine,API-AMLODIPINE,Amlodipine besylate,293339,29333990,LOW,HS6 = pyridine ring compounds; shared 'other' line
+ISOSORBIDE-DINITRATE-9935B6B6,Isosorbide Dinitrate,API-ISDN,Isosorbide dinitrate (diluted),293299,29329990,LOW,HS6 = other O-heterocyclic compounds; classification not confirmed
+FUROSEMIDE-AB0E6076,Furosemide,API-FUROSEMIDE,Furosemide,293590,29359090,LOW,HS6 = sulphonamides; shared 'other' line
+BUDESONIDE-F59CE74F,Budesonide,API-BUDESONIDE,Budesonide,293729,29372900,LOW,HS6 = other corticosteroids (budesonide is not halogenated); 8-digit not confirmed

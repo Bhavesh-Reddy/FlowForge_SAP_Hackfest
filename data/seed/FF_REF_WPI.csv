@@ -1,0 +1,520 @@
+MONTH,SERIES,INDEX_VALUE,SOURCE,SOURCE_URL,FETCHED_AT,IS_PROXY
+2012-04-01,MANUFACTURED_PRODUCTS,72.4726,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2012-05-01,MANUFACTURED_PRODUCTS,72.9627,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2012-06-01,MANUFACTURED_PRODUCTS,73.1028,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2012-07-01,MANUFACTURED_PRODUCTS,73.4529,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2012-08-01,MANUFACTURED_PRODUCTS,73.733,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2012-09-01,MANUFACTURED_PRODUCTS,74.1531,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2012-10-01,MANUFACTURED_PRODUCTS,74.2931,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2012-11-01,MANUFACTURED_PRODUCTS,73.943,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2012-12-01,MANUFACTURED_PRODUCTS,73.733,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2013-01-01,MANUFACTURED_PRODUCTS,74.0831,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2013-02-01,MANUFACTURED_PRODUCTS,74.0831,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2013-03-01,MANUFACTURED_PRODUCTS,74.3632,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2013-04-01,MANUFACTURED_PRODUCTS,74.5732,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2013-05-01,MANUFACTURED_PRODUCTS,74.5032,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2013-06-01,MANUFACTURED_PRODUCTS,74.7833,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2013-07-01,MANUFACTURED_PRODUCTS,75.2034,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2013-08-01,MANUFACTURED_PRODUCTS,75.6936,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2013-09-01,MANUFACTURED_PRODUCTS,76.3938,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2013-10-01,MANUFACTURED_PRODUCTS,76.4638,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2013-11-01,MANUFACTURED_PRODUCTS,76.2538,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2013-12-01,MANUFACTURED_PRODUCTS,76.3238,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2014-01-01,MANUFACTURED_PRODUCTS,76.6739,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2014-02-01,MANUFACTURED_PRODUCTS,76.954,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2014-03-01,MANUFACTURED_PRODUCTS,77.5142,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2014-04-01,MANUFACTURED_PRODUCTS,77.7242,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2014-05-01,MANUFACTURED_PRODUCTS,77.9343,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2014-06-01,MANUFACTURED_PRODUCTS,78.0743,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2014-07-01,MANUFACTURED_PRODUCTS,78.2844,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2014-08-01,MANUFACTURED_PRODUCTS,78.6345,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2014-09-01,MANUFACTURED_PRODUCTS,78.5645,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2014-10-01,MANUFACTURED_PRODUCTS,78.4945,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2014-11-01,MANUFACTURED_PRODUCTS,77.9343,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2014-12-01,MANUFACTURED_PRODUCTS,77.3741,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2015-01-01,MANUFACTURED_PRODUCTS,77.4441,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2015-02-01,MANUFACTURED_PRODUCTS,77.094,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2015-03-01,MANUFACTURED_PRODUCTS,77.024,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2015-04-01,MANUFACTURED_PRODUCTS,77.094,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2015-05-01,MANUFACTURED_PRODUCTS,77.3741,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2015-06-01,MANUFACTURED_PRODUCTS,77.2341,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2015-07-01,MANUFACTURED_PRODUCTS,76.954,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2015-08-01,MANUFACTURED_PRODUCTS,76.4638,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2015-09-01,MANUFACTURED_PRODUCTS,76.4638,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2015-10-01,MANUFACTURED_PRODUCTS,76.6039,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2015-11-01,MANUFACTURED_PRODUCTS,76.1837,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2015-12-01,MANUFACTURED_PRODUCTS,75.9037,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2016-01-01,MANUFACTURED_PRODUCTS,75.6236,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2016-02-01,MANUFACTURED_PRODUCTS,75.8336,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2016-03-01,MANUFACTURED_PRODUCTS,76.1837,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2016-04-01,MANUFACTURED_PRODUCTS,76.4638,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2016-05-01,MANUFACTURED_PRODUCTS,76.884,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2016-06-01,MANUFACTURED_PRODUCTS,77.024,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2016-07-01,MANUFACTURED_PRODUCTS,77.2341,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2016-08-01,MANUFACTURED_PRODUCTS,77.164,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2016-09-01,MANUFACTURED_PRODUCTS,77.3041,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2016-10-01,MANUFACTURED_PRODUCTS,77.5842,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2016-11-01,MANUFACTURED_PRODUCTS,77.7242,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2016-12-01,MANUFACTURED_PRODUCTS,77.7942,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2017-01-01,MANUFACTURED_PRODUCTS,78.1443,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2017-02-01,MANUFACTURED_PRODUCTS,78.2844,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2017-03-01,MANUFACTURED_PRODUCTS,78.6345,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2017-04-01,MANUFACTURED_PRODUCTS,78.8446,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2017-05-01,MANUFACTURED_PRODUCTS,78.8446,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2017-06-01,MANUFACTURED_PRODUCTS,78.8446,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2017-07-01,MANUFACTURED_PRODUCTS,78.8446,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2017-08-01,MANUFACTURED_PRODUCTS,78.9846,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2017-09-01,MANUFACTURED_PRODUCTS,79.6148,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2017-10-01,MANUFACTURED_PRODUCTS,79.6148,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2017-11-01,MANUFACTURED_PRODUCTS,79.8249,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2017-12-01,MANUFACTURED_PRODUCTS,79.9649,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2018-01-01,MANUFACTURED_PRODUCTS,80.4551,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2018-02-01,MANUFACTURED_PRODUCTS,80.8752,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2018-03-01,MANUFACTURED_PRODUCTS,81.0853,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2018-04-01,MANUFACTURED_PRODUCTS,81.4354,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2018-05-01,MANUFACTURED_PRODUCTS,81.8555,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2018-06-01,MANUFACTURED_PRODUCTS,82.1356,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2018-07-01,MANUFACTURED_PRODUCTS,82.4157,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2018-08-01,MANUFACTURED_PRODUCTS,82.4857,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2018-09-01,MANUFACTURED_PRODUCTS,82.9058,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2018-10-01,MANUFACTURED_PRODUCTS,83.2559,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2018-11-01,MANUFACTURED_PRODUCTS,83.1859,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2018-12-01,MANUFACTURED_PRODUCTS,82.8358,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2019-01-01,MANUFACTURED_PRODUCTS,82.6958,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2019-02-01,MANUFACTURED_PRODUCTS,82.7658,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2019-03-01,MANUFACTURED_PRODUCTS,82.8358,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2019-04-01,MANUFACTURED_PRODUCTS,82.9759,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2019-05-01,MANUFACTURED_PRODUCTS,83.0459,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2019-06-01,MANUFACTURED_PRODUCTS,82.9759,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2019-07-01,MANUFACTURED_PRODUCTS,82.6257,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2019-08-01,MANUFACTURED_PRODUCTS,82.4857,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2019-09-01,MANUFACTURED_PRODUCTS,82.5557,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2019-10-01,MANUFACTURED_PRODUCTS,82.4857,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2019-11-01,MANUFACTURED_PRODUCTS,82.4857,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2019-12-01,MANUFACTURED_PRODUCTS,82.6257,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2020-01-01,MANUFACTURED_PRODUCTS,83.1859,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2020-02-01,MANUFACTURED_PRODUCTS,83.1859,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2020-03-01,MANUFACTURED_PRODUCTS,83.0459,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2020-04-01,MANUFACTURED_PRODUCTS,83.1159,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2020-05-01,MANUFACTURED_PRODUCTS,82.7658,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2020-06-01,MANUFACTURED_PRODUCTS,83.0459,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2020-07-01,MANUFACTURED_PRODUCTS,83.1159,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2020-08-01,MANUFACTURED_PRODUCTS,83.6061,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2020-09-01,MANUFACTURED_PRODUCTS,84.0962,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2020-10-01,MANUFACTURED_PRODUCTS,84.3063,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2020-11-01,MANUFACTURED_PRODUCTS,85.1465,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2020-12-01,MANUFACTURED_PRODUCTS,86.3369,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2021-01-01,MANUFACTURED_PRODUCTS,87.7373,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2021-02-01,MANUFACTURED_PRODUCTS,88.2275,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2021-03-01,MANUFACTURED_PRODUCTS,89.5579,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2021-04-01,MANUFACTURED_PRODUCTS,90.9583,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2021-05-01,MANUFACTURED_PRODUCTS,92.0787,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2021-06-01,MANUFACTURED_PRODUCTS,92.1487,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2021-07-01,MANUFACTURED_PRODUCTS,92.6389,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2021-08-01,MANUFACTURED_PRODUCTS,93.2691,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2021-09-01,MANUFACTURED_PRODUCTS,93.8292,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2021-10-01,MANUFACTURED_PRODUCTS,95.1597,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2021-11-01,MANUFACTURED_PRODUCTS,95.6498,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2021-12-01,MANUFACTURED_PRODUCTS,95.5798,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2022-01-01,MANUFACTURED_PRODUCTS,96.0699,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2022-02-01,MANUFACTURED_PRODUCTS,97.2603,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2022-03-01,MANUFACTURED_PRODUCTS,99.641,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2022-04-01,MANUFACTURED_PRODUCTS,101.3216,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2022-05-01,MANUFACTURED_PRODUCTS,101.5316,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2022-06-01,MANUFACTURED_PRODUCTS,100.7614,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2022-07-01,MANUFACTURED_PRODUCTS,100.2712,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2022-08-01,MANUFACTURED_PRODUCTS,100.2712,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2022-09-01,MANUFACTURED_PRODUCTS,99.571,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2022-10-01,MANUFACTURED_PRODUCTS,99.361,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2022-11-01,MANUFACTURED_PRODUCTS,98.9408,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2022-12-01,MANUFACTURED_PRODUCTS,98.8008,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2023-01-01,MANUFACTURED_PRODUCTS,99.0109,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2023-02-01,MANUFACTURED_PRODUCTS,99.1509,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2023-03-01,MANUFACTURED_PRODUCTS,98.9408,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2023-04-01,MANUFACTURED_PRODUCTS,99.1,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2023-05-01,MANUFACTURED_PRODUCTS,98.9,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2023-06-01,MANUFACTURED_PRODUCTS,98.2,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2023-07-01,MANUFACTURED_PRODUCTS,97.8,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2023-08-01,MANUFACTURED_PRODUCTS,98.1,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2023-09-01,MANUFACTURED_PRODUCTS,98.3,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2023-10-01,MANUFACTURED_PRODUCTS,98.4,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2023-11-01,MANUFACTURED_PRODUCTS,98.2,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2023-12-01,MANUFACTURED_PRODUCTS,97.9,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2024-01-01,MANUFACTURED_PRODUCTS,97.7,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2024-02-01,MANUFACTURED_PRODUCTS,97.4,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2024-03-01,MANUFACTURED_PRODUCTS,97.7,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2024-04-01,MANUFACTURED_PRODUCTS,98.5,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2024-05-01,MANUFACTURED_PRODUCTS,98.9,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2024-06-01,MANUFACTURED_PRODUCTS,99.1,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2024-07-01,MANUFACTURED_PRODUCTS,98.8,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2024-08-01,MANUFACTURED_PRODUCTS,98.4,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2024-09-01,MANUFACTURED_PRODUCTS,98.6,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2024-10-01,MANUFACTURED_PRODUCTS,99.2,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2024-11-01,MANUFACTURED_PRODUCTS,99.2,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2024-12-01,MANUFACTURED_PRODUCTS,98.9,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2025-01-01,MANUFACTURED_PRODUCTS,99.2,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2025-02-01,MANUFACTURED_PRODUCTS,99.6,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2025-03-01,MANUFACTURED_PRODUCTS,99.9,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2025-04-01,MANUFACTURED_PRODUCTS,100.3,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2025-05-01,MANUFACTURED_PRODUCTS,100.3,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2025-06-01,MANUFACTURED_PRODUCTS,100.3,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2025-07-01,MANUFACTURED_PRODUCTS,100.1,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2025-08-01,MANUFACTURED_PRODUCTS,100.4,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2025-09-01,MANUFACTURED_PRODUCTS,100.4,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2025-10-01,MANUFACTURED_PRODUCTS,100.6,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2025-11-01,MANUFACTURED_PRODUCTS,100.6,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2025-12-01,MANUFACTURED_PRODUCTS,101.1,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2026-01-01,MANUFACTURED_PRODUCTS,102.0,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2026-02-01,MANUFACTURED_PRODUCTS,103.2,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2026-03-01,MANUFACTURED_PRODUCTS,104.7,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2026-04-01,MANUFACTURED_PRODUCTS,107.0,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2026-05-01,MANUFACTURED_PRODUCTS,108.0,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2026-06-01,MANUFACTURED_PRODUCTS,108.1,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2026-07-01,MANUFACTURED_PRODUCTS,108.4,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2026-08-01,MANUFACTURED_PRODUCTS,108.8,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2012-04-01,CHEMICALS,71.0807,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2012-05-01,CHEMICALS,71.8885,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2012-06-01,CHEMICALS,72.2923,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2012-07-01,CHEMICALS,72.5616,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2012-08-01,CHEMICALS,73.0328,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2012-09-01,CHEMICALS,73.1674,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2012-10-01,CHEMICALS,73.0328,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2012-11-01,CHEMICALS,73.1001,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2012-12-01,CHEMICALS,73.302,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2013-01-01,CHEMICALS,73.6386,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2013-02-01,CHEMICALS,73.7059,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2013-03-01,CHEMICALS,73.9078,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2013-04-01,CHEMICALS,74.1097,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2013-05-01,CHEMICALS,74.0424,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2013-06-01,CHEMICALS,74.6482,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2013-07-01,CHEMICALS,75.456,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2013-08-01,CHEMICALS,75.9272,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2013-09-01,CHEMICALS,76.9368,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2013-10-01,CHEMICALS,76.9368,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2013-11-01,CHEMICALS,76.9368,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2013-12-01,CHEMICALS,77.2061,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2014-01-01,CHEMICALS,77.2734,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2014-02-01,CHEMICALS,77.6772,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2014-03-01,CHEMICALS,78.2157,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2014-04-01,CHEMICALS,78.3504,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2014-05-01,CHEMICALS,78.485,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2014-06-01,CHEMICALS,78.6196,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2014-07-01,CHEMICALS,78.8889,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2014-08-01,CHEMICALS,79.1581,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2014-09-01,CHEMICALS,79.4947,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2014-10-01,CHEMICALS,79.0235,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2014-11-01,CHEMICALS,78.8889,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2014-12-01,CHEMICALS,77.4753,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2015-01-01,CHEMICALS,76.6676,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2015-02-01,CHEMICALS,76.0618,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2015-03-01,CHEMICALS,76.6003,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2015-04-01,CHEMICALS,76.6676,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2015-05-01,CHEMICALS,77.1388,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2015-06-01,CHEMICALS,77.0714,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2015-07-01,CHEMICALS,76.8695,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2015-08-01,CHEMICALS,76.331,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2015-09-01,CHEMICALS,76.0618,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2015-10-01,CHEMICALS,75.7925,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2015-11-01,CHEMICALS,75.3214,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2015-12-01,CHEMICALS,74.7829,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2016-01-01,CHEMICALS,74.5809,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2016-02-01,CHEMICALS,74.4463,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2016-03-01,CHEMICALS,74.6482,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2016-04-01,CHEMICALS,75.0521,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2016-05-01,CHEMICALS,75.1867,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2016-06-01,CHEMICALS,74.9175,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2016-07-01,CHEMICALS,75.1867,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2016-08-01,CHEMICALS,74.5136,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2016-09-01,CHEMICALS,74.2444,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2016-10-01,CHEMICALS,74.2444,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2016-11-01,CHEMICALS,74.379,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2016-12-01,CHEMICALS,74.1771,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2017-01-01,CHEMICALS,74.5136,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2017-02-01,CHEMICALS,74.9175,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2017-03-01,CHEMICALS,75.1867,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2017-04-01,CHEMICALS,75.1194,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2017-05-01,CHEMICALS,75.1867,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2017-06-01,CHEMICALS,75.0521,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2017-07-01,CHEMICALS,74.7829,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2017-08-01,CHEMICALS,74.7829,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2017-09-01,CHEMICALS,74.9175,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2017-10-01,CHEMICALS,75.3214,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2017-11-01,CHEMICALS,75.6579,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2017-12-01,CHEMICALS,76.1964,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2018-01-01,CHEMICALS,76.8022,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2018-02-01,CHEMICALS,77.4753,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2018-03-01,CHEMICALS,77.7446,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2018-04-01,CHEMICALS,78.2831,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2018-05-01,CHEMICALS,79.0235,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2018-06-01,CHEMICALS,79.1581,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2018-07-01,CHEMICALS,79.6293,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2018-08-01,CHEMICALS,79.9658,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2018-09-01,CHEMICALS,80.5043,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2018-10-01,CHEMICALS,81.1101,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2018-11-01,CHEMICALS,81.5813,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2018-12-01,CHEMICALS,80.7736,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2019-01-01,CHEMICALS,80.5043,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2019-02-01,CHEMICALS,80.5716,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2019-03-01,CHEMICALS,80.5043,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2019-04-01,CHEMICALS,80.7063,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2019-05-01,CHEMICALS,80.6389,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2019-06-01,CHEMICALS,80.1005,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2019-07-01,CHEMICALS,79.6966,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2019-08-01,CHEMICALS,79.562,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2019-09-01,CHEMICALS,79.2254,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2019-10-01,CHEMICALS,78.8215,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2019-11-01,CHEMICALS,78.4177,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2019-12-01,CHEMICALS,78.2157,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2020-01-01,CHEMICALS,78.2157,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2020-02-01,CHEMICALS,77.9465,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2020-03-01,CHEMICALS,77.7446,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2020-04-01,CHEMICALS,77.5426,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2020-05-01,CHEMICALS,77.7446,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2020-06-01,CHEMICALS,77.8792,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2020-07-01,CHEMICALS,78.0138,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2020-08-01,CHEMICALS,78.1484,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2020-09-01,CHEMICALS,78.1484,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2020-10-01,CHEMICALS,78.6196,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2020-11-01,CHEMICALS,79.562,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2020-12-01,CHEMICALS,80.5716,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2021-01-01,CHEMICALS,81.3121,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2021-02-01,CHEMICALS,82.8602,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2021-03-01,CHEMICALS,84.543,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2021-04-01,CHEMICALS,86.1585,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2021-05-01,CHEMICALS,86.4277,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2021-06-01,CHEMICALS,86.3604,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2021-07-01,CHEMICALS,87.0335,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2021-08-01,CHEMICALS,87.7066,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2021-09-01,CHEMICALS,88.2451,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2021-10-01,CHEMICALS,90.3991,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2021-11-01,CHEMICALS,91.8126,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2021-12-01,CHEMICALS,92.0819,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2022-01-01,CHEMICALS,92.553,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2022-02-01,CHEMICALS,93.6973,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2022-03-01,CHEMICALS,95.784,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2022-04-01,CHEMICALS,98.0726,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2022-05-01,CHEMICALS,98.9476,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2022-06-01,CHEMICALS,99.8227,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2022-07-01,CHEMICALS,99.4861,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2022-08-01,CHEMICALS,98.6784,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2022-09-01,CHEMICALS,98.2745,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2022-10-01,CHEMICALS,98.4764,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2022-11-01,CHEMICALS,97.736,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2022-12-01,CHEMICALS,96.9283,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2023-01-01,CHEMICALS,96.4571,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2023-02-01,CHEMICALS,96.1205,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2023-03-01,CHEMICALS,95.7167,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2023-04-01,CHEMICALS,95.2,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2023-05-01,CHEMICALS,94.1,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2023-06-01,CHEMICALS,92.5,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2023-07-01,CHEMICALS,91.6,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2023-08-01,CHEMICALS,92.2,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2023-09-01,CHEMICALS,92.2,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2023-10-01,CHEMICALS,92.2,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2023-11-01,CHEMICALS,91.6,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2023-12-01,CHEMICALS,91.2,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2024-01-01,CHEMICALS,91.1,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2024-02-01,CHEMICALS,90.8,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2024-03-01,CHEMICALS,90.9,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2024-04-01,CHEMICALS,90.7,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2024-05-01,CHEMICALS,91.0,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2024-06-01,CHEMICALS,91.6,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2024-07-01,CHEMICALS,92.0,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2024-08-01,CHEMICALS,91.6,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2024-09-01,CHEMICALS,90.7,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2024-10-01,CHEMICALS,90.6,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2024-11-01,CHEMICALS,90.7,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2024-12-01,CHEMICALS,90.8,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2025-01-01,CHEMICALS,91.3,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2025-02-01,CHEMICALS,91.6,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2025-03-01,CHEMICALS,91.3,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2025-04-01,CHEMICALS,90.8,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2025-05-01,CHEMICALS,90.3,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2025-06-01,CHEMICALS,90.8,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2025-07-01,CHEMICALS,90.7,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2025-08-01,CHEMICALS,90.9,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2025-09-01,CHEMICALS,90.8,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2025-10-01,CHEMICALS,90.7,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2025-11-01,CHEMICALS,90.5,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2025-12-01,CHEMICALS,90.4,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2026-01-01,CHEMICALS,91.0,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2026-02-01,CHEMICALS,91.8,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2026-03-01,CHEMICALS,96.5,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2026-04-01,CHEMICALS,102.6,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2026-05-01,CHEMICALS,103.6,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2026-06-01,CHEMICALS,103.8,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2026-07-01,CHEMICALS,102.6,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2026-08-01,CHEMICALS,103.9,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2012-04-01,PHARMACEUTICALS,71.39,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2012-05-01,PHARMACEUTICALS,73.5105,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2012-06-01,PHARMACEUTICALS,73.0157,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2012-07-01,PHARMACEUTICALS,74.0053,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2012-08-01,PHARMACEUTICALS,74.0759,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2012-09-01,PHARMACEUTICALS,74.288,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2012-10-01,PHARMACEUTICALS,74.7121,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2012-11-01,PHARMACEUTICALS,74.5,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2012-12-01,PHARMACEUTICALS,75.2069,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2013-01-01,PHARMACEUTICALS,74.9241,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2013-02-01,PHARMACEUTICALS,74.8535,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2013-03-01,PHARMACEUTICALS,74.6414,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2013-04-01,PHARMACEUTICALS,75.3482,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2013-05-01,PHARMACEUTICALS,74.2173,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2013-06-01,PHARMACEUTICALS,75.3482,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2013-07-01,PHARMACEUTICALS,74.3587,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2013-08-01,PHARMACEUTICALS,75.2776,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2013-09-01,PHARMACEUTICALS,76.8326,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2013-10-01,PHARMACEUTICALS,78.1756,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2013-11-01,PHARMACEUTICALS,77.5394,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2013-12-01,PHARMACEUTICALS,77.5394,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2014-01-01,PHARMACEUTICALS,77.7515,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2014-02-01,PHARMACEUTICALS,77.9635,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2014-03-01,PHARMACEUTICALS,78.1049,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2014-04-01,PHARMACEUTICALS,80.5081,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2014-05-01,PHARMACEUTICALS,79.7306,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2014-06-01,PHARMACEUTICALS,79.9426,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2014-07-01,PHARMACEUTICALS,80.5788,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2014-08-01,PHARMACEUTICALS,80.5788,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2014-09-01,PHARMACEUTICALS,80.9322,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2014-10-01,PHARMACEUTICALS,81.3563,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2014-11-01,PHARMACEUTICALS,81.0736,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2014-12-01,PHARMACEUTICALS,81.7804,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2015-01-01,PHARMACEUTICALS,81.3563,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2015-02-01,PHARMACEUTICALS,81.639,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2015-03-01,PHARMACEUTICALS,81.5684,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2015-04-01,PHARMACEUTICALS,82.982,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2015-05-01,PHARMACEUTICALS,85.3146,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2015-06-01,PHARMACEUTICALS,83.9716,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2015-07-01,PHARMACEUTICALS,84.3957,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2015-08-01,PHARMACEUTICALS,83.6182,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2015-09-01,PHARMACEUTICALS,83.6888,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2015-10-01,PHARMACEUTICALS,82.3459,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2015-11-01,PHARMACEUTICALS,83.8302,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2015-12-01,PHARMACEUTICALS,83.6888,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2016-01-01,PHARMACEUTICALS,84.2543,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2016-02-01,PHARMACEUTICALS,84.2543,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2016-03-01,PHARMACEUTICALS,84.2543,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2016-04-01,PHARMACEUTICALS,83.6888,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2016-05-01,PHARMACEUTICALS,83.4061,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2016-06-01,PHARMACEUTICALS,85.1732,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2016-07-01,PHARMACEUTICALS,84.9611,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2016-08-01,PHARMACEUTICALS,84.8905,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2016-09-01,PHARMACEUTICALS,83.9009,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2016-10-01,PHARMACEUTICALS,84.6784,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2016-11-01,PHARMACEUTICALS,84.4664,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2016-12-01,PHARMACEUTICALS,84.6077,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2017-01-01,PHARMACEUTICALS,84.4664,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2017-02-01,PHARMACEUTICALS,85.5973,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2017-03-01,PHARMACEUTICALS,85.8093,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2017-04-01,PHARMACEUTICALS,85.1025,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2017-05-01,PHARMACEUTICALS,85.0318,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2017-06-01,PHARMACEUTICALS,84.7491,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2017-07-01,PHARMACEUTICALS,84.8198,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2017-08-01,PHARMACEUTICALS,85.3146,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2017-09-01,PHARMACEUTICALS,85.8093,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2017-10-01,PHARMACEUTICALS,86.3041,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2017-11-01,PHARMACEUTICALS,86.3041,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2017-12-01,PHARMACEUTICALS,87.0816,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2018-01-01,PHARMACEUTICALS,86.7989,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2018-02-01,PHARMACEUTICALS,85.5266,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2018-03-01,PHARMACEUTICALS,85.3146,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2018-04-01,PHARMACEUTICALS,84.9611,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2018-05-01,PHARMACEUTICALS,86.4455,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2018-06-01,PHARMACEUTICALS,86.3748,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2018-07-01,PHARMACEUTICALS,87.011,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2018-08-01,PHARMACEUTICALS,86.9403,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2018-09-01,PHARMACEUTICALS,85.88,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2018-10-01,PHARMACEUTICALS,87.0816,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2018-11-01,PHARMACEUTICALS,87.8592,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2018-12-01,PHARMACEUTICALS,87.223,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2019-01-01,PHARMACEUTICALS,89.1315,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2019-02-01,PHARMACEUTICALS,89.0608,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2019-03-01,PHARMACEUTICALS,89.3435,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2019-04-01,PHARMACEUTICALS,88.4246,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2019-05-01,PHARMACEUTICALS,88.778,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2019-06-01,PHARMACEUTICALS,88.8487,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2019-07-01,PHARMACEUTICALS,88.566,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2019-08-01,PHARMACEUTICALS,89.3435,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2019-09-01,PHARMACEUTICALS,88.9194,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2019-10-01,PHARMACEUTICALS,89.6262,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2019-11-01,PHARMACEUTICALS,90.121,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2019-12-01,PHARMACEUTICALS,90.3331,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2020-01-01,PHARMACEUTICALS,92.3122,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2020-02-01,PHARMACEUTICALS,93.0897,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2020-03-01,PHARMACEUTICALS,91.676,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2020-04-01,PHARMACEUTICALS,92.1001,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2020-05-01,PHARMACEUTICALS,90.8985,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2020-06-01,PHARMACEUTICALS,91.3933,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2020-07-01,PHARMACEUTICALS,91.8881,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2020-08-01,PHARMACEUTICALS,92.3829,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2020-09-01,PHARMACEUTICALS,91.8881,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2020-10-01,PHARMACEUTICALS,92.2415,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2020-11-01,PHARMACEUTICALS,93.3018,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2020-12-01,PHARMACEUTICALS,93.2311,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2021-01-01,PHARMACEUTICALS,92.9483,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2021-02-01,PHARMACEUTICALS,93.8672,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2021-03-01,PHARMACEUTICALS,94.2913,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2021-04-01,PHARMACEUTICALS,95.2102,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2021-05-01,PHARMACEUTICALS,96.7652,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2021-06-01,PHARMACEUTICALS,95.2102,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2021-07-01,PHARMACEUTICALS,94.9275,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2021-08-01,PHARMACEUTICALS,94.7861,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2021-09-01,PHARMACEUTICALS,95.0688,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2021-10-01,PHARMACEUTICALS,96.1291,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2021-11-01,PHARMACEUTICALS,96.2704,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2021-12-01,PHARMACEUTICALS,96.5532,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2022-01-01,PHARMACEUTICALS,96.9066,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2022-02-01,PHARMACEUTICALS,97.4721,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2022-03-01,PHARMACEUTICALS,97.5427,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2022-04-01,PHARMACEUTICALS,98.6737,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2022-05-01,PHARMACEUTICALS,98.3203,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2022-06-01,PHARMACEUTICALS,98.815,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2022-07-01,PHARMACEUTICALS,98.9564,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2022-08-01,PHARMACEUTICALS,99.3805,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2022-09-01,PHARMACEUTICALS,99.1685,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2022-10-01,PHARMACEUTICALS,99.8046,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2022-11-01,PHARMACEUTICALS,100.0167,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2022-12-01,PHARMACEUTICALS,100.2287,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2023-01-01,PHARMACEUTICALS,100.5114,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2023-02-01,PHARMACEUTICALS,100.6528,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2023-03-01,PHARMACEUTICALS,100.158,OEA WPI 2011-12 base linked to 2022-23 (wpi_1112_monthly_index_202606.xls),https://eaindustry.nic.in/download_data_1112.asp,2026-09-27T07:41:44Z,PROXY
+2023-04-01,PHARMACEUTICALS,101.4,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2023-05-01,PHARMACEUTICALS,101.1,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2023-06-01,PHARMACEUTICALS,100.6,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2023-07-01,PHARMACEUTICALS,100.9,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2023-08-01,PHARMACEUTICALS,101.4,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2023-09-01,PHARMACEUTICALS,101.1,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2023-10-01,PHARMACEUTICALS,99.9,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2023-11-01,PHARMACEUTICALS,100.8,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2023-12-01,PHARMACEUTICALS,100.6,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2024-01-01,PHARMACEUTICALS,100.8,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2024-02-01,PHARMACEUTICALS,101.4,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2024-03-01,PHARMACEUTICALS,101.7,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2024-04-01,PHARMACEUTICALS,100.0,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2024-05-01,PHARMACEUTICALS,98.8,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2024-06-01,PHARMACEUTICALS,99.5,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2024-07-01,PHARMACEUTICALS,100.2,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2024-08-01,PHARMACEUTICALS,100.2,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2024-09-01,PHARMACEUTICALS,100.0,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2024-10-01,PHARMACEUTICALS,99.9,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2024-11-01,PHARMACEUTICALS,99.7,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2024-12-01,PHARMACEUTICALS,99.9,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2025-01-01,PHARMACEUTICALS,99.5,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2025-02-01,PHARMACEUTICALS,99.3,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2025-03-01,PHARMACEUTICALS,99.7,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2025-04-01,PHARMACEUTICALS,99.7,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2025-05-01,PHARMACEUTICALS,99.0,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2025-06-01,PHARMACEUTICALS,99.4,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2025-07-01,PHARMACEUTICALS,98.9,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2025-08-01,PHARMACEUTICALS,99.9,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2025-09-01,PHARMACEUTICALS,99.8,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2025-10-01,PHARMACEUTICALS,99.9,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2025-11-01,PHARMACEUTICALS,99.8,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2025-12-01,PHARMACEUTICALS,99.9,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2026-01-01,PHARMACEUTICALS,99.6,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2026-02-01,PHARMACEUTICALS,99.6,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2026-03-01,PHARMACEUTICALS,100.8,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2026-04-01,PHARMACEUTICALS,102.3,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2026-05-01,PHARMACEUTICALS,102.9,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2026-06-01,PHARMACEUTICALS,102.8,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2026-07-01,PHARMACEUTICALS,103.6,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL
+2026-08-01,PHARMACEUTICALS,103.3,OEA WPI 2022-23 base (wpi_2223_monthly_index_202609.xlsx),https://eaindustry.nic.in/download_data_2223.asp,2026-09-27T07:40:48Z,REAL

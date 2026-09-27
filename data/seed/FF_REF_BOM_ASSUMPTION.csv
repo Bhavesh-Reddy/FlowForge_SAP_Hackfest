@@ -1,0 +1,36 @@
+FORM_ID,API_G_PER_UNIT,YIELD,CONVERSION_COST_INR,PACKAGING_COST_INR,FREIGHT_COST_INR,SOURCE,SOURCE_URL,FETCHED_AT,IS_PROXY
+BENZYL-PENICILLIN-86CA1B40,0.599,0.95,3.0,1.5,0.3,rules/bom_defaults.yaml (powder_inj: team estimate for an aseptically filled dry-powder vial [VER),,2026-09-27T00:00:00Z,PROXY
+ATROPINE-6BCEA471,0.0006,0.95,0.4,0.25,0.05,rules/bom_defaults.yaml (inj_ml: team estimate per mL of a filled ampoule/vial [VERIFY]),,2026-09-27T00:00:00Z,PROXY
+STREPTOMYCIN-4A70DA8C,0.938,0.95,3.0,1.5,0.3,rules/bom_defaults.yaml (powder_inj: team estimate for an aseptically filled dry-powder vial [VER),,2026-09-27T00:00:00Z,PROXY
+STREPTOMYCIN-D2FA81E6,1.25,0.95,3.0,1.5,0.3,rules/bom_defaults.yaml (powder_inj: team estimate for an aseptically filled dry-powder vial [VER),,2026-09-27T00:00:00Z,PROXY
+SALBUTAMOL-F30AE0F7,0.0024,0.95,0.05,0.03,0.01,rules/bom_defaults.yaml (tablet: team estimate for a blister-packed generic tablet [VERIFY]),,2026-09-27T00:00:00Z,PROXY
+SALBUTAMOL-4E228030,0.0048,0.95,0.05,0.03,0.01,rules/bom_defaults.yaml (tablet: team estimate for a blister-packed generic tablet [VERIFY]),,2026-09-27T00:00:00Z,PROXY
+SALBUTAMOL-98EC1949,0.006,0.95,0.3,0.2,0.05,rules/bom_defaults.yaml (resp_ml: team estimate per mL of respules / nebuliser solution [VERIF),,2026-09-27T00:00:00Z,PROXY
+PILOCARPINE-9BF60519,0.02,0.95,0.8,0.8,0.05,rules/bom_defaults.yaml (drops_ml: team estimate per mL of a sterile eye-drop bottle [VERIFY]),,2026-09-27T00:00:00Z,PROXY
+CEFADROXIL-6BAADD66,0.525,0.95,0.05,0.03,0.01,rules/bom_defaults.yaml (tablet: team estimate for a blister-packed generic tablet [VERIFY]),,2026-09-27T00:00:00Z,PROXY
+DESFERRIOXAMINE-D4E309B9,0.5,0.95,3.0,1.5,0.3,rules/bom_defaults.yaml (powder_inj: team estimate for an aseptically filled dry-powder vial [VER),,2026-09-27T00:00:00Z,PROXY
+LITHIUM-2AA5768E,0.3,0.95,0.05,0.03,0.01,rules/bom_defaults.yaml (tablet: team estimate for a blister-packed generic tablet [VERIFY]),,2026-09-27T00:00:00Z,PROXY
+CHLOROQUINE-0E9C6F84,0.242,0.95,0.05,0.03,0.01,rules/bom_defaults.yaml (tablet: team estimate for a blister-packed generic tablet [VERIFY]),,2026-09-27T00:00:00Z,PROXY
+DAPSONE-9EAD7BD9,0.1,0.95,0.05,0.03,0.01,rules/bom_defaults.yaml (tablet: team estimate for a blister-packed generic tablet [VERIFY]),,2026-09-27T00:00:00Z,PROXY
+METRONIDAZOLE-013A41E8,0.4,0.95,0.05,0.03,0.01,rules/bom_defaults.yaml (tablet: team estimate for a blister-packed generic tablet [VERIFY]),,2026-09-27T00:00:00Z,PROXY
+ASCORBIC-ACID-VITAMINC-76AF4E47,0.5,0.95,0.05,0.03,0.01,rules/bom_defaults.yaml (tablet: team estimate for a blister-packed generic tablet [VERIFY]),,2026-09-27T00:00:00Z,PROXY
+CARBOPLATIN-49C2E049,0.01,0.95,0.4,0.25,0.05,rules/bom_defaults.yaml (inj_ml: team estimate per mL of a filled ampoule/vial [VERIFY]),,2026-09-27T00:00:00Z,PROXY
+CISPLATIN-1C3AF2A6,0.001,0.95,0.4,0.25,0.05,rules/bom_defaults.yaml (inj_ml: team estimate per mL of a filled ampoule/vial [VERIFY]),,2026-09-27T00:00:00Z,PROXY
+AMOXICILLIN-0D6327FE,0.574,0.95,0.08,0.03,0.01,rules/bom_defaults.yaml (capsule: team estimate for a blister-packed hard-gelatin capsule [VER),,2026-09-27T00:00:00Z,PROXY
+AMPICILLIN-0FB71DE1,0.532,0.95,3.0,1.5,0.3,rules/bom_defaults.yaml (powder_inj: team estimate for an aseptically filled dry-powder vial [VER),,2026-09-27T00:00:00Z,PROXY
+GENTAMICIN-BC45877A,0.0678,0.95,0.4,0.25,0.05,rules/bom_defaults.yaml (inj_ml: team estimate per mL of a filled ampoule/vial [VERIFY]),,2026-09-27T00:00:00Z,PROXY
+CO-TRIMOXAZOLE-SULPHAMET-933D8B76,0.4,0.95,0.05,0.03,0.01,rules/bom_defaults.yaml (tablet: team estimate for a blister-packed generic tablet [VERIFY]),,2026-09-27T00:00:00Z,PROXY
+DOXYCYCLINE-565014F8,0.115,0.95,0.08,0.03,0.01,rules/bom_defaults.yaml (capsule: team estimate for a blister-packed hard-gelatin capsule [VER),,2026-09-27T00:00:00Z,PROXY
+ADRENALINE-6742CFF2,0.00182,0.95,0.4,0.25,0.05,rules/bom_defaults.yaml (inj_ml: team estimate per mL of a filled ampoule/vial [VERIFY]),,2026-09-27T00:00:00Z,PROXY
+OXYTOCIN-8920711D,1.7e-05,0.95,0.4,0.25,0.05,rules/bom_defaults.yaml (inj_ml: team estimate per mL of a filled ampoule/vial [VERIFY]),,2026-09-27T00:00:00Z,PROXY
+HEPARIN-5C85406B,0.0278,0.95,0.4,0.25,0.05,rules/bom_defaults.yaml (inj_ml: team estimate per mL of a filled ampoule/vial [VERIFY]),,2026-09-27T00:00:00Z,PROXY
+ISONIAZID-807E2A29,0.3,0.95,0.05,0.03,0.01,rules/bom_defaults.yaml (tablet: team estimate for a blister-packed generic tablet [VERIFY]),,2026-09-27T00:00:00Z,PROXY
+RIFAMPICIN-582E5DF4,0.45,0.95,0.08,0.03,0.01,rules/bom_defaults.yaml (capsule: team estimate for a blister-packed hard-gelatin capsule [VER),,2026-09-27T00:00:00Z,PROXY
+PYRAZINAMIDE-922547E8,0.5,0.95,0.05,0.03,0.01,rules/bom_defaults.yaml (tablet: team estimate for a blister-packed generic tablet [VERIFY]),,2026-09-27T00:00:00Z,PROXY
+PRIMAQUINE-425B0622,0.0132,0.95,0.05,0.03,0.01,rules/bom_defaults.yaml (tablet: team estimate for a blister-packed generic tablet [VERIFY]),,2026-09-27T00:00:00Z,PROXY
+QUININE-0C5A96AE,0.3,0.95,0.4,0.25,0.05,rules/bom_defaults.yaml (inj_ml: team estimate per mL of a filled ampoule/vial [VERIFY]),,2026-09-27T00:00:00Z,PROXY
+DIGOXIN-905411CD,0.00025,0.95,0.05,0.03,0.01,rules/bom_defaults.yaml (tablet: team estimate for a blister-packed generic tablet [VERIFY]),,2026-09-27T00:00:00Z,PROXY
+AMLODIPINE-B4311439,0.00694,0.95,0.05,0.03,0.01,rules/bom_defaults.yaml (tablet: team estimate for a blister-packed generic tablet [VERIFY]),,2026-09-27T00:00:00Z,PROXY
+ISOSORBIDE-DINITRATE-9935B6B6,0.005,0.95,0.05,0.03,0.01,rules/bom_defaults.yaml (tablet: team estimate for a blister-packed generic tablet [VERIFY]),,2026-09-27T00:00:00Z,PROXY
+FUROSEMIDE-AB0E6076,0.01,0.95,0.4,0.25,0.05,rules/bom_defaults.yaml (inj_ml: team estimate per mL of a filled ampoule/vial [VERIFY]),,2026-09-27T00:00:00Z,PROXY
+BUDESONIDE-F59CE74F,0.0005,0.95,0.3,0.2,0.05,rules/bom_defaults.yaml (resp_ml: team estimate per mL of respules / nebuliser solution [VERIF),,2026-09-27T00:00:00Z,PROXY
