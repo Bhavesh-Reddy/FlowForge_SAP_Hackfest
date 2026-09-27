@@ -1,0 +1,131 @@
+# BOM assumptions for the A1 unit-cost model (plan §4.1, §5). Tag: PROXY.
+# unit_cost = api_cost_per_kg x api_mg_per_unit / 1e6 / yield + conversion + packaging + freight
+# All costs are INR per NPPA ceiling-price unit (1 tablet, 1 capsule, 1 vial, 1 mL ...).
+# api_mg_per_unit = label strength converted to the salt/hydrate that is actually imported
+# (salt factors are approximate molecular-weight ratios, marked [VERIFY]).
+# Conversion / packaging / freight are team estimates by unit kind, NOT measured data: they set the
+# scale of non-API cost so headroom is plausible. Change numbers here, not in code.
+version: "2026-09-27"
+
+yield:
+  value: 0.95
+  source: "assumption: 95% overall API-to-finished-unit yield (typical generic process, literature default) [VERIFY]"
+
+unit_kinds:
+  tablet:      {conversion_inr: 0.05, packaging_inr: 0.03, freight_inr: 0.01, source: "team estimate for a blister-packed generic tablet [VERIFY]"}
+  capsule:     {conversion_inr: 0.08, packaging_inr: 0.03, freight_inr: 0.01, source: "team estimate for a blister-packed hard-gelatin capsule [VERIFY]"}
+  powder_inj:  {conversion_inr: 3.00, packaging_inr: 1.50, freight_inr: 0.30, source: "team estimate for an aseptically filled dry-powder vial [VERIFY]"}
+  inj_ml:      {conversion_inr: 0.40, packaging_inr: 0.25, freight_inr: 0.05, source: "team estimate per mL of a filled ampoule/vial [VERIFY]"}
+  drops_ml:    {conversion_inr: 0.80, packaging_inr: 0.80, freight_inr: 0.05, source: "team estimate per mL of a sterile eye-drop bottle [VERIFY]"}
+  resp_ml:     {conversion_inr: 0.30, packaging_inr: 0.20, freight_inr: 0.05, source: "team estimate per mL of respules / nebuliser solution [VERIFY]"}
+
+# FORM_ID (data/seed/targets.csv) -> API rows. Biologicals (vaccines, immunoglobulins) have no entry:
+# the cost model is not applied to them (see data/seed/api_hs8.csv).
+formulations:
+  BENZYL-PENICILLIN-86CA1B40:
+    kind: powder_inj
+    apis: [{api: API-BENZYLPENICILLIN, mg: 599, source: "10 lakh IU / ~1670 IU per mg benzylpenicillin sodium [VERIFY]"}]
+  ATROPINE-6BCEA471:
+    kind: inj_ml
+    apis: [{api: API-ATROPINE, mg: 0.6, source: "label 0.6 mg/mL atropine sulphate"}]
+  STREPTOMYCIN-4A70DA8C:
+    kind: powder_inj
+    apis: [{api: API-STREPTOMYCIN, mg: 938, source: "label 750 mg base x 1.25 sulphate factor [VERIFY]"}]
+  STREPTOMYCIN-D2FA81E6:
+    kind: powder_inj
+    apis: [{api: API-STREPTOMYCIN, mg: 1250, source: "label 1000 mg base x 1.25 sulphate factor [VERIFY]"}]
+  SALBUTAMOL-F30AE0F7:
+    kind: tablet
+    apis: [{api: API-SALBUTAMOL, mg: 2.4, source: "label 2 mg base x 1.2 sulphate factor [VERIFY]"}]
+  SALBUTAMOL-4E228030:
+    kind: tablet
+    apis: [{api: API-SALBUTAMOL, mg: 4.8, source: "label 4 mg base x 1.2 sulphate factor [VERIFY]"}]
+  SALBUTAMOL-98EC1949:
+    kind: resp_ml
+    apis: [{api: API-SALBUTAMOL, mg: 6.0, source: "label 5 mg/mL base x 1.2 sulphate factor [VERIFY]"}]
+  PILOCARPINE-9BF60519:
+    kind: drops_ml
+    apis: [{api: API-PILOCARPINE, mg: 20, source: "label 2% w/v = 20 mg/mL"}]
+  CEFADROXIL-6BAADD66:
+    kind: tablet
+    apis: [{api: API-CEFADROXIL, mg: 525, source: "label 500 mg x 1.05 monohydrate factor [VERIFY]"}]
+  DESFERRIOXAMINE-D4E309B9:
+    kind: powder_inj
+    apis: [{api: API-DESFERRIOXAMINE, mg: 500, source: "label 500 mg deferoxamine mesylate"}]
+  LITHIUM-2AA5768E:
+    kind: tablet
+    apis: [{api: API-LITHIUM-CARBONATE, mg: 300, source: "label 300 mg lithium carbonate"}]
+  CHLOROQUINE-0E9C6F84:
+    kind: tablet
+    apis: [{api: API-CHLOROQUINE, mg: 242, source: "label 150 mg base x 1.61 phosphate factor [VERIFY]"}]
+  DAPSONE-9EAD7BD9:
+    kind: tablet
+    apis: [{api: API-DAPSONE, mg: 100, source: "label 100 mg"}]
+  METRONIDAZOLE-013A41E8:
+    kind: tablet
+    apis: [{api: API-METRONIDAZOLE, mg: 400, source: "label 400 mg"}]
+  ASCORBIC-ACID-VITAMINC-76AF4E47:
+    kind: tablet
+    apis: [{api: API-ASCORBIC-ACID, mg: 500, source: "label 500 mg"}]
+  CARBOPLATIN-49C2E049:
+    kind: inj_ml
+    apis: [{api: API-CARBOPLATIN, mg: 10, source: "label 10 mg/mL"}]
+  CISPLATIN-1C3AF2A6:
+    kind: inj_ml
+    apis: [{api: API-CISPLATIN, mg: 1, source: "label 1 mg/mL"}]
+  AMOXICILLIN-0D6327FE:
+    kind: capsule
+    apis: [{api: API-AMOXICILLIN, mg: 574, source: "label 500 mg base x 1.148 trihydrate factor (as the S00 fixture)"}]
+  AMPICILLIN-0FB71DE1:
+    kind: powder_inj
+    apis: [{api: API-AMPICILLIN, mg: 532, source: "label 500 mg base x 1.063 sodium factor [VERIFY]"}]
+  GENTAMICIN-BC45877A:
+    kind: inj_ml
+    apis: [{api: API-GENTAMICIN, mg: 67.8, source: "label 40 mg/mL base / ~0.59 potency of gentamicin sulphate [VERIFY]"}]
+  CO-TRIMOXAZOLE-SULPHAMET-933D8B76:
+    kind: tablet
+    apis:
+      - {api: API-SULFAMETHOXAZOLE, mg: 400, source: "label 400 mg"}
+      - {api: API-TRIMETHOPRIM, mg: 80, source: "label 80 mg"}
+  DOXYCYCLINE-565014F8:
+    kind: capsule
+    apis: [{api: API-DOXYCYCLINE, mg: 115, source: "label 100 mg base x 1.15 hyclate factor [VERIFY]"}]
+  ADRENALINE-6742CFF2:
+    kind: inj_ml
+    apis: [{api: API-ADRENALINE, mg: 1.82, source: "label 1 mg/mL base x 1.82 bitartrate factor [VERIFY]"}]
+  OXYTOCIN-8920711D:
+    kind: inj_ml
+    apis: [{api: API-OXYTOCIN, mg: 0.0167, source: "label 10 IU/mL / ~600 IU per mg [VERIFY]"}]
+  HEPARIN-5C85406B:
+    kind: inj_ml
+    apis: [{api: API-HEPARIN, mg: 27.8, source: "label 5000 IU/mL / ~180 IU per mg heparin sodium [VERIFY]"}]
+  ISONIAZID-807E2A29:
+    kind: tablet
+    apis: [{api: API-ISONIAZID, mg: 300, source: "label 300 mg"}]
+  RIFAMPICIN-582E5DF4:
+    kind: capsule
+    apis: [{api: API-RIFAMPICIN, mg: 450, source: "label 450 mg"}]
+  PYRAZINAMIDE-922547E8:
+    kind: tablet
+    apis: [{api: API-PYRAZINAMIDE, mg: 500, source: "label 500 mg"}]
+  PRIMAQUINE-425B0622:
+    kind: tablet
+    apis: [{api: API-PRIMAQUINE, mg: 13.2, source: "label 7.5 mg base x 1.76 phosphate factor [VERIFY]"}]
+  QUININE-0C5A96AE:
+    kind: inj_ml
+    apis: [{api: API-QUININE, mg: 300, source: "label 300 mg/mL quinine dihydrochloride"}]
+  DIGOXIN-905411CD:
+    kind: tablet
+    apis: [{api: API-DIGOXIN, mg: 0.25, source: "label 0.25 mg"}]
+  AMLODIPINE-B4311439:
+    kind: tablet
+    apis: [{api: API-AMLODIPINE, mg: 6.94, source: "label 5 mg base x 1.39 besylate factor [VERIFY]"}]
+  ISOSORBIDE-DINITRATE-9935B6B6:
+    kind: tablet
+    apis: [{api: API-ISDN, mg: 5, source: "label 5 mg isosorbide dinitrate (diluted API priced per kg of ISDN) [VERIFY]"}]
+  FUROSEMIDE-AB0E6076:
+    kind: inj_ml
+    apis: [{api: API-FUROSEMIDE, mg: 10, source: "label 10 mg/mL"}]
+  BUDESONIDE-F59CE74F:
+    kind: resp_ml
+    apis: [{api: API-BUDESONIDE, mg: 0.5, source: "label 0.5 mg/mL"}]
