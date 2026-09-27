@@ -119,6 +119,37 @@ def test_shock_what_if_writes_nothing(client, db_path):
     assert _one(db_path, "SELECT COUNT(*) AS N FROM FF_AG_SIGNAL").iloc[0]["N"] == before
 
 
+def test_shock_rows_carry_names(client):
+    row = client.post("/scenario/shock", json={"multiplier": 1.3, "form_ids": ["F001"]}, headers=H).json()["rows"][0]
+    assert row["generic"] == "Amoxicillin" and row["strength"]
+
+
+def test_margin_series_replays_a1(client, ran):
+    r = client.get("/molecule/F001/margin-series?months=6&shock=1.3", headers=H)
+    assert r.status_code == 200, r.text
+    s = r.json()
+    assert len(s["points"]) == 6 and s["ceiling_price_inr"] and s["shock"] == 1.3
+    last = s["points"][-1]
+    assert last["realisation_inr"] and last["unit_cost_inr"] and last["shocked_unit_cost_inr"] > last["unit_cost_inr"]
+    # the latest month equals what the orchestrator's A1 reported (same code path, no look-ahead)
+    sig = client.get("/molecule/F001", headers=H).json()["signal"]
+    assert abs(last["shocked_headroom_pct"] - sig["headroom_pct"]) < 1e-6
+    assert client.get("/molecule/NOPE/margin-series", headers=H).status_code == 404
+
+
+def test_watchlist_sorted_by_exposure(client, ran):
+    rows = client.get("/watchlist?assessed_only=true", headers=H).json()
+    assert rows and all(r["run_id"] for r in rows)
+    exp = [r["exposure"] for r in rows if r["exposure"] is not None]
+    assert exp == sorted(exp, reverse=True) and "window_months_lo" in rows[0]
+    assert client.get("/watchlist?sort=bogus", headers=H).status_code == 422
+
+
+def test_fallback_ui_served_without_key(client):
+    r = client.get("/ui")
+    assert r.status_code == 200 and "FlowForge" in r.text and "text/html" in r.headers["content-type"]
+
+
 def test_recall_trace(client):
     r = client.get("/recall/NSQ-T1", headers=H)
     assert r.status_code == 200 and r.json()["matches"][0]["CHARG"] == "B2601"

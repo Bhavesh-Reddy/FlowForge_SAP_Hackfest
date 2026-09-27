@@ -20,6 +20,7 @@ Then:
 - http://127.0.0.1:8000/health returns `{"status":"ok",...}`. No key is needed.
 - http://127.0.0.1:8000/docs opens Swagger. Click **Authorize**, paste the key, and try `GET /watchlist`.
 - From a terminal: `curl -H "X-API-Key: local-dev-key" http://127.0.0.1:8000/watchlist?limit=5`
+- **Fallback UI (S10):** open http://127.0.0.1:8000/ui and enter the key in the top bar. It's served same-origin, so no CORS setup is needed. To open `ui/fallback/index.html` straight from disk (`file://`) instead, start the API with `$env:CORS_ORIGINS = "null"` for that shell. Browsers send the origin `null` for local files. Do this only on the laptop, never on CF.
 
 The watchlist lists every formulation. Run the agents to fill in the risk columns: `POST /run {"form_ids": [], "shock": 1.3}` scores the tracked set, which is every formulation with a BOM assumption.
 
@@ -94,8 +95,10 @@ If `/watchlist` fails, run `cf logs flowforge-api --recent`. The usual cause is 
 | Method | Path | Notes |
 |---|---|---|
 | GET | `/health` | public; no DB access |
-| GET | `/watchlist?limit=100&assessed_only=false` | `FF_V_WATCHLIST`, highest exit risk first |
+| GET | `/ui` | public static page (fallback UI); every data call inside still needs the key |
+| GET | `/watchlist?limit=100&assessed_only=false&sort=exposure` | `FF_V_WATCHLIST` + A3 exposure; highest exposure first (`sort=exit_risk` also works) |
 | GET | `/molecule/{form_id}` | latest signal, dependency, forecast, scenarios, checks, graph nodes/edges, data tags |
+| GET | `/molecule/{form_id}/margin-series?months=12&shock=1.3` | ceiling-vs-cost chart data: A1 replayed as of each month-end (no look-ahead, writes nothing) |
 | POST | `/run` | `{form_ids, shock, dry_run}`; A1→A5 stop at the human gate; at most 50 formulations |
 | POST | `/scenario/shock` | `{multiplier, form_ids}`; A1-only what-if, writes nothing |
 | GET | `/approvals/pending` | gate items from each formulation's latest run, with the level they wait for |

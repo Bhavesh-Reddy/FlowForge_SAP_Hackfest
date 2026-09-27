@@ -44,6 +44,9 @@ class WatchlistRow(_Model):
     assessed_at: str | None = None
     exit_risk_band: str | None = None
     exit_risk: float | None = None
+    exposure: float | None = Field(default=None, description="A3 exposure (risk x criticality x cover gap); sort key")
+    window_months_lo: float | None = None
+    window_months_hi: float | None = None
     cause_code: str | None = None
     confidence: float | None = None
     margin_band: str | None = None
@@ -94,6 +97,27 @@ class MoleculeDetail(_Model):
     disclaimer: str
 
 
+class MarginPoint(_Model):
+    """A1 replayed as of one month (no look-ahead): what the Margin Sentinel would have reported then."""
+
+    month: str
+    realisation_inr: float | None = Field(default=None, description="est. manufacturer realisation under the ceiling")
+    unit_cost_inr: float | None = None
+    headroom_pct: float | None = None
+    band: str
+    shocked_unit_cost_inr: float | None = None
+    shocked_headroom_pct: float | None = None
+
+
+class MarginSeries(_Model):
+    form_id: str
+    ceiling_price_inr: float | None = Field(default=None, description="current NPPA ceiling, excl. GST")
+    shock: float | None = None
+    points: list[MarginPoint]
+    data_tags: dict[str, str] = Field(default_factory=dict)
+    note: str = "Estimated from NPPA ceiling, API import cost and BOM assumptions. A risk flag for review."
+
+
 class RunRequest(_Model):
     form_ids: list[str] = Field(default_factory=list, max_length=MAX_FORMS_PER_RUN,
                                 description="formulation ids or generic names; empty = tracked set")
@@ -119,6 +143,8 @@ class ShockRequest(_Model):
 
 class ShockRow(_Model):
     form_id: str
+    generic: str | None = None
+    strength: str | None = None
     baseline: RiskSignal
     shocked: RiskSignal
     band_changed: bool
