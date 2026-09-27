@@ -9,6 +9,7 @@ from __future__ import annotations
 import hmac
 import json
 import logging
+import math
 import os
 import uuid
 from datetime import datetime, timedelta, timezone
@@ -18,7 +19,7 @@ from typing import Any, Callable, Iterator
 import pandas as pd
 from fastapi import APIRouter, Depends, FastAPI, HTTPException, Query, Request, Security
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse
+from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.security import APIKeyHeader
 
 from agents import a1_margin_sentinel as a1
@@ -26,18 +27,18 @@ from agents import a2_dependency as a2
 from agents import a6_audit as a6
 from agents import orchestrator as orch
 from agents import report
-from agents.common import AgentCtx
+from agents.common import AgentCtx, placeholders
 from agents.contracts import (
     ApprovalAction, AuditEvent, CheckResult, DataQuality, DataSourceRef, DependencyProfile, DraftPR, Forecast,
     Recommendation, RiskSignal, RunContext, Scenario, SecondarySignal,
 )
-from agents.ctx import SQLITE_PATH, Db, Settings, get_db, load_settings
+from agents.ctx import REPO_ROOT, SQLITE_PATH, Db, Settings, get_db, load_settings
 from agents.rules import Rules, load_rules
 from api import cf
 from api.models import (
     MAX_FORMS_PER_RUN, ApprovalRequest, ApprovalResponse, AuditResponse, ChainStatus, GraphEdge, GraphNode,
-    GraphSnapshot, Health, MoleculeDetail, PendingApproval, RecallResponse, RecommendationView, RunRequest,
-    RunResponse, ShockRequest, ShockResponse, ShockRow, WatchlistRow,
+    GraphSnapshot, Health, MarginPoint, MarginSeries, MoleculeDetail, PendingApproval, RecallResponse,
+    RecommendationView, RunRequest, RunResponse, ShockRequest, ShockResponse, ShockRow, WatchlistRow,
 )
 
 log = logging.getLogger(__name__)
@@ -49,6 +50,7 @@ DISCLAIMER = ("Probabilistic risk flag for review from deterministic rules; not 
 BUILD_APPS_ORIGIN_REGEX = (r"https://([a-z0-9-]+\.)*(hana\.ondemand\.com|build\.cloud\.sap|appgyver\.com"
                            r"|appgyver\.page|cloud\.sap)|http://(localhost|127\.0\.0\.1)(:\d+)?")
 PENDING_SCAN_LIMIT = 200
+FALLBACK_UI = REPO_ROOT / "ui" / "fallback" / "index.html"
 API_KEY_HEADER = APIKeyHeader(name="X-API-Key", auto_error=False, description="APP_API_KEY")
 
 
@@ -117,6 +119,12 @@ def _default_factory(settings: Settings) -> Callable[[], Db]:
                                      "--reset --seed` or set DB_BACKEND=hana")
         return get_db(settings)
     return factory
+
+
+def producers_label(n: Any) -> str:
+    """Producer counts are lower bounds (plan §5); zero means none on record, not none in the market."""
+    n = int(_nz(n) or 0)
+    return f"at least {n} producer{'s' if n != 1 else ''}" if n else "no producer on record"
 
 
 def tracked_form_ids(db: Db) -> list[str]:
@@ -234,16 +242,28 @@ def health(request: Request) -> Health:
     return Health(db_backend=request.app.state.settings.db_backend, version=VERSION)
 
 
+@public.get("/ui", include_in_schema=False)
+def fallback_ui() -> FileResponse:
+    """The fallback UI (S10), served same-origin so no CORS setup is needed. Static file; data needs the API key."""
+    if not FALLBACK_UI.exists():
+        raise HTTPException(404, "ui/fallback/index.html is not deployed")
+    return FileResponse(FALLBACK_UI, media_type="text/html")
+
+
 @secured.get("/watchlist", response_model=list[WatchlistRow])
-def watchlist(db: Db = Depends(get_conn), limit: int = Query(100, ge=1, le=1000),
-              assessed_only: bool = False) -> list[WatchlistRow]:
-    where = "WHERE RUN_ID IS NOT NULL " if assessed_only else ""
-    rows = _records(db, "SELECT FORM_ID, GENERIC, DOSAGE_FORM, STRENGTH, NLEM_LEVEL, THERAPEUTIC_CLASS, CEILING_PRICE, "
-                        "GST_RATE, CEILING_SO_NUMBER, PRODUCER_COUNT_MIN, MIN_DAYS_OF_COVER, RUN_ID, ASSESSED_AT, "
-                        "EXIT_RISK_BAND, EXIT_RISK, CAUSE_CODE, CONFIDENCE, MARGIN_BAND, HEADROOM_PCT, MONTHS_TO_BREACH, "
-                        f"HHI, TOP_ORIGIN_COUNTRY, TOP_ORIGIN_SHARE, IS_PROXY FROM FF_V_WATCHLIST {where}"
-                        "ORDER BY CASE WHEN EXIT_RISK IS NULL THEN 1 ELSE 0 END, EXIT_RISK DESC, FORM_ID "
-                        f"LIMIT {int(limit)}")
+def watchlist(db: Db = Depends(get_conn), limit: int = Query(100, ge=1, le=1000), assessed_only: bool = False,
+              sort: str = Query("exposure", pattern="^(exposure|exit_risk)$")) -> list[WatchlistRow]:
+    """Highest exposure first (A3: exit risk × criticality × cover gap); unassessed formulations last."""
+    where = "WHERE w.RUN_ID IS NOT NULL " if assessed_only else ""
+    key = "fc.EXPOSURE" if sort == "exposure" else "w.EXIT_RISK"
+    rows = _records(db, "SELECT w.FORM_ID, w.GENERIC, w.DOSAGE_FORM, w.STRENGTH, w.NLEM_LEVEL, w.THERAPEUTIC_CLASS, "
+                        "w.CEILING_PRICE, w.GST_RATE, w.CEILING_SO_NUMBER, w.PRODUCER_COUNT_MIN, w.MIN_DAYS_OF_COVER, "
+                        "w.RUN_ID, w.ASSESSED_AT, w.EXIT_RISK_BAND, w.EXIT_RISK, w.CAUSE_CODE, w.CONFIDENCE, "
+                        "w.MARGIN_BAND, w.HEADROOM_PCT, w.MONTHS_TO_BREACH, w.HHI, w.TOP_ORIGIN_COUNTRY, "
+                        "w.TOP_ORIGIN_SHARE, w.IS_PROXY, fc.EXPOSURE, fc.WINDOW_MONTHS_LO, fc.WINDOW_MONTHS_HI "
+                        "FROM FF_V_WATCHLIST w LEFT JOIN FF_AG_FORECAST fc ON fc.RUN_ID = w.RUN_ID AND fc.FORM_ID = w.FORM_ID "
+                        f"{where}ORDER BY CASE WHEN {key} IS NULL THEN 1 ELSE 0 END, {key} DESC, "
+                        f"w.EXIT_RISK DESC, w.FORM_ID LIMIT {int(limit)}")
     out = []
     for r in rows:
         n = int(r["PRODUCER_COUNT_MIN"] or 0)
@@ -252,9 +272,10 @@ def watchlist(db: Db = Depends(get_conn), limit: int = Query(100, ge=1, le=1000)
             nlem_level=r["NLEM_LEVEL"], therapeutic_class=r["THERAPEUTIC_CLASS"],
             ceiling_price_inr=float(r["CEILING_PRICE"]) if r["CEILING_PRICE"] is not None else None,
             gst_rate=r["GST_RATE"], ceiling_so_number=r["CEILING_SO_NUMBER"], producer_count_min=n,
-            producers_label=f"at least {n} producers", min_days_of_cover=r["MIN_DAYS_OF_COVER"],
+            producers_label=producers_label(n), min_days_of_cover=r["MIN_DAYS_OF_COVER"],
             run_id=r["RUN_ID"], assessed_at=str(r["ASSESSED_AT"]) if r["ASSESSED_AT"] else None,
-            exit_risk_band=r["EXIT_RISK_BAND"], exit_risk=r["EXIT_RISK"], cause_code=r["CAUSE_CODE"],
+            exit_risk_band=r["EXIT_RISK_BAND"], exit_risk=r["EXIT_RISK"], exposure=r["EXPOSURE"],
+            window_months_lo=r["WINDOW_MONTHS_LO"], window_months_hi=r["WINDOW_MONTHS_HI"], cause_code=r["CAUSE_CODE"],
             confidence=r["CONFIDENCE"], margin_band=r["MARGIN_BAND"], headroom_pct=r["HEADROOM_PCT"],
             months_to_breach=r["MONTHS_TO_BREACH"], hhi=r["HHI"], top_origin_country=r["TOP_ORIGIN_COUNTRY"],
             top_origin_share=r["TOP_ORIGIN_SHARE"], data_tag=r["IS_PROXY"]))
@@ -268,7 +289,7 @@ def molecule(form_id: str, db: Db = Depends(get_conn)) -> MoleculeDetail:
                     "FROM FF_V_WATCHLIST WHERE FORM_ID = ?", (form_id,))
     if form is None:
         raise HTTPException(404, f"unknown formulation {form_id!r}")
-    form["PRODUCERS_LABEL"] = f"at least {int(form['PRODUCER_COUNT_MIN'] or 0)} producers"
+    form["PRODUCERS_LABEL"] = producers_label(form["PRODUCER_COUNT_MIN"])
     sig_row = _one(db, "SELECT * FROM FF_AG_SIGNAL WHERE FORM_ID = ? ORDER BY CREATED_AT DESC, RUN_ID DESC LIMIT 1",
                    (form_id,))
     tags: dict[str, str] = {"formulation": str(form["IS_PROXY"])}
@@ -295,7 +316,38 @@ def molecule(form_id: str, db: Db = Depends(get_conn)) -> MoleculeDetail:
                            scenario=by_id.get(r["SCENARIO_ID"]))
         for r in _records(db, "SELECT * FROM FF_AG_RECOMMENDATION WHERE RUN_ID = ? AND FORM_ID = ? "
                               "ORDER BY SCENARIO_ID", (run_id, form_id))]
+    detail.data_tags = tags  # pydantic copied the dict at construction; publish the merged tags
     return detail
+
+
+def _num(x: Any) -> float | None:
+    x = _nz(x)
+    return None if x is None or not math.isfinite(float(x)) else float(x)
+
+
+@secured.get("/molecule/{form_id}/margin-series", response_model=MarginSeries)
+def margin_series(form_id: str, request: Request, db: Db = Depends(get_conn),
+                  months: int = Query(12, ge=3, le=36), shock: float | None = Query(None, gt=0, le=5)) -> MarginSeries:
+    """Ceiling-vs-cost chart data: A1 replayed as of each month-end (no look-ahead, nothing written)."""
+    form = _one(db, "SELECT CEILING_PRICE FROM FF_V_WATCHLIST WHERE FORM_ID = ?", (form_id,))
+    if form is None:
+        raise HTTPException(404, f"unknown formulation {form_id!r}")
+    rules = rules_of(request)
+    as_of = orch.as_of_date(db)
+    points, tags = [], {}
+    for m in pd.period_range(end=pd.Period(as_of, "M"), periods=months, freq="M"):
+        ctx = AgentCtx(db, rules, RunContext(run_id=f"series-{uuid.uuid4().hex[:8]}", dry_run=True,
+                                             as_of=min(m.to_timestamp(how="end").date(), as_of)))
+        s = a1.run([form_id], ctx)[0]
+        sh = a1.run([form_id], ctx, api_cost_multiplier=shock)[0] if shock else None
+        tags = {k: v.value for k, v in s.data_quality.tags.items()}
+        points.append(MarginPoint(
+            month=str(m), realisation_inr=_num(s.realisation_inr), unit_cost_inr=_num(s.unit_cost_inr),
+            headroom_pct=_num(s.headroom_pct), band=s.band.value,
+            shocked_unit_cost_inr=_num(sh.unit_cost_inr) if sh else None,
+            shocked_headroom_pct=_num(sh.headroom_pct) if sh else None))
+    return MarginSeries(form_id=form_id, ceiling_price_inr=_num(form["CEILING_PRICE"]), shock=shock, points=points,
+                        data_tags=tags)
 
 
 @secured.post("/run", response_model=RunResponse)
@@ -315,8 +367,11 @@ def scenario_shock(req: ShockRequest, request: Request, db: Db = Depends(get_con
     ctx = AgentCtx(db, rules, rc)
     base = {s.formulation_id: s for s in a1.run(ids, ctx)}
     shocked = a1.run(ids, ctx, api_cost_multiplier=req.multiplier)
-    rows = [ShockRow(form_id=s.formulation_id, baseline=base[s.formulation_id], shocked=s,
-                     band_changed=base[s.formulation_id].band is not s.band) for s in shocked]
+    names = {r["FORM_ID"]: r for r in _records(
+        db, f"SELECT FORM_ID, GENERIC, STRENGTH FROM FF_REF_FORMULATION WHERE FORM_ID IN ({placeholders(ids)})", tuple(ids))}
+    rows = [ShockRow(form_id=s.formulation_id, generic=names.get(s.formulation_id, {}).get("GENERIC"),
+                     strength=names.get(s.formulation_id, {}).get("STRENGTH"), baseline=base[s.formulation_id],
+                     shocked=s, band_changed=base[s.formulation_id].band is not s.band) for s in shocked]
     rows.sort(key=lambda x: (not x.band_changed, x.shocked.headroom_pct))
     return ShockResponse(multiplier=req.multiplier, rows=rows)
 

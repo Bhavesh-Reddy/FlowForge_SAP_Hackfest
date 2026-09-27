@@ -40,3 +40,6 @@
 - 2026-09-27 · API opens one DB connection per request (hdbcli/sqlite connections are not thread-safe); /health never touches the DB · a HANA outage can't make CF restart-loop the app
 - 2026-09-27 · CF creds come from the user-provided service ff-hana (VCAP_SERVICES), filling only unset env vars; values are typed at the cf prompt, never on the command line · no secrets in repo, manifest or shell history
 - 2026-09-27 · /approvals/pending shows only gate items of each formulation's latest run, with the level (1/2) still needed; snoozed items return after snooze_days · reruns don't leave stale approvals
+- 2026-09-27 · Ceiling-vs-cost chart = A1 replayed as of each month-end via /molecule/{id}/margin-series (no A1 change, no look-ahead, identical to A1's numbers) · chart can't drift from the scoring code
+- 2026-09-27 · Fallback UI is one static file served by the API at /ui (same origin, no CORS); file:// works only with CORS_ORIGINS=null on the laptop · zero-config demo backup
+- 2026-09-27 · Watchlist sorts by A3 exposure (join on FF_AG_FORECAST in the API; views.sql untouched); margin flags show "RED/AMBER/GREEN" only, "High/Elevated/Low" is reserved for exit risk; zero producers reads "no producer on record" · no misleading "at least 0"
