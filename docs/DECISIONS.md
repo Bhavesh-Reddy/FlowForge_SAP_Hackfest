@@ -29,3 +29,5 @@
 - 2026-09-27 · A1 computes the OTD drop monthly from EKPO/EKKO/MSEG with the FF_V_SUPPLIER_OTD logic · the view is a lifetime figure per vendor
 - 2026-09-27 · A3 uses FF_V_DAYS_OF_COVER only when run as_of = FF_V_ASOF, else the same FEFO logic in Python · no look-ahead in backtests
 - 2026-09-27 · Agent tests load fixtures through ingest.load_hana (ref_views.sql removed); fixture ceilings get EFFECTIVE_FROM 2025-04-01 · the fixture CSV has no effective date
+- 2026-09-27 · Weights frozen at rules/weights.yaml v1.0.0 with no tuning; the backtest is published as a pipeline check, not evidence · SYNTH costs anchored on post-order ceilings + 2 positives would make any tuning fit noise
+- 2026-09-27 · Backtest back-casts pre-2026 ceilings by annual WPI change (para 16, PROXY) and excludes unverified Para-19 targets from negatives · longer replay window without mislabelling likely positives

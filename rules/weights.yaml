@@ -1,6 +1,7 @@
 # Scoring constants (plan §4). Every leaf is {value, source, verify}.
+# FROZEN for the finale at v1.0.0 (S12, 2026-09-27): hand-set, not tuned; see docs/backtest_results.md.
 # verify: true = assumption or unconfirmed wording; confirm before the finale.
-version: "0.1.0"
+version: "1.0.0"
 
 margin:                       # §4.1 A1 margin headroom
   retailer_margin:

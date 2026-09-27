@@ -26,11 +26,11 @@ Updated: 2026-09-26 by Bhavesh
 | S09 | FastAPI + BTP deploy | B3 | todo |
 | S10 | Build Apps guide + fallback UI | B3 | todo |
 | S11 | LLM explanation | B3 | todo |
-| S12 | Para-19 backtest | B2 + P2 | todo |
+| S12 | Para-19 backtest | B2 + P2 | PR open |
 | S13 | Integration + demo hardening | Bhavesh | todo |
 
 ## Blocked / open questions
-- S12 blocked on S02 + S03 (no data/seed/para19_events.csv, no historical price/cost series)
+- S12 is a pipeline check only (SYNTH costs, 2 positives). Real evidence needs: verify the Oct-2024 / Dec-2019 Para-19 rows + real TradeStat costs, then rerun `python tests/backtest_para19.py`
 - S01: add FF_G_E.WEIGHT (DOUBLE) + IS_PROXY (NVARCHAR(8)) so A2 can use HANA Graph (see PR feat/harnish-s01-align)
 - Does the shared HANA allow CREATE GRAPH WORKSPACE / PAL?
 - BTP trial region, and can CF reach HANA eu10?
