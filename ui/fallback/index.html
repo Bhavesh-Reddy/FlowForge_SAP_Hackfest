@@ -336,6 +336,11 @@ async function molecule(id) {
   render(h("div", { class: "stack" }, h("div", { class: "row" }, title, h("span", { class: "spacer" }),
       d.run_id ? h("button", { class: "btn", onclick: () => go(`#/audit/${encodeURIComponent(d.run_id)}`) }, "Audit trail") : null),
     h("p", { class: "disclaimer" }, d.disclaimer), tags,
+    d.explanation ? h("div", { class: "card" }, h("h2", {}, "Why this flag"),
+      h("p", { style: "font-size:1.08rem;margin:0 0 8px" }, d.explanation.text),
+      h("p", { class: "secondary", style: "font-size:.82rem;margin:0" }, d.explanation.used_llm
+        ? `Written by ${d.explanation.model || "an LLM"} from the fact sheet; every number was checked against it.`
+        : "Deterministic template from the fact sheet.")) : null,
     h("div", { class: "card" }, h("h2", {}, "Ceiling vs estimated cost"), chartBox),
     h("div", { class: "grid" }, margin, dependency, forecast), scen));
   try {

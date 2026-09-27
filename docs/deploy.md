@@ -60,6 +60,13 @@ cf create-user-provided-service ff-hana -p "host, port, user, password, schema, 
 
 To add the SAP API Business Hub key for the read-only master-data check, include `sap_api_hub_key` in the `-p` list.
 
+**Plain-language explanations (S11), optional.** They are template-only by default (`LLM_PROVIDER: none` in the manifest). To let Claude write them:
+1. Add `anthropic_api_key` to the `-p` list above.
+2. Run `cf set-env flowforge-api LLM_PROVIDER anthropic`. Optionally also set `LLM_MODEL`; the default is `claude-opus-5`.
+3. Run `cf restage flowforge-api`.
+
+Only a fact sheet goes to the model: no material codes, plant, wards or stock quantities. Any reply with a number that isn't in the fact sheet, or with a claim about a manufacturer's intent, is replaced by the template. So is any reply that takes longer than 8 s.
+
 If you mistype a value, run `cf update-user-provided-service ff-hana -p "host, port, user, password, schema, app_api_key"`, then `cf restage flowforge-api`.
 
 ### 2.3 Push

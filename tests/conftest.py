@@ -40,3 +40,9 @@ def fixture_db(tmp_path):
 @pytest.fixture(scope="session")
 def rules() -> Rules:
     return load_rules()
+
+
+@pytest.fixture(autouse=True)
+def _no_real_llm(monkeypatch):
+    """Tests never call a real LLM, whatever the developer's .env says (S11)."""
+    monkeypatch.setenv("LLM_PROVIDER", "none")

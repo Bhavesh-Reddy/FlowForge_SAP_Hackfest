@@ -25,7 +25,7 @@ Updated: 2026-09-26 by Bhavesh
 | S08 | A6 Audit/Action + orchestrator | B3 | PR open |
 | S09 | FastAPI + BTP deploy | B3 | PR open |
 | S10 | Build Apps guide + fallback UI | B3 | PR open |
-| S11 | LLM explanation | B3 | todo |
+| S11 | LLM explanation | B3 | PR open |
 | S12 | Para-19 backtest | B2 + P2 | PR open |
 | S13 | Integration + demo hardening | Bhavesh | todo |
 

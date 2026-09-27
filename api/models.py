@@ -10,6 +10,7 @@ from agents.contracts import (
     ApprovalChecklist, ApprovalDecision, AuditEvent, CheckResult, DependencyProfile, DraftPR, Forecast,
     Recommendation, RiskSignal, Scenario,
 )
+from agents.explain import Explanation
 
 MAX_FORMS_PER_RUN = 50  # keep runs light on the shared HANA instance
 
@@ -93,6 +94,7 @@ class MoleculeDetail(_Model):
     scenarios: list[Scenario] = Field(default_factory=list)
     recommendations: list[RecommendationView] = Field(default_factory=list)
     graph: GraphSnapshot
+    explanation: Explanation | None = Field(default=None, description="plain-language why; numbers checked")
     data_tags: dict[str, str] = Field(default_factory=dict)
     disclaimer: str
 
@@ -134,6 +136,7 @@ class RunResponse(_Model):
     forecasts: list[Forecast]
     recommendations: list[Recommendation]
     awaiting_approval: list[str]
+    explanations: dict[str, Explanation] = Field(default_factory=dict)
 
 
 class ShockRequest(_Model):
