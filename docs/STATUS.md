@@ -17,7 +17,7 @@ Updated: 2026-09-26 by Bhavesh
 | S00 | Bootstrap | B2 | merged |
 | S01 | HANA schema + Day-1 checks | B1 | merged |
 | S02 | NPPA + NLEM ingest | B1 | merged |
-| S03 | Cost/origin/NSQ/producers + synth hospital | B1 | PR open |
+| S03 | Cost/origin/NSQ/producers + synth hospital | B1 | merged |
 | S04 | A1 Margin Sentinel | B2 | merged |
 | S05 | A2 Dependency + graph | B2 | merged |
 | S06 | A3 Forecaster | B2 | merged |

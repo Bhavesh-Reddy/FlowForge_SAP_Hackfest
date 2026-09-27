@@ -1,2 +1,2 @@
 WERKS,NAME1,ORT01,REGIO,LOC_TYPE,SOURCE,SOURCE_URL,FETCHED_AT,IS_PROXY
-H001,Demo Hospital Pharmacy (SYNTH),Coimbatore,TN,"Hospital (storage locations: CENT=Central Pharmacy, ABLK=A Block, BBLK=B Block, CBLK=C Block, ONCO=Oncology)",synth_hospital seed 20260927,,2026-09-25T00:00:00Z,SYNTH
+H001,Demo Hospital Pharmacy (SYNTH),Coimbatore,TN,Hospital (5 SLocs),synth_hospital seed 20260927,,2026-09-25T00:00:00Z,SYNTH

@@ -353,6 +353,8 @@ def _convert(value: Any, typ: str, table: str, col: str) -> Any:
     if value is None or value == "":
         return None
     v = str(value)
+    if (n := re.fullmatch(r"N?VARCHAR\((\d+)\)", typ)) and len(v) > int(n.group(1)):
+        raise ValueError(f"{table}.{col}: {len(v)} characters > {typ}: {v[:40]!r}")  # HANA enforces this; SQLite does not
     try:
         if typ in ("INTEGER", "BIGINT", "SMALLINT", "TINYINT"):
             return int(v)
