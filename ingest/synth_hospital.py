@@ -350,7 +350,7 @@ def generate(targets: list[dict[str, str]], producers: dict[str, list[str]], cei
                      "DRUG_LICENCE_NO": f"TN-CBE-SYN-20B-{i:04d}", "SPERR": "X" if lifnr == BLACKLISTED_VENDOR else "",
                      **PROV})
     t001w = [{"WERKS": PLANT, "NAME1": "Demo Hospital Pharmacy (SYNTH)", "ORT01": "Coimbatore", "REGIO": "TN",
-              "LOC_TYPE": "Hospital (storage locations: " + ", ".join(f"{k}={v[0]}" for k, v in LOCATIONS.items()) + ")",
+              "LOC_TYPE": "Hospital (5 SLocs)",  # CENT, ABLK, BBLK, CBLK, ONCO: see LOCATIONS
               **PROV}]
     cold = _coldchain()
     cfg = [{"NAME": "AS_OF_DATE", "DATE_VALUE": AS_OF.isoformat(), "TEXT_VALUE": "synthetic hospital data end date"}]
