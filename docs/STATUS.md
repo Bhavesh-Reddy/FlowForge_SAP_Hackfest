@@ -22,7 +22,7 @@ Updated: 2026-09-26 by Bhavesh
 | S05 | A2 Dependency + graph | B2 | merged |
 | S06 | A3 Forecaster | B2 | merged |
 | S07 | A4 Resilience + A5 Validator | B2 | merged |
-| S08 | A6 Audit/Action + orchestrator | B3 | todo |
+| S08 | A6 Audit/Action + orchestrator | B3 | PR open |
 | S09 | FastAPI + BTP deploy | B3 | todo |
 | S10 | Build Apps guide + fallback UI | B3 | todo |
 | S11 | LLM explanation | B3 | todo |

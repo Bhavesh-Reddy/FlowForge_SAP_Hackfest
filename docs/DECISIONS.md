@@ -31,3 +31,8 @@
 - 2026-09-27 · Agent tests load fixtures through ingest.load_hana (ref_views.sql removed); fixture ceilings get EFFECTIVE_FROM 2025-04-01 · the fixture CSV has no effective date
 - 2026-09-27 · Weights frozen at rules/weights.yaml v1.0.0 with no tuning; the backtest is published as a pipeline check, not evidence · SYNTH costs anchored on post-order ceilings + 2 positives would make any tuning fit noise
 - 2026-09-27 · Backtest back-casts pre-2026 ceilings by annual WPI change (para 16, PROXY) and excludes unverified Para-19 targets from negatives · longer replay window without mislabelling likely positives
+- 2026-09-27 · Audit chain is per run (SEQ 0..n, PREV_HASH = previous ROW_HASH); ROW_HASH = sha256 over the stored column values so it re-verifies from the table alone; gate decisions and A6 actions extend the same run chain · tamper/delete of any row is detected at its SEQ
+- 2026-09-27 · Rule-file version in the audit = "<yaml version>+sha256:<file hash>" · a silent YAML edit without a version bump still shows up
+- 2026-09-27 · Recommendation id = A4 scenario id (<run_id>:<form_id>:<nn>); A6 stores the S/4 PR JSON in FF_AG_ACTION (added to db/schema.sql) · FF_MM_EBAN has no payload column
+- 2026-09-27 · Orchestrator --dry-run writes nothing: agents skip their tables and the audit chain is built and verified in memory · safe on the shared HANA
+- 2026-09-27 · Second approver re-evaluated on the edited PR value (qty × rate > BUDGET threshold), not only A5's flag · an edit can't dodge level 2
