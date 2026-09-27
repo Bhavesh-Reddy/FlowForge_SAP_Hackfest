@@ -119,6 +119,15 @@ def test_shock_what_if_writes_nothing(client, db_path):
     assert _one(db_path, "SELECT COUNT(*) AS N FROM FF_AG_SIGNAL").iloc[0]["N"] == before
 
 
+def test_explanations_on_run_and_molecule(client, ran):
+    ex = ran["explanations"]["F001"]
+    assert ex["used_llm"] is False and ex["fallback_reason"] == "LLM_PROVIDER=none"
+    assert ex["text"].startswith("Amoxicillin 500 mg: exit-risk flag")
+    d = client.get("/molecule/F001", headers=H).json()
+    assert d["explanation"]["text"] == ex["text"]
+    assert "MAT-" not in d["explanation"]["text"] and "H001" not in d["explanation"]["text"]
+
+
 def test_shock_rows_carry_names(client):
     row = client.post("/scenario/shock", json={"multiplier": 1.3, "form_ids": ["F001"]}, headers=H).json()["rows"][0]
     assert row["generic"] == "Amoxicillin" and row["strength"]

@@ -27,6 +27,7 @@ from agents import a2_dependency as a2
 from agents import a6_audit as a6
 from agents import orchestrator as orch
 from agents import report
+from agents.explain import Explanation, explain
 from agents.common import AgentCtx, placeholders
 from agents.contracts import (
     ApprovalAction, AuditEvent, CheckResult, DataQuality, DataSourceRef, DependencyProfile, DraftPR, Forecast,
@@ -283,7 +284,7 @@ def watchlist(db: Db = Depends(get_conn), limit: int = Query(100, ge=1, le=1000)
 
 
 @secured.get("/molecule/{form_id}", response_model=MoleculeDetail)
-def molecule(form_id: str, db: Db = Depends(get_conn)) -> MoleculeDetail:
+def molecule(form_id: str, request: Request, db: Db = Depends(get_conn)) -> MoleculeDetail:
     form = _one(db, "SELECT FORM_ID, GENERIC, DOSAGE_FORM, STRENGTH, NLEM_LEVEL, THERAPEUTIC_CLASS, CEILING_PRICE, "
                     "GST_RATE, CEILING_SO_NUMBER, CEILING_PARA, PRODUCER_COUNT_MIN, MIN_DAYS_OF_COVER, IS_PROXY "
                     "FROM FF_V_WATCHLIST WHERE FORM_ID = ?", (form_id,))
@@ -317,6 +318,8 @@ def molecule(form_id: str, db: Db = Depends(get_conn)) -> MoleculeDetail:
         for r in _records(db, "SELECT * FROM FF_AG_RECOMMENDATION WHERE RUN_ID = ? AND FORM_ID = ? "
                               "ORDER BY SCENARIO_ID", (run_id, form_id))]
     detail.data_tags = tags  # pydantic copied the dict at construction; publish the merged tags
+    if detail.forecast is not None:
+        detail.explanation = _explanation(request, detail, form)
     return detail
 
 
@@ -350,13 +353,29 @@ def margin_series(form_id: str, request: Request, db: Db = Depends(get_conn),
                         data_tags=tags)
 
 
+def _explanation(request: Request, d: MoleculeDetail, form: dict[str, Any]) -> Explanation:
+    """Explain the latest run's forecast once per (run, formulation, provider, model); cached in-process."""
+    s: Settings = request.app.state.settings
+    key = (d.run_id, d.form_id, s.llm_provider, s.llm_model)
+    cache: dict = request.app.state.explain_cache
+    if key not in cache:
+        recs = [v.recommendation for v in d.recommendations]
+        name = " ".join(x for x in (form.get("GENERIC"), form.get("STRENGTH")) if isinstance(x, str) and x)
+        if len(cache) > 500:
+            cache.clear()
+        cache[key] = explain(d.forecast, d.dependency, orch.best_recommendation(recs, d.scenarios, d.form_id),
+                             name=name or None, settings=s)
+    return cache[key]
+
+
 @secured.post("/run", response_model=RunResponse)
 def run(req: RunRequest, request: Request, db: Db = Depends(get_conn)) -> RunResponse:
     ids = _resolve(db, req.form_ids, MAX_FORMS_PER_RUN)
-    r = orch.run(ids, req.shock, db=db, rules=rules_of(request), dry_run=req.dry_run)
+    r = orch.run(ids, req.shock, db=db, rules=rules_of(request), dry_run=req.dry_run,
+                 settings=request.app.state.settings)
     return RunResponse(run_id=r.run_id, status=r.status, dry_run=r.dry_run, chain_ok=r.chain.ok, signals=r.signals,
                        forecasts=r.forecasts, recommendations=r.recommendations,
-                       awaiting_approval=[x.scenario_id for x in r.gate])
+                       awaiting_approval=[x.scenario_id for x in r.gate], explanations=r.explanations)
 
 
 @secured.post("/scenario/shock", response_model=ShockResponse)
@@ -506,6 +525,7 @@ def create_app(settings: Settings | None = None, db_factory: Callable[[], Db] | 
     app.state.settings = settings
     app.state.db_factory = db_factory or _default_factory(settings)
     app.state.rules = rules or load_rules()
+    app.state.explain_cache = {}
     extra = [o.strip() for o in os.environ.get("CORS_ORIGINS", "").split(",") if o.strip()]
     app.add_middleware(CORSMiddleware, allow_origins=extra, allow_origin_regex=BUILD_APPS_ORIGIN_REGEX,
                        allow_methods=["GET", "POST", "OPTIONS"], allow_headers=["X-API-Key", "Content-Type"],

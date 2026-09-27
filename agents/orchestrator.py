@@ -16,6 +16,7 @@ import json
 import logging
 import sys
 import uuid
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 from datetime import date, datetime, timezone
 from typing import Any, Sequence
@@ -33,7 +34,8 @@ from agents.contracts import (
     ApprovalAction, ApprovalChecklist, ApprovalDecision, DependencyProfile, Forecast, Recommendation, RiskSignal,
     RunContext, RunTrigger, Scenario, ShockSpec,
 )
-from agents.ctx import SQLITE_PATH, Db, get_db, load_settings
+from agents.ctx import SQLITE_PATH, Db, Settings, get_db, load_settings
+from agents.explain import Explanation, explain
 from agents.rules import Rules, load_rules
 
 log = logging.getLogger(__name__)
@@ -109,28 +111,57 @@ class RunResult:
     events: list[Any]
     chain: a6.ChainCheck
     dry_run: bool = False
+    explanations: dict[str, Explanation] = field(default_factory=dict)
 
     @property
     def gate(self) -> list[Recommendation]:
         return [r for r in self.recommendations if r.reaches_gate]
 
 
+def best_recommendation(recs: Sequence[Recommendation], scenarios: Sequence[Scenario],
+                        form_id: str) -> Recommendation | None:
+    """The best-ranked recommendation of a formulation that reaches the gate (else its best-ranked one)."""
+    rank = {s.scenario_id: s.rank if s.rank is not None else 999 for s in scenarios if s.formulation_id == form_id}
+    mine = sorted((r for r in recs if r.scenario_id in rank), key=lambda r: (not r.reaches_gate, rank[r.scenario_id]))
+    return mine[0] if mine else None
+
+
+def explain_all(db: Db, forecasts: Sequence[Forecast], deps: Sequence[DependencyProfile],
+                recs: Sequence[Recommendation], scenarios: Sequence[Scenario],
+                settings: Settings | None = None) -> dict[str, Explanation]:
+    """One plain-language explanation per forecast, in parallel so LLM timeouts don't add up."""
+    if not forecasts:
+        return {}
+    ids = [f.formulation_id for f in forecasts]
+    names = {r["FORM_ID"]: " ".join(x for x in (r["GENERIC"], r["STRENGTH"]) if isinstance(x, str) and x)
+             for r in db.query(f"SELECT FORM_ID, GENERIC, STRENGTH FROM FF_REF_FORMULATION WHERE FORM_ID IN "
+                               f"({placeholders(ids)})", tuple(ids)).to_dict(orient="records")}
+    dep = {d.formulation_id: d for d in deps}
+    s = settings or load_settings()
+    with ThreadPoolExecutor(max_workers=4, thread_name_prefix="explain-run") as pool:
+        futs = {f.formulation_id: pool.submit(explain, f, dep.get(f.formulation_id),
+                                              best_recommendation(recs, scenarios, f.formulation_id),
+                                              name=names.get(f.formulation_id), settings=s) for f in forecasts}
+        return {k: v.result() for k, v in futs.items()}
+
+
 def run(form_ids: Sequence[str], shock: float = 1.0, *, db: Db | None = None, rules: Rules | None = None,
-        dry_run: bool = False, as_of: date | None = None, run_id: str | None = None) -> RunResult:
-    """A1 → A5 with an audit hop after each agent; stops at the human gate."""
+        dry_run: bool = False, as_of: date | None = None, run_id: str | None = None,
+        settings: Settings | None = None) -> RunResult:
+    """A1 → A5 with an audit hop after each agent, plus plain-language explanations; stops at the human gate."""
     if shock <= 0:
         raise ValueError("shock must be > 0 (1.3 = API cost +30%)")
     own_db = db is None
     db = db or get_db()
     try:
-        return _run(db, rules or load_rules(), list(form_ids), shock, dry_run, as_of, run_id)
+        return _run(db, rules or load_rules(), list(form_ids), shock, dry_run, as_of, run_id, settings)
     finally:
         if own_db:
             db.close()
 
 
 def _run(db: Db, rules: Rules, form_ids: list[str], shock: float, dry_run: bool, as_of: date | None,
-         run_id: str | None) -> RunResult:
+         run_id: str | None, settings: Settings | None = None) -> RunResult:
     ids = resolve_form_ids(db, form_ids) if form_ids else []
     versions = a6.rule_file_versions(rules)
     rc = RunContext(
@@ -171,7 +202,8 @@ def _run(db: Db, rules: Rules, form_ids: list[str], shock: float, dry_run: bool,
     if not dry_run:
         _set_run_status(db, rc.run_id, status)
     chain = a6.verify_chain(rc.run_id, sink)
-    return RunResult(rc.run_id, status, sigs, deps, fcs, scen, recs, events, chain, dry_run)
+    explanations = explain_all(db, fcs, deps, recs, scen, settings)
+    return RunResult(rc.run_id, status, sigs, deps, fcs, scen, recs, events, chain, dry_run, explanations)
 
 
 # ---------------------------------------------------------------- human gate
@@ -299,6 +331,9 @@ def format_result(r: RunResult) -> str:
         flags = ",".join(f"{c.check_id}={c.status.value}" for c in rec.checks if c.status.value != "PASS") or "all PASS"
         lines.append(f"  {rec.scenario_id:<30}{rec.overall.value:<14}{s.option_type.value:<16}qty={s.qty:g} "
                      f"INR {s.cost}{' · 2nd approver' if rec.needs_second_approver else ''}  [{flags}]")
+    for form_id, ex in r.explanations.items():
+        how = "LLM, numbers checked" if ex.used_llm else f"template: {ex.fallback_reason}"
+        lines += ["", f"why {form_id} ({how}):", f"  {ex.text}"]
     return "\n".join(lines)
 
 

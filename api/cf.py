@@ -23,6 +23,7 @@ KEYS: dict[str, tuple[str, ...]] = {
     "HANA_SCHEMA": ("schema", "hana_schema", "HANA_SCHEMA"),
     "APP_API_KEY": ("app_api_key", "APP_API_KEY"),
     "SAP_API_HUB_KEY": ("sap_api_hub_key", "SAP_API_HUB_KEY"),
+    "ANTHROPIC_API_KEY": ("anthropic_api_key", "ANTHROPIC_API_KEY"),
 }
 
 

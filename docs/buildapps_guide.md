@@ -159,14 +159,15 @@ Logic on *Page mounted*:
 **Sections:**
 
 1. **Header:** `pageVars.m.formulation.GENERIC + " " + pageVars.m.formulation.STRENGTH`. Subtitle: `"Ceiling ₹" + pageVars.m.formulation.CEILING_PRICE + " excl. GST · " + pageVars.m.formulation.CEILING_SO_NUMBER`. Under it, the disclaimer text `pageVars.m.disclaimer`.
-2. **Ceiling vs estimated cost (chart).** Install **Line chart** from the component marketplace.
+2. **Why this flag (S11).** A text component bound to `pageVars.m.explanation.text`, with a caption bound to `IF(pageVars.m.explanation.used_llm, "Written by an LLM from the fact sheet; every number was checked against it.", "Deterministic template from the fact sheet.")`. The text never names a manufacturer's intent. If an LLM reply fails the number check, the API has already replaced it with the template.
+3. **Ceiling vs estimated cost (chart).** Install **Line chart** from the component marketplace.
    - Data: `pageVars.series.points`, x-axis `month`.
    - Series 1 `realisation_inr`, colour `#2a78d6`, label "Est. manufacturer realisation under the NPPA ceiling".
    - Series 2 `unit_cost_inr`, colour `#eb6834`, label "Est. unit cost".
    - Series 3 `shocked_unit_cost_inr`, colour `#eb6834`, dashed, label "Est. unit cost if API import cost ×1.3".
    - Rules: one y-axis only (₹), legend on, and leave months with null values blank; don't draw them as zero.
    - Caption: `pageVars.series.note`.
-3. **Margin (A1):**
+4. **Margin (A1):**
 
    | Label | Binding |
    |---|---|
@@ -174,7 +175,7 @@ Logic on *Page mounted*:
    | Headroom | `FORMAT_LOCALIZED_DECIMAL(pageVars.m.signal.headroom_pct * 100, "en", 1) + "%"` |
    | Months to breach | `IF(IS_EMPTY(pageVars.m.signal.months_to_breach), "–", ROUND(pageVars.m.signal.months_to_breach, 1))` |
 
-4. **Dependency summary (A2):**
+5. **Dependency summary (A2):**
 
    | Label | Binding |
    |---|---|
@@ -183,7 +184,7 @@ Logic on *Page mounted*:
    | Affected wards | `JOIN(pageVars.m.dependency.affected_wards, ", ")` |
 
    Optional: a list repeated over `pageVars.m.graph.edges`, showing `rel`, `src`, `dst` and `is_proxy`.
-5. **Forecast (A3):**
+6. **Forecast (A3):**
 
    | Label | Binding |
    |---|---|
@@ -193,7 +194,7 @@ Logic on *Page mounted*:
    | Hospital cover | `ROUND(pageVars.m.forecast.days_of_cover, 0) + " days"` |
 
    Fixed caption: "When an exit becomes more likely, not a prediction that it will happen."
-6. **Scenarios (A4) + verdict (A5):** a list repeated over `pageVars.m.scenarios`:
+7. **Scenarios (A4) + verdict (A5):** a list repeated over `pageVars.m.scenarios`:
 
    | Field | Binding |
    |---|---|
@@ -208,7 +209,7 @@ Logic on *Page mounted*:
    A5 verdict: `SELECT(pageVars.m.recommendations, item.recommendation.scenario_id == repeated.current.scenario_id)[0].recommendation.overall`.
 
    **Review** button, visible when the verdict is not `BLOCKED`: set `selectedRecId` = `repeated.current.scenario_id` → **Open page** `Approval`.
-7. **Audit trail** button: set `lastRunId` = `pageVars.m.run_id` → **Open page** `Audit`.
+8. **Audit trail** button: set `lastRunId` = `pageVars.m.run_id` → **Open page** `Audit`.
 
 ### Page 3: Approval (Chief Pharmacist gate)
 
