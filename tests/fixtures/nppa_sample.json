@@ -1,0 +1,178 @@
+{
+ "_source": "Copied verbatim (pdfplumber cells) from NPPA S.O. 1575(E) dated 25.03.2026, S.O. 3004(E) dated 11.06.2026 and NLEM 2022 (CDSCO). REAL data, used only to test the parsers.",
+ "ceiling_order": {
+  "english_preamble": "MINISTRY OF CHEMICALS AND FERTILIZERS\n(Department of Pharmaceuticals)\n(NATIONAL PHARMACEUTICAL PRICING AUTHORITY)\nORDER\nNew Delhi, the 25th March, 2026\nS.O. 1575(E).—In exercise of the powers, conferred by paragraph 4, 6, 10, 11, 14, 16, 17 and 18 of the\nDrugs (Prices Control) Order, 2013, read with S.O. No. 1394(E) dated 30th May, 2013, S.O. 5249(E) dated 11th\nNovember, 2022 issued by the Government of India in the ",
+  "header_cells": [
+   "Sl.\nNo.",
+   "Medicines",
+   "Dosage form and strength",
+   "Unit",
+   "Ceiling\nprice\n(w.e.f.\n1.4.2026\nwith WPI\n@\n0.64956%)\n(in Rs.)",
+   "Existing S.O., No. & Date",
+   null
+  ],
+  "rows": [
+   [
+    "12",
+    "Acetylsalicylic acid",
+    "Conventional/Effervescent/D\nispersible/ Enteric coated\nTablets 150 mg",
+    "1 Tablet",
+    "0.72",
+    "1489(E)",
+    "27-03-2025"
+   ],
+   [
+    "42",
+    "Amoxicillin",
+    "Capsule 500mg",
+    "1 Capsule",
+    "7.54",
+    "1489(E)",
+    "27-03-2025"
+   ],
+   [
+    "47",
+    "Amoxicillin (A) +\nClavulanic acid (B)",
+    "Powder for Injection 500mg\n(A) + 100mg (B)",
+    "1 Vial",
+    "103.78",
+    "1489(E)",
+    "27-03-2025"
+   ],
+   [
+    "59",
+    "Anti-\ntetanus immunoglobulin",
+    "As licensed (250IU)",
+    "1 Vial",
+    "1274.68",
+    "1489(E)",
+    "27-03-2025"
+   ],
+   [
+    "92",
+    "BCG vaccine",
+    "As licensed",
+    "Each dose (0.10 ML)",
+    "8.20",
+    "1489(E)",
+    "27-03-2025"
+   ]
+  ]
+ },
+ "para19_table": [
+  [
+   "Sl.\nNo.",
+   "Name of the\nScheduled\nFormulation",
+   "Dosage form &\nStrength",
+   "Unit",
+   "Approved\nrevised Ceiling\nPrice\n(Rs.)",
+   "Existing S.O. No. & Date",
+   null
+  ],
+  [
+   "(1)",
+   "(2)",
+   "(3)",
+   "(4)",
+   "(5)",
+   "6(a)",
+   "6(b)"
+  ],
+  [
+   "1.",
+   "Carboplatin",
+   "Injection 10 mg/ml",
+   "Per ML",
+   "90.74",
+   "1575(E)\nSl. No. 141",
+   "25.03.2026"
+  ],
+  [
+   "2.",
+   "Cisplatin",
+   "Injection 1 mg/ml",
+   "Per ML",
+   "10.89",
+   "1575(E)\nSl. No. 182",
+   "25.03.2026"
+  ]
+ ],
+ "nlem_tables": [
+  [
+   [
+    [
+     "Section 4\nAntidotes and Other Substances used in Management of\nPoisonings/Envenomation",
+     null,
+     null,
+     null
+    ],
+    [
+     "4.1-Nonspecific",
+     null,
+     null,
+     null
+    ],
+    [
+     "",
+     "Medicine",
+     "Level of\nHealthcare",
+     "Dosage form(s) and strength(s)"
+    ],
+    [
+     "4.1.1",
+     "Activated Charcoal",
+     "P,S,T",
+     "Powder (as licensed)"
+    ],
+    [
+     "4.2 Specific",
+     null,
+     null,
+     null
+    ],
+    [
+     "",
+     "Medicine",
+     "Level of\nHealthcare",
+     "Dosage form(s) and strength(s)"
+    ],
+    [
+     "4.2.1",
+     "Atropine*",
+     "P,S,T",
+     "Injection 0.6 mg/mL"
+    ],
+    [
+     "4.2.2",
+     "Calcium gluconate**",
+     "P,S,T",
+     "Injection 100 mg/mL"
+    ],
+    [
+     "4.2.3",
+     "D- Penicillamine",
+     "P,S,T",
+     "Capsule 150 mg (p)\nCapsule 250 mg"
+    ],
+    [
+     "4.2.4",
+     "Desferrioxamine",
+     "S,T",
+     "Powder for injection 500 mg"
+    ],
+    [
+     "4.2.5",
+     "Methylthioninium\nchloride\n(Methylene blue)",
+     "S,T",
+     "Injection 10 mg/mL"
+    ],
+    [
+     "*Atropine formulations are also listed in -\nA. Section 1.3.1 - Medicines used in Anaesthesia -Preoperative Medication and Sedation for\nshort term procedures\nB. Section 21.5.1 - Ophthalmological Medicines- Mydriatics\n** Calcium gluconate formulations are also listed in Section 26.3 - Vitamins and minerals",
+     null,
+     null,
+     null
+    ]
+   ]
+  ]
+ ]
+}
