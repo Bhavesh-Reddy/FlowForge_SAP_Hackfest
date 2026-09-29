@@ -1,5 +1,10 @@
 // SAP UI5 Web Components used by ui/fallback/index.html (Horizon theme, English).
 // Rebuild after changes: cd ui/fiori && npm install && npm run build
+// Fully offline: never fetch the "72" font or CLDR locale data from the SAP CDN (the page sets its own font stack).
+import { setDefaultFontLoading } from "@ui5/webcomponents-base/dist/config/Fonts.js";
+import { registerLocaleDataLoader } from "@ui5/webcomponents-base/dist/asset-registries/LocaleData.js";
+import cldrEn from "@ui5/webcomponents-localization/dist/generated/assets/cldr/en.json";
+import cldrEnIn from "@ui5/webcomponents-localization/dist/generated/assets/cldr/en_IN.json";
 import "@ui5/webcomponents/dist/Avatar.js";
 import "@ui5/webcomponents/dist/Bar.js";
 import "@ui5/webcomponents/dist/BusyIndicator.js";
@@ -83,3 +88,15 @@ import "@ui5/webcomponents-icons/dist/stethoscope.js";
 import "@ui5/webcomponents-icons/dist/pharmacy.js";
 import "@ui5/webcomponents-icons/dist/edit.js";
 import "@ui5/webcomponents-icons/dist/navigation-left-arrow.js";
+import "@ui5/webcomponents-icons/dist/show.js";
+import "@ui5/webcomponents-icons/dist/course-book.js";
+import "@ui5/webcomponents-icons/dist/slim-arrow-right.js";
+import "@ui5/webcomponents-icons/dist/slim-arrow-left.js";
+import "@ui5/webcomponents-icons/dist/locked.js";
+import "@ui5/webcomponents-icons/dist/quality-issue.js";
+import "@ui5/webcomponents-icons/dist/message-success.js";
+import "@ui5/webcomponents-icons/dist/pie-chart.js";
+
+setDefaultFontLoading(false);
+registerLocaleDataLoader("en", async () => cldrEn);
+registerLocaleDataLoader("en_IN", async () => cldrEnIn);

@@ -1,0 +1,751 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FlowForge · Medicine shortage early warning</title>
+<link rel="icon" href="data:,">
+<!--
+  FlowForge fallback UI (S10, redesigned in S13): SAP Fiori look with SAP UI5 Web Components (Horizon theme),
+  bundled locally in assets/ui5.js so it also works offline. Same REST API as SAP Build Apps; every data call
+  sends the X-API-Key header. All text is set with textContent (no innerHTML from data).
+-->
+<style>
+  :root { --ff-gap: 1rem; }
+  html, body { margin: 0; background: var(--sapBackgroundColor, #f5f6f7); color: var(--sapTextColor, #1d2d3e);
+    font-family: var(--sapFontFamily, "72", "72full", Arial, Helvetica, sans-serif); font-size: 0.875rem; }
+  body:not(.ready) main, body:not(.ready) nav { visibility: hidden; }
+  #boot { padding: 2rem; font-size: 1rem; }
+  main { max-width: 1320px; margin: 0 auto; padding: 1rem 1.25rem 3rem; }
+  .muted { color: var(--sapContent_LabelColor, #556b82); }
+  .small { font-size: 0.8125rem; }
+  .row { display: flex; gap: var(--ff-gap); flex-wrap: wrap; align-items: center; }
+  .spread { justify-content: space-between; }
+  .grid { display: grid; gap: var(--ff-gap); }
+  .g2 { grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); }
+  .g3 { grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); align-items: stretch; }
+  .g4 { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+  .stack > * + * { margin-top: var(--ff-gap); }
+  .pad { padding: 0.75rem 1rem 1rem; }
+  ui5-card { width: 100%; }
+  h1.page { font-size: 1.5rem; font-weight: 700; margin: 0.25rem 0 0.25rem; }
+  .lead { font-size: 0.95rem; margin: 0 0 0.75rem; max-width: 72rem; }
+  /* guided flow */
+  nav.steps { background: var(--sapObjectHeader_Background, #fff); border-bottom: 1px solid var(--sapGroup_TitleBorderColor, #d9d9d9); }
+  nav.steps ol { list-style: none; display: flex; margin: 0 auto; padding: 0 1.25rem; max-width: 1320px; gap: 0.25rem; overflow-x: auto; }
+  nav.steps li { flex: 1 1 0; min-width: 150px; }
+  nav.steps button { all: unset; box-sizing: border-box; cursor: pointer; display: flex; gap: 0.6rem; align-items: center;
+    width: 100%; padding: 0.7rem 0.5rem; border-bottom: 3px solid transparent; }
+  nav.steps button:focus-visible { outline: 2px solid var(--sapContent_FocusColor, #0070f2); outline-offset: -2px; }
+  nav.steps .num { width: 1.75rem; height: 1.75rem; border-radius: 50%; display: grid; place-items: center; font-weight: 700;
+    border: 1px solid var(--sapButton_BorderColor, #bcc3ca); color: var(--sapContent_LabelColor, #556b82); flex: none; }
+  nav.steps .t1 { font-weight: 700; display: block; }
+  nav.steps .t2 { font-size: 0.75rem; color: var(--sapContent_LabelColor, #556b82); display: block; }
+  nav.steps button[aria-current="step"] { border-bottom-color: var(--sapBrandColor, #0070f2); }
+  nav.steps button[aria-current="step"] .num { background: var(--sapBrandColor, #0070f2); color: #fff; border-color: transparent; }
+  /* KPI tiles */
+  .kpi { padding: 0.9rem 1rem; }
+  .kpi .v { font-size: 2rem; font-weight: 700; line-height: 1.1; }
+  .kpi .l { font-weight: 700; margin-top: 0.15rem; }
+  .kpi .d { font-size: 0.75rem; color: var(--sapContent_LabelColor, #556b82); margin-top: 0.2rem; }
+  .v.neg { color: var(--sapNegativeColor, #aa0808); } .v.crit { color: var(--sapCriticalColor, #e76500); }
+  .v.pos { color: var(--sapPositiveColor, #256f3a); }
+  /* facts */
+  dl.facts { display: grid; grid-template-columns: minmax(150px, 40%) 1fr; gap: 0.45rem 1rem; margin: 0; max-width: 760px; }
+  .checks { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 0.25rem 1rem; align-items: start; }
+  dl.facts dt { color: var(--sapContent_LabelColor, #556b82); }
+  dl.facts dd { margin: 0; font-weight: 600; }
+  .answer { font-size: 1rem; font-weight: 700; margin: 0.1rem 0 0.6rem; }
+  .why { background: var(--sapInformationBackgroundColor, #e1f4ff); border-radius: 0.5rem; padding: 0.75rem 1rem; }
+  .clickable { cursor: pointer; }
+  .loc { padding: 0.9rem 1rem; }
+  .loc .big { font-size: 1.4rem; font-weight: 700; }
+  .legend { display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; font-size: 0.8125rem; }
+  .legend span.sw { display: inline-block; width: 1.4rem; height: 0; border-top: 3px solid; vertical-align: middle; margin-right: 0.3rem; }
+  svg text { font-family: inherit; fill: var(--sapContent_LabelColor, #556b82); font-size: 11px; }
+  pre.json { background: var(--sapShell_Background, #f2f2f2); padding: 0.75rem; border-radius: 0.5rem; overflow: auto; max-height: 18rem;
+    font-size: 0.75rem; margin: 0; }
+  .split { display: grid; grid-template-columns: minmax(300px, 420px) 1fr; gap: var(--ff-gap); align-items: start; }
+  @media (max-width: 900px) { .split { grid-template-columns: 1fr; } .g2 { grid-template-columns: 1fr; } }
+  .qlist { max-height: 70vh; overflow: auto; }
+  .hint { font-size: 0.8125rem; color: var(--sapContent_LabelColor, #556b82); }
+  .sr { position: absolute; left: -9999px; }
+  ui5-table { --ff: 0; }
+</style>
+</head>
+<body>
+<div id="boot">Loading FlowForge…</div>
+
+<ui5-shellbar id="shell" primary-title="FlowForge" secondary-title="Medicine shortage early warning · Demo Hospital">
+  <ui5-shellbar-item id="connItem" icon="disconnected" text="Connection"></ui5-shellbar-item>
+  <ui5-shellbar-item id="helpItem" icon="question-mark" text="How to read FlowForge"></ui5-shellbar-item>
+</ui5-shellbar>
+
+<nav class="steps" aria-label="Guided flow"><ol id="steps"></ol></nav>
+<main id="app" tabindex="-1"></main>
+
+<!-- connection dialog -->
+<ui5-dialog id="connDlg" header-text="Connect to the FlowForge API">
+  <div class="stack pad" style="min-width: min(520px, 80vw)">
+    <p class="small muted" style="margin:0">The API runs on SAP BTP (or on this laptop). The key is the <b>app API key</b> the team set up; it is stored only in this browser.</p>
+    <div><ui5-label for="apiBase" show-colon>API URL</ui5-label><ui5-input id="apiBase" style="width:100%"></ui5-input></div>
+    <div><ui5-label for="apiKey" show-colon>API key</ui5-label><ui5-input id="apiKey" type="Password" style="width:100%"></ui5-input></div>
+    <div id="connMsg"></div>
+  </div>
+  <div slot="footer" class="row" style="justify-content:flex-end; width:100%; padding: 0.5rem">
+    <ui5-button id="connGo" design="Emphasized">Connect</ui5-button>
+    <ui5-button id="connClose" design="Transparent">Close</ui5-button>
+  </div>
+</ui5-dialog>
+
+<!-- help dialog -->
+<ui5-dialog id="helpDlg" header-text="How to read FlowForge">
+  <div class="pad stack" style="max-width: 760px" id="helpBody"></div>
+  <div slot="footer" class="row" style="justify-content:flex-end; width:100%; padding: 0.5rem">
+    <ui5-button id="helpClose" design="Emphasized">Got it</ui5-button>
+  </div>
+</ui5-dialog>
+
+<!-- small "what does this mean?" popover -->
+<ui5-popover id="tip" placement="Bottom"><div class="pad small" id="tipBody" style="max-width: 340px"></div></ui5-popover>
+<!-- generic input dialog (edit / reject / snooze) -->
+<ui5-dialog id="askDlg"><div class="pad stack" id="askBody" style="min-width: min(460px, 80vw)"></div>
+  <div slot="footer" class="row" style="justify-content:flex-end; width:100%; padding: 0.5rem">
+    <ui5-button id="askOk" design="Emphasized">OK</ui5-button><ui5-button id="askCancel" design="Transparent">Cancel</ui5-button>
+  </div>
+</ui5-dialog>
+<ui5-toast id="toast" placement="BottomCenter" duration="4000"></ui5-toast>
+
+<script type="module">
+"use strict";
+// Load the bundled SAP UI5 Web Components: from the API (/ui/assets) or next to this file when opened from disk.
+const ASSETS = location.protocol === "file:" ? "assets/" : "/ui/assets/";
+try { await import(ASSETS + "ui5.js"); }
+catch (e) { document.getElementById("boot").textContent = "Could not load the SAP UI5 components (" + e.message + ")."; throw e; }
+document.getElementById("boot").remove();
+document.body.classList.add("ready");
+
+/* ============================================================ plain-language dictionary */
+const BAND = {
+  RED: { text: "Act now", design: "Negative", icon: "error" },
+  AMBER: { text: "Watch closely", design: "Critical", icon: "alert" },
+  GREEN: { text: "Stable", design: "Positive", icon: "sys-enter-2" },
+};
+const CAUSE = {
+  CEILING_BELOW_COST: ["Costs more to make than the price cap allows", "The estimated cost of making one unit is above what the maker earns under the NPPA price cap. Makers lose money on every unit."],
+  HEADROOM_ERODING: ["Cost is climbing towards the price cap", "The margin between the maker's earnings under the cap and the cost of making it is shrinking month by month."],
+  SINGLE_ORIGIN_API: ["Key ingredient mostly from one country", "Most of the active ingredient (API) is imported from a single country, so one disruption there hits every maker."],
+  FEW_PRODUCERS: ["Few makers on record", "We found few (or no) companies making it. This count is a minimum: it comes from public quality records, so the real number can be higher."],
+  QUALITY_NSQ: ["Recent quality failures (CDSCO)", "Batches of this medicine failed government quality tests recently (CDSCO 'Not of Standard Quality' alerts)."],
+  SUPPLIER_OTD_DROP: ["Our supplier's deliveries are slipping", "On-time delivery from the hospital's supplier dropped in recent months."],
+};
+const OPTION = {
+  BUFFER: ["Buy extra stock from the current supplier", "cart"],
+  ALT_SUPPLIER: ["Buy from another maker", "supplier"],
+  THERAPEUTIC_ALT: ["Switch to an alternative medicine (needs clinical sign-off)", "stethoscope"],
+  REBALANCE: ["Move stock between our pharmacy locations", "shipping-status"],
+};
+const OVERALL = {
+  READY: ["Ready for approval", "Positive"], NEEDS_CHANGES: ["Review the warnings", "Critical"], BLOCKED: ["Blocked by the rules", "Negative"],
+};
+const CHECK = {
+  PRICE_COMPLIANCE: "Price is within the government cap plus GST (DPCO para 14)",
+  SCHEDULED_STATUS: "Medicine is on the price-control list and its order is on record",
+  SUPPLIER_LICENCE: "Supplier has a valid drug licence and GST number and is not blocked",
+  QUALITY_HISTORY: "No recent quality failures for this supplier / maker",
+  SHELF_LIFE: "Enough shelf life left on delivery",
+  EXPIRY_WASTE: "Little or nothing will expire before it is used",
+  BUDGET: "Fits the department budget (large orders need a second approver)",
+  STORAGE: "Fits storage and cold-chain capacity",
+  ROL_ROQ: "Resulting stock stays within the reorder limits",
+  CLINICAL: "Clinical sign-off for a substitute medicine",
+};
+const CHECKLIST = [
+  ["cp01_material_master", "The material matches: generic name, strength and pack (CP-01)"],
+  ["cp02_rol_roq_stock", "Reorder level, quantity and the resulting stock are acceptable (CP-02)"],
+  ["cp04_supplier_verified", "The supplier is verified: licence and past performance (CP-04)"],
+  ["price_within_ceiling_gst", "The price is at or below the NPPA ceiling plus GST"],
+  ["shelf_life_fefo_ok", "Shelf life and first-expiry-first-out use are acceptable"],
+  ["cause_reviewed_not_claim", "I read the cause: it is a risk flag, not a claim about any manufacturer"],
+];
+const TAG = {
+  REAL: ["REAL", "Positive", "Public data from the government or CDSCO"],
+  PROXY: ["PROXY", "Information", "An estimate derived from public data"],
+  SYNTH: ["SYNTH", "Neutral", "Synthetic demo data (hospital stock, API cost)"],
+};
+const AGENT = {
+  A1: ["Margin check", "Is it still worth making under the price cap?", "money-bills"],
+  A2: ["Supply map", "Who makes it and where does the ingredient come from?", "factory"],
+  A3: ["Shortage forecast", "When could supply fail and how long does our stock last?", "trend-down"],
+  A4: ["Options", "What can the hospital do about it?", "lightbulb"],
+  A5: ["Rule checks", "Does each option follow DPCO and our SOP?", "shield"],
+  GATE: ["Human decision", "The Chief Pharmacist's decision and checklist", "customer"],
+  A6: ["Purchase requisition", "The approved order in SAP S/4HANA format (mock posting)", "document"],
+};
+const LOCATION = { CENT: "Central Pharmacy", ABLK: "A Block", BBLK: "B Block", CBLK: "C Block", ONCO: "Oncology" };
+const NLEM = { P: "primary", S: "secondary", T: "tertiary" };
+const STEPS = [
+  ["watch", "Watch", "Which medicines are at risk"],
+  ["understand", "Understand", "Why this medicine"],
+  ["decide", "Decide", "Pharmacist approves an action"],
+  ["prove", "Prove", "Tamper-evident audit trail"],
+  ["recall", "Recall", "Find a failed batch"],
+];
+
+/* ============================================================ storage, api, dom */
+const store = {
+  get(k, d) { try { const v = localStorage.getItem("ff." + k); return v === null ? d : v; } catch { return d; } },
+  set(k, v) { try { localStorage.setItem("ff." + k, v); } catch { /* private mode */ } },
+};
+const DEFAULT_BASE = location.protocol.startsWith("http") ? location.origin : "http://127.0.0.1:8000";
+const state = { base: store.get("base", DEFAULT_BASE), key: store.get("key", ""), step: "watch", form: store.get("form", ""),
+  rec: "", run: store.get("lastRun", ""), watch: null, pending: null, shock: null };
+
+async function api(path, opts = {}) {
+  const res = await fetch(state.base.replace(/\/$/, "") + path, {
+    method: opts.method || "GET",
+    headers: { "X-API-Key": state.key, ...(opts.body ? { "Content-Type": "application/json" } : {}) },
+    body: opts.body ? JSON.stringify(opts.body) : undefined,
+  });
+  if (!res.ok) {
+    let detail = res.statusText;
+    try { const j = await res.json(); detail = typeof j.detail === "string" ? j.detail : JSON.stringify(j.detail); } catch {}
+    const err = new Error(`${res.status}: ${detail}`); err.status = res.status; throw err;
+  }
+  return opts.raw ? res.text() : res.json();
+}
+
+function h(tag, attrs, ...kids) {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs || {})) {
+    if (v === null || v === undefined || v === false) continue;
+    if (k.startsWith("on")) el.addEventListener(k.slice(2), v);
+    else if (k.startsWith(".")) el[k.slice(1)] = v;
+    else if (k === "class") el.className = v;
+    else el.setAttribute(k, v === true ? "" : v);
+  }
+  for (const k of kids.flat()) if (k !== null && k !== undefined && k !== false)
+    el.append(k instanceof Node ? k : document.createTextNode(String(k)));
+  return el;
+}
+const $app = document.getElementById("app");
+const toast = msg => { const t = document.getElementById("toast"); t.textContent = msg; t.open = true; };
+function busy(msg) { return h("div", { class: "row pad" }, h("ui5-busy-indicator", { active: true, size: "M" }), h("span", { class: "muted" }, msg)); }
+function strip(design, ...text) { return h("ui5-message-strip", { design, "hide-close-button": true }, ...text); }
+function card(title, subtitle, icon, ...body) {
+  const header = h("ui5-card-header", { slot: "header", "title-text": title, "subtitle-text": subtitle || "" },
+    icon ? h("ui5-icon", { slot: "avatar", name: icon }) : null);
+  return h("ui5-card", {}, header, h("div", { class: "pad" }, ...body));
+}
+function tag(text, design, icon) { return h("ui5-tag", { design: design || "Neutral" }, icon ? h("ui5-icon", { slot: "icon", name: icon }) : null, text); }
+function bandTag(band, prefix = "") { const b = BAND[band]; return b ? tag(prefix + b.text, b.design, b.icon) : tag("Not assessed", "Neutral"); }
+function dataTag(t) { const d = TAG[t] || [t || "?", "Neutral", ""]; const el = tag(d[0], d[1]); el.title = d[2]; return el; }
+function info(text) {
+  const b = h("ui5-button", { icon: "hint", design: "Transparent", tooltip: "What does this mean?", "accessible-name": "What does this mean?" });
+  b.addEventListener("click", () => { const p = document.getElementById("tip"); document.getElementById("tipBody").textContent = text; p.opener = b; p.open = true; });
+  return b;
+}
+function facts(pairs) { return h("dl", { class: "facts" }, ...pairs.filter(Boolean).flatMap(([k, v]) => [h("dt", {}, k), h("dd", {}, v)])); }
+
+const fmt = {
+  n: (v, d = 0) => v === null || v === undefined || Number.isNaN(Number(v)) ? "–" : Number(v).toLocaleString("en-IN", { maximumFractionDigits: d, minimumFractionDigits: d }),
+  inr: (v, d = 2) => v === null || v === undefined || v === "" ? "–" : "₹" + Number(v).toLocaleString("en-IN", { maximumFractionDigits: d, minimumFractionDigits: d }),
+  pct: (v, d = 0) => v === null || v === undefined ? "–" : (Number(v) * 100).toLocaleString("en-IN", { maximumFractionDigits: d }) + "%",
+  date: v => { if (!v) return "–"; const d = new Date(String(v).replace(" ", "T")); return isNaN(d) ? String(v) : d.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }); },
+  ts: v => { if (!v) return "–"; const d = new Date(String(v).replace(" ", "T") + (String(v).includes("Z") ? "" : "Z")); return isNaN(d) ? String(v) : d.toLocaleString("en-IN", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }); },
+  med: r => [r.generic || r.GENERIC, r.strength || r.STRENGTH, (r.dosage_form || r.DOSAGE_FORM || "").toLowerCase()].filter(Boolean).join(" "),
+  hash: v => v ? String(v).slice(0, 10) + "…" : "–",
+};
+const nlemText = lv => lv ? "Essential medicine (NLEM 2022) for " + lv.split(",").map(x => NLEM[x.trim()] || x).join(", ") + " care" : "Not on NLEM 2022";
+
+/* ============================================================ shell: steps, connection, help */
+function renderSteps() {
+  const ol = document.getElementById("steps");
+  ol.replaceChildren(...STEPS.map(([id, t1, t2], i) => h("li", {}, h("button", {
+    "aria-current": state.step === id ? "step" : null, onclick: () => go(id) },
+    h("span", { class: "num" }, String(i + 1)), h("span", {}, h("span", { class: "t1" }, t1), h("span", { class: "t2" }, t2))))));
+}
+async function go(step, arg) {
+  state.step = step; renderSteps(); window.scrollTo(0, 0);
+  if (step === "understand" && arg) { state.form = arg; store.set("form", arg); }
+  if (step === "decide" && arg) state.rec = arg;
+  if (step === "prove" && arg) { state.run = arg; store.set("lastRun", arg); }
+  if (!state.key) { $app.replaceChildren(strip("Information", "Connect to the API first (top right).")); openConn(); return; }
+  try { await ({ watch, understand, decide, prove, recall })[step](arg); }
+  catch (e) { $app.replaceChildren(strip("Negative", "Could not load this page: " + e.message)); if (e.status === 401) openConn(); }
+}
+
+const connDlg = document.getElementById("connDlg");
+function openConn() {
+  document.getElementById("apiBase").value = state.base; document.getElementById("apiKey").value = state.key;
+  document.getElementById("connMsg").replaceChildren(); connDlg.open = true;
+}
+async function connect() {
+  state.base = document.getElementById("apiBase").value.trim() || DEFAULT_BASE;
+  state.key = document.getElementById("apiKey").value.trim();
+  const msg = document.getElementById("connMsg");
+  msg.replaceChildren(busy("Checking the connection…"));
+  try {
+    const hl = await api("/health");
+    await api("/watchlist?limit=1");
+    store.set("base", state.base); store.set("key", state.key);
+    setConn(true, hl.db_backend);
+    msg.replaceChildren(strip("Positive", `Connected. Data comes from ${hl.db_backend === "hana" ? "SAP HANA Cloud" : "the local SQLite copy"}.`));
+    setTimeout(() => { connDlg.open = false; go(state.step); }, 600);
+  } catch (e) { setConn(false); msg.replaceChildren(strip("Negative", "Not connected: " + e.message)); }
+}
+function setConn(ok, backend) {
+  const it = document.getElementById("connItem");
+  it.icon = ok ? "connected" : "disconnected";
+  it.text = ok ? `Connected · ${backend === "hana" ? "SAP HANA Cloud" : "SQLite"}` : "Connection";
+  document.getElementById("shell").setAttribute("secondary-title",
+    "Medicine shortage early warning · Demo Hospital" + (ok ? (backend === "hana" ? " · SAP BTP + SAP HANA Cloud" : " · offline copy") : ""));
+}
+document.getElementById("connItem").addEventListener("click", openConn);
+document.getElementById("connGo").addEventListener("click", connect);
+document.getElementById("connClose").addEventListener("click", () => { connDlg.open = false; });
+document.getElementById("helpItem").addEventListener("click", () => { document.getElementById("helpDlg").open = true; });
+document.getElementById("helpClose").addEventListener("click", () => { document.getElementById("helpDlg").open = false; });
+document.getElementById("helpBody").append(
+  h("p", { style: "margin-top:0" }, "The government (NPPA) caps the price of essential medicines. If the imported ingredient gets expensive, making the medicine stops paying and makers quietly stop. The hospital only notices when the shelf is empty. FlowForge spots that squeeze early and helps the pharmacist act before it happens."),
+  h("ui5-title", { level: "H5" }, "The five steps"),
+  h("ol", {}, ...STEPS.map(([, a, b]) => h("li", {}, h("b", {}, a + ": "), b))),
+  h("ui5-title", { level: "H5" }, "Risk colours"),
+  h("div", { class: "row" }, bandTag("RED"), "cost has met the cap, or supply could fail soon", bandTag("AMBER"), "worth watching", bandTag("GREEN"), "no concern now"),
+  h("ui5-title", { level: "H5" }, "Where each number comes from"),
+  h("div", { class: "stack" }, ...Object.keys(TAG).map(k => h("div", { class: "row" }, dataTag(k), TAG[k][2]))),
+  strip("Information", "Every result is a probabilistic risk flag for review, computed by transparent rules. It is never a statement about what any manufacturer intends to do."),
+);
+
+/* ============================================================ 1. WATCH */
+async function watch() {
+  $app.replaceChildren(busy("Loading the watchlist from the database…"));
+  const rows = await api("/watchlist?limit=200&assessed_only=true");
+  state.watch = rows;
+  if (rows[0] && rows[0].run_id) { state.run = state.run || rows[0].run_id; }
+  const n = b => rows.filter(r => r.exit_risk_band === b).length;
+  const lowCover = rows.filter(r => r.min_days_of_cover !== null && r.min_days_of_cover < 30).length;
+  let filter = "ALL", query = "";
+
+  const table = h("ui5-table", { "overflow-mode": "Popin", "accessible-name": "Watchlist" });
+  const header = h("ui5-table-header-row", { slot: "headerRow", sticky: true },
+    ...["Medicine", "Risk", "Main reason", "Our stock lasts", "Price cap (excl. GST)", "Makers on record", "Data"].map((t, i) =>
+      h("ui5-table-header-cell", { "min-width": i === 0 ? "220px" : i === 2 ? "220px" : "110px" }, t)));
+  function fill() {
+    const q = query.toLowerCase();
+    const shown = rows.filter(r => (filter === "ALL" || r.exit_risk_band === filter) && (!q || fmt.med(r).toLowerCase().includes(q)));
+    table.replaceChildren(header, ...shown.map(r => {
+      const c = CAUSE[r.cause_code];
+      const tr = h("ui5-table-row", { interactive: true, "row-key": r.form_id },
+        h("ui5-table-cell", {}, h("div", {}, h("b", {}, fmt.med(r)), h("div", { class: "small muted" }, r.therapeutic_class || ""))),
+        h("ui5-table-cell", {}, bandTag(r.exit_risk_band)),
+        h("ui5-table-cell", {}, c ? c[0] : "–"),
+        h("ui5-table-cell", {}, r.min_days_of_cover === null ? "not stocked" : `${fmt.n(r.min_days_of_cover)} days`),
+        h("ui5-table-cell", {}, fmt.inr(r.ceiling_price_inr) + " / unit"),
+        h("ui5-table-cell", {}, r.producers_label || "–"),
+        h("ui5-table-cell", {}, dataTag(r.data_tag)));
+      tr.dataset.form = r.form_id;
+      return tr;
+    }));
+    if (!shown.length) table.append(h("div", { slot: "noData", class: "pad muted" }, "No medicine matches."));
+  }
+  table.addEventListener("row-click", e => { const id = e.detail.row.dataset.form; if (id) go("understand", id); });
+
+  const seg = h("ui5-segmented-button", { "accessible-name": "Filter by risk" },
+    h("ui5-segmented-button-item", { selected: true, "data-v": "ALL" }, `All (${rows.length})`),
+    h("ui5-segmented-button-item", { "data-v": "RED" }, `Act now (${n("RED")})`),
+    h("ui5-segmented-button-item", { "data-v": "AMBER" }, `Watch (${n("AMBER")})`),
+    h("ui5-segmented-button-item", { "data-v": "GREEN" }, `Stable (${n("GREEN")})`));
+  seg.addEventListener("selection-change", e => { filter = e.detail.selectedItems[0].dataset.v; fill(); });
+  const search = h("ui5-input", { placeholder: "Search a medicine", "show-clear-icon": true }, h("ui5-icon", { slot: "icon", name: "search" }));
+  search.addEventListener("input", e => { query = e.target.value; fill(); });
+  fill();
+
+  const shockBox = h("div", {});
+  const shockBtn = h("ui5-button", { design: "Emphasized", icon: "trend-up" }, "What if import costs rise 30%?");
+  shockBtn.addEventListener("click", () => runShock(shockBox, shockBtn));
+  if (state.shock) showShock(shockBox, state.shock);
+
+  $app.replaceChildren(h("div", { class: "stack" },
+    h("h1", { class: "page" }, "Which price-capped medicines are at risk?"),
+    h("p", { class: "lead muted" }, "FlowForge checks every tracked medicine: is it still worth making under the government price cap, how many makers are left, and how long our own stock lasts. Click a medicine to see why."),
+    h("div", { class: "grid g4" },
+      kpi(n("RED"), "Act now", "Supply could fail soon, or cost is already above the cap", "neg"),
+      kpi(n("AMBER"), "Watch closely", "Margin is thin or supply is concentrated", "crit"),
+      kpi(n("GREEN"), "Stable", "No concern now", "pos"),
+      kpi(lowCover, "Stock under 30 days", "Hospital stock of these medicines lasts less than a month", "")),
+    card("Stress test: import cost shock", "Tariffs, freight or a supply crisis can push ingredient costs up overnight.", "trend-up",
+      h("div", { class: "row spread" }, h("span", { class: "muted" }, "Re-checks every medicine's margin with ingredient costs 30% higher. Nothing is saved; takes about 30 seconds."), shockBtn), shockBox),
+    card("Watchlist", `${rows.length} medicines, most urgent first`, "activity-2",
+      h("div", { class: "row spread", style: "margin-bottom: 0.75rem" }, seg, search), table),
+  ));
+}
+function kpi(v, label, desc, cls) {
+  return h("ui5-card", {}, h("div", { class: "kpi" }, h("div", { class: "v " + cls }, String(v)), h("div", { class: "l" }, label), h("div", { class: "d" }, desc)));
+}
+async function runShock(box, btn) {
+  btn.disabled = true; box.replaceChildren(busy("Re-checking every medicine with 30% higher ingredient costs… (about 30 s)"));
+  try { state.shock = await api("/scenario/shock", { method: "POST", body: { multiplier: 1.3 } }); showShock(box, state.shock); }
+  catch (e) { box.replaceChildren(strip("Negative", "The shock test failed: " + e.message)); }
+  finally { btn.disabled = false; }
+}
+function showShock(box, res) {
+  const changed = res.rows.filter(r => r.band_changed);
+  const red = res.rows.filter(r => r.shocked.band === "RED").length;
+  const list = h("ui5-list", { "header-text": `${changed.length} medicines change band`, "no-data-text": "No medicine changes band." },
+    ...changed.map(r => h("ui5-li", { description: `margin ${fmt.pct(r.baseline.headroom_pct)} → ${fmt.pct(r.shocked.headroom_pct)}`,
+      "additional-text": `${BAND[r.baseline.band]?.text || r.baseline.band} → ${BAND[r.shocked.band]?.text || r.shocked.band}`,
+      "additional-text-state": r.shocked.band === "RED" ? "Negative" : "Critical", icon: "trend-down", type: "Active", "data-form": r.form_id },
+      [r.generic, r.strength].filter(Boolean).join(" "))));
+  list.addEventListener("item-click", e => go("understand", e.detail.item.dataset.form));
+  box.replaceChildren(h("div", { class: "stack", style: "margin-top: 0.75rem" },
+    strip(red >= 3 ? "Negative" : "Critical", `With 30% higher import costs, ${red} of ${res.rows.length} medicines would be unviable or close to it on margin (Act now).`),
+    list, h("p", { class: "hint" }, res.note)));
+}
+
+/* ============================================================ 2. UNDERSTAND */
+async function understand() {
+  if (!state.form) { $app.replaceChildren(strip("Information", "Pick a medicine on the Watch step first."), h("p"), h("ui5-button", { onclick: () => go("watch") }, "Open the watchlist")); return; }
+  $app.replaceChildren(busy("Loading the medicine's story…"));
+  const [d, series] = await Promise.all([
+    api(`/molecule/${encodeURIComponent(state.form)}`),
+    api(`/molecule/${encodeURIComponent(state.form)}/margin-series?months=12&shock=1.3`).catch(() => null),
+  ]);
+  const f = d.formulation, s = d.signal, dep = d.dependency, fc = d.forecast, facts_ = fc ? fc.cause_facts : {};
+  if (d.run_id) { state.run = d.run_id; store.set("lastRun", d.run_id); }
+  const cause = fc && CAUSE[fc.cause_code];
+  const recBy = Object.fromEntries((d.recommendations || []).map(v => [v.recommendation.scenario_id, v.recommendation]));
+
+  // header
+  const head = h("ui5-card", {}, h("div", { class: "pad" },
+    h("div", { class: "row spread" },
+      h("div", {}, h("h1", { class: "page" }, fmt.med(f)), h("div", { class: "muted" }, `${f.THERAPEUTIC_CLASS || ""} · ${nlemText(f.NLEM_LEVEL)}`)),
+      h("div", { class: "row" }, fc ? bandTag(fc.exit_risk_band, "Shortage risk: ") : tag("Not assessed", "Neutral"), dataTag(f.IS_PROXY))),
+    h("div", { class: "row", style: "margin-top: 0.75rem" },
+      h("span", {}, "Government price cap: ", h("b", {}, fmt.inr(f.CEILING_PRICE) + " per unit"), " excl. GST ", h("span", { class: "muted" }, `(${f.CEILING_SO_NUMBER || "NPPA order"})`))),
+    cause ? h("div", { class: "why", style: "margin-top: 0.75rem" }, h("b", {}, "Main reason: " + cause[0] + ". "), cause[1]) : null,
+    d.explanation ? h("p", { class: "small", style: "margin: 0.75rem 0 0" }, h("b", {}, "In plain words: "), d.explanation.text) : null));
+
+  // Q1 margin
+  const q1 = card("1 · Is it still worth making?", "Margin check (agent A1)", AGENT.A1[2],
+    s ? h("div", { class: "stack" },
+      h("div", { class: "row" }, bandTag(s.band, "Margin: "), info("The maker earns the price cap minus the chemist's and wholesaler's margins. From that we subtract the estimated cost of making one unit (ingredient, conversion, packaging, freight). What is left is the margin (headroom). Below 5%, or running out within 6 months, is red.")),
+      facts([
+        ["Maker earns per unit (est.)", fmt.inr(s.realisation_inr)],
+        ["Cost to make per unit (est.)", fmt.inr(s.unit_cost_inr)],
+        ["Margin left", fmt.pct(s.headroom_pct, 1)],
+        ["Trend", s.headroom_trend === null ? "–" : (s.headroom_trend < 0 ? "shrinking " : "growing ") + fmt.pct(Math.abs(s.headroom_trend), 1) + " per month"],
+        ["Margin runs out in", s.months_to_breach === null ? "not on current trend" : `${fmt.n(s.months_to_breach, 1)} months`],
+      ]),
+      chart(series), h("div", { class: "row small muted" }, "Data:", ...Object.entries(s.data_quality.tags).map(([k, t]) => h("span", {}, k.replace(/_/g, " "), " ", dataTag(t)))))
+      : h("p", { class: "muted" }, "No cost model for this medicine (for example a vaccine)."));
+
+  // Q2 supply
+  const q2 = card("2 · Who makes it, and where from?", "Supply map (agent A2)", AGENT.A2[2],
+    dep ? h("div", { class: "stack" },
+      facts([
+        ["Makers on record", dep.n_producers_min ? `at least ${dep.n_producers_min}` : "none found in public quality records"],
+        ["Ingredient imported mainly from", dep.top_origin_country ? `${dep.top_origin_country} (${fmt.pct(dep.top_origin_share)} of imports)` : "–"],
+        ["Supply concentration", dep.concentration === null ? "–" : fmt.pct(dep.concentration)],
+        ["Wards that use it", (dep.affected_wards || []).join(", ") || "–"],
+      ]),
+      h("ui5-progress-indicator", { value: Math.round((dep.concentration || 0) * 100), "value-state": (dep.concentration || 0) > 0.7 ? "Negative" : (dep.concentration || 0) > 0.4 ? "Critical" : "Positive",
+        "display-value": `Concentration ${fmt.pct(dep.concentration)}`, "accessible-name": "Supply concentration" }),
+      h("div", { class: "row small muted" }, "Few makers or one dominant country means one failure can stop all supply.",
+        info("Concentration combines how few makers there are, how evenly the market is split between them (HHI) and how much of the ingredient comes from one country. Maker counts are minimums from public records.")))
+      : h("p", { class: "muted" }, "No supply data."));
+
+  // Q3 time
+  const q3 = card("3 · How much time do we have?", "Shortage forecast (agent A3)", AGENT.A3[2],
+    fc ? h("div", { class: "stack" },
+      h("div", { class: "row" }, bandTag(fc.exit_risk_band, "Exit risk: "), h("b", {}, fc.exit_risk === null ? "" : fmt.pct(fc.exit_risk) + " score"),
+        info("The exit-risk score adds up the warning signs (thin margin, fast decline, few makers, one-country ingredient, quality alerts, late deliveries) with fixed weights from rules/weights.yaml. It is a flag for review, not a prediction of any company's decision.")),
+      facts([
+        ["Makers may stop within", fc.window_months_lo === null ? "not estimated (the margin is not falling)" : `${fmt.n(fc.window_months_lo, 0)}–${fmt.n(fc.window_months_hi, 0)} months`],
+        ["Our stock lasts", fc.days_of_cover === null ? "–" : `${fmt.n(fc.days_of_cover)} days`],
+        ["If supply stopped today we run out on", fmt.date(fc.stockout_date_if_exit)],
+        ["Using per day (forecast)", facts_.daily_consumption ? `${fmt.n(facts_.daily_consumption.value)} units` : "–"],
+      ]),
+      signals(s)) : h("p", { class: "muted" }, "No forecast."));
+
+  // Q4 options
+  const scen = (d.scenarios || []).slice().sort((a, b) => (a.rank ?? 99) - (b.rank ?? 99));
+  const optTable = h("ui5-table", { "overflow-mode": "Popin", "accessible-name": "Options" },
+    h("ui5-table-header-row", { slot: "headerRow" }, ...["Option", "Quantity", "Cost", "Covers", "Rules (A5)", "Action"].map(t => h("ui5-table-header-cell", { "min-width": t === "Option" ? "320px" : "100px" }, t))),
+    ...scen.map(sc => {
+      const rec = recBy[sc.scenario_id], ov = rec && OVERALL[rec.overall];
+      const opt = OPTION[sc.option_type] || [sc.option_type, "product"];
+      const status = sc.rank === null
+        ? tag(sc.correlated_risk_flag ? "Rejected: same weak point" : "Rejected", "Negative", "decline")
+        : ov ? tag(ov[0], ov[1]) : tag("Not validated", "Neutral");
+      const act = rec && (rec.overall === "READY" || rec.overall === "NEEDS_CHANGES")
+        ? h("ui5-button", { design: rec.overall === "READY" ? "Emphasized" : "Default", onclick: () => go("decide", sc.scenario_id) }, "Review") : null;
+      return h("ui5-table-row", {},
+        h("ui5-table-cell", {}, h("div", {}, h("div", { class: "row", style: "gap: 0.4rem" }, h("ui5-icon", { name: opt[1] }), h("b", {}, opt[0])),
+          h("div", { class: "small muted" }, [sc.supplier ? "supplier " + sc.supplier : "", sc.substitute_formulation_id ? "substitute " + sc.substitute_formulation_id : "", sc.rank ? "rank " + sc.rank : ""].filter(Boolean).join(" · ")),
+          sc.correlated_risk_reason ? h("div", { class: "small", style: "color: var(--sapNegativeTextColor)" }, "Why rejected: " + sc.correlated_risk_reason) : null)),
+        h("ui5-table-cell", {}, fmt.n(sc.qty)),
+        h("ui5-table-cell", {}, fmt.inr(sc.cost, 0)),
+        h("ui5-table-cell", {}, `${fmt.n(sc.coverage_days)} days`),
+        h("ui5-table-cell", {}, status),
+        h("ui5-table-cell", {}, act));
+    }));
+  const q4 = card("4 · What can we do?", "Options (agent A4), each checked against the rules (agent A5)", AGENT.A4[2],
+    scen.length ? h("div", { class: "stack" },
+      h("p", { class: "small muted", style: "margin:0" }, "Options that share the same weak point as today's supply (same ingredient country or starting material) are rejected: they would fail together. Quantities are sized so nothing expires before use."),
+      optTable) : strip("Positive", "No action needed: our stock covers the risk window."));
+
+  $app.replaceChildren(h("div", { class: "stack" },
+    h("div", { class: "row" }, h("ui5-button", { icon: "navigation-left-arrow", design: "Transparent", onclick: () => go("watch") }, "Back to watchlist")),
+    head, h("div", { class: "grid g3" }, q1, q2, q3), q4,
+    h("p", { class: "hint" }, d.disclaimer)));
+}
+function signals(s) {
+  const sec = (s && s.secondary_signals) || [];
+  if (!sec.length) return h("p", { class: "small muted", style: "margin:0" }, "No other warning signs (quality alerts, late deliveries, cold-chain breaks).");
+  const label = { NSQ: "Quality alerts", OTD: "Late deliveries", COLD_CHAIN: "Cold-chain breaks" };
+  const say = x => {
+    const days = /last (\d+) days/.exec(x.note || ""), months = /last (\d+) months/.exec(x.note || "");
+    if (x.kind === "OTD") return `Our supplier's on-time deliveries fell by ${fmt.n(x.value)} percentage points (last ${months ? months[1] : 3} months vs the ${months ? months[1] : 3} before).`;
+    if (x.kind === "COLD_CHAIN") return `${fmt.n(x.value)} fridge temperature break${x.value === 1 ? "" : "s"} in the last ${days ? days[1] : 90} days where this medicine is stored.`;
+    if (x.kind === "NSQ") return `${fmt.n(x.value)} CDSCO quality alert${x.value === 1 ? "" : "s"} for this medicine or its makers recently.`;
+    return x.note || "";
+  };
+  return h("div", { class: "stack" }, h("b", {}, "Other warning signs"),
+    ...sec.map(x => h("div", { class: "row small", style: "flex-wrap: nowrap; align-items: flex-start" },
+      tag(label[x.kind] || x.kind, "Critical", "alert"), h("span", {}, say(x), " ", dataTag(x.tag)))));
+}
+function chart(series) {
+  if (!series || !series.points) return null;
+  const pts = series.points.filter(p => p.realisation_inr !== null || p.unit_cost_inr !== null);
+  if (pts.length < 2) return h("p", { class: "small muted" }, "Not enough monthly history for a chart yet (NPPA prices are recorded from April 2026).");
+  const W = 560, H = 210, L = 46, R = 10, T = 12, B = 28;
+  const ys = pts.flatMap(p => [p.realisation_inr, p.unit_cost_inr, p.shocked_unit_cost_inr]).filter(v => v !== null);
+  ys.push(series.ceiling_price_inr);
+  const ymax = Math.max(...ys) * 1.1, ymin = Math.min(0, ...ys);
+  const x = i => L + (W - L - R) * (i / (pts.length - 1)), y = v => T + (H - T - B) * (1 - (v - ymin) / (ymax - ymin));
+  const NS = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(NS, "svg");
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`); svg.setAttribute("width", "100%"); svg.setAttribute("role", "img");
+  svg.setAttribute("aria-label", "Price cap, what the maker earns and the estimated cost per unit, by month");
+  const el = (t, a) => { const e = document.createElementNS(NS, t); for (const [k, v] of Object.entries(a)) e.setAttribute(k, v); svg.append(e); return e; };
+  for (let k = 0; k <= 4; k++) { const v = ymin + (ymax - ymin) * k / 4; el("line", { x1: L, x2: W - R, y1: y(v), y2: y(v), stroke: "#d9d9d9", "stroke-width": 1 }); el("text", { x: L - 6, y: y(v) + 4, "text-anchor": "end" }).textContent = "₹" + v.toFixed(v < 10 ? 2 : 0); }
+  pts.forEach((p, i) => { if (i % Math.ceil(pts.length / 6) === 0 || i === pts.length - 1) el("text", { x: x(i), y: H - 8, "text-anchor": "middle" }).textContent = p.month; });
+  const line = (key, color, dash) => { const d = pts.map((p, i) => p[key] === null ? null : `${x(i)},${y(p[key])}`).filter(Boolean); if (d.length > 1) el("polyline", { points: d.join(" "), fill: "none", stroke: color, "stroke-width": 2.5, "stroke-dasharray": dash || "" }); };
+  el("line", { x1: L, x2: W - R, y1: y(series.ceiling_price_inr), y2: y(series.ceiling_price_inr), stroke: "#5b738b", "stroke-width": 2, "stroke-dasharray": "6 4" });
+  line("realisation_inr", "#0070f2"); line("unit_cost_inr", "#e76500"); line("shocked_unit_cost_inr", "#aa0808", "4 3");
+  return h("div", {},
+    h("div", { class: "small", style: "font-weight:700; margin-bottom: 0.25rem" }, "Price cap vs what it costs to make (per unit)"),
+    svg,
+    h("div", { class: "legend" },
+      h("span", {}, h("span", { class: "sw", style: "border-color:#5b738b; border-top-style:dashed" }), "Price cap"),
+      h("span", {}, h("span", { class: "sw", style: "border-color:#0070f2" }), "Maker earns"),
+      h("span", {}, h("span", { class: "sw", style: "border-color:#e76500" }), "Cost to make (est.)"),
+      h("span", {}, h("span", { class: "sw", style: "border-color:#aa0808; border-top-style:dashed" }), "Cost if imports +30%")),
+    h("p", { class: "hint", style: "margin: 0.25rem 0 0" }, "When the orange line reaches the blue line, making the medicine stops paying. " + (series.note || "")));
+}
+
+/* ============================================================ 3. DECIDE */
+async function decide() {
+  $app.replaceChildren(busy("Loading the approval queue… (about 10 seconds on SAP BTP)"));
+  if (!state.pending) state.pending = await api("/approvals/pending");
+  const all = state.pending;
+  const rank = p => (p.scenario && p.scenario.rank) || 99;
+  const best = Object.values(all.reduce((m, p) => {
+    const cur = m[p.form_id];
+    const better = !cur || (p.overall === "READY") > (cur.overall === "READY") || ((p.overall === "READY") === (cur.overall === "READY") && rank(p) < rank(cur));
+    if (better) m[p.form_id] = p; return m;
+  }, {})).sort((a, b) => (a.overall === "READY" ? 0 : 1) - (b.overall === "READY" ? 0 : 1) || (a.generic || "").localeCompare(b.generic || ""));
+  let mode = "best";
+  if (state.rec && !best.some(p => p.rec_id === state.rec) && all.some(p => p.rec_id === state.rec)) mode = "all";
+
+  const listBox = h("div", { class: "qlist" }), detail = h("div", {});
+  function fillList() {
+    const items = mode === "best" ? best : all.slice().sort((a, b) => (a.generic || "").localeCompare(b.generic || "") || rank(a) - rank(b));
+    const list = h("ui5-list", { "selection-mode": "Single", "no-data-text": "Nothing is waiting for a decision.", "accessible-name": "Approval queue" },
+      ...items.map(p => { const o = OVERALL[p.overall] || [p.overall, "Neutral"]; const opt = OPTION[p.scenario?.option_type] || ["", "product"];
+        const short = { BUFFER: "Buy extra stock", ALT_SUPPLIER: "Buy from another maker", THERAPEUTIC_ALT: "Alternative medicine", REBALANCE: "Move stock between locations" }[p.scenario?.option_type] || "";
+        return h("ui5-li", { description: `${short}${p.scenario ? " · " + fmt.inr(p.scenario.cost, 0) : ""}`, "additional-text": p.overall === "READY" ? "Ready" : p.overall === "BLOCKED" ? "Blocked" : "Warnings", "additional-text-state": o[1] === "Positive" ? "Positive" : "Critical",
+          icon: opt[1], selected: p.rec_id === state.rec, "data-rec": p.rec_id }, p.generic || p.form_id); }));
+    const pick = li => { if (li && li.dataset.rec !== state.rec) { state.rec = li.dataset.rec; showRec(); } };
+    list.addEventListener("selection-change", e => pick(e.detail.selectedItems[0]));
+    list.addEventListener("item-click", e => pick(e.detail.item));
+    listBox.replaceChildren(list);
+  }
+  function showRec() {
+    const p = all.find(x => x.rec_id === state.rec);
+    if (!p) { detail.replaceChildren(card("Pick a recommendation", "", "workflow-tasks", h("p", { class: "muted" }, "Choose a medicine on the left. Green items are ready: every rule check passed."))); return; }
+    detail.replaceChildren(recDetail(p));
+  }
+  const seg = h("ui5-segmented-button", { "accessible-name": "Show" },
+    h("ui5-segmented-button-item", { selected: mode === "best", "data-v": "best" }, `Best option per medicine (${best.length})`),
+    h("ui5-segmented-button-item", { selected: mode === "all", "data-v": "all" }, `All options (${all.length})`));
+  seg.addEventListener("selection-change", e => { mode = e.detail.selectedItems[0].dataset.v; fillList(); });
+  fillList(); showRec();
+  $app.replaceChildren(h("div", { class: "stack" },
+    h("h1", { class: "page" }, "The Chief Pharmacist decides"),
+    h("p", { class: "lead muted" }, "Nothing is bought by the system. Each recommended action has already passed the DPCO price rule and the hospital's SOP checks. The pharmacist reviews it, ticks the checklist and approves; only then is a purchase requisition created."),
+    h("div", { class: "split" }, h("div", { class: "stack" }, seg, listBox), detail)));
+}
+function recDetail(p) {
+  const sc = p.scenario || {}, pr = p.draft_pr, opt = OPTION[sc.option_type] || [sc.option_type, "product"];
+  const o = OVERALL[p.overall] || [p.overall, "Neutral"];
+  const sentence = sc.option_type === "REBALANCE"
+    ? `Move ${fmt.n(sc.qty)} units of ${p.generic} between our pharmacy locations. This covers about ${fmt.n(sc.coverage_days)} days; no purchase needed.`
+    : `${opt[0]}: ${fmt.n(sc.qty)} units of ${p.generic}${sc.supplier ? " from supplier " + sc.supplier : ""} at ${fmt.inr(sc.unit_rate_inr)} per unit incl. GST, ${fmt.inr(sc.cost, 0)} in total. This covers about ${fmt.n(sc.coverage_days)} days.`;
+  const checks = h("div", { class: "stack" }, ...p.checks.map(c => {
+    const d = c.status === "PASS" ? "Positive" : c.status === "WARN" ? "Critical" : "Negative";
+    const ev = c.evidence || {};
+    const extra = c.check_id === "PRICE_COMPLIANCE" && ev.max_allowed_inr !== undefined
+      ? ` ${fmt.inr(ev.unit_rate_incl_gst_inr)} vs max ${fmt.inr(ev.max_allowed_inr)} (cap ${fmt.inr(ev.ceiling_excl_gst_inr)} + ${fmt.pct(ev.gst_rate)} GST).` : "";
+    return h("div", { class: "row small", style: "flex-wrap: nowrap; align-items: flex-start" }, tag(c.status, d),
+      h("div", {}, h("b", {}, CHECK[c.check_id] || c.name), extra, h("div", { class: "muted" }, `${c.rule_source || ""}${ev.note ? " · " + ev.note : ""}`)));
+  }));
+  const ticks = {};
+  const boxes = CHECKLIST.map(([k, label]) => { const cb = h("ui5-checkbox", { text: label, "wrapping-type": "Normal" }); ticks[k] = cb; cb.addEventListener("change", update); return cb; });
+  const user = h("ui5-input", { value: store.get("user", p.awaiting_level === 2 ? "director" : "chief.pharmacist"), "accessible-name": "Approver" });
+  user.addEventListener("input", update);
+  const approve = h("ui5-button", { design: "Emphasized", icon: "accept", disabled: true }, p.awaiting_level === 2 ? "Approve (level 2)" : "Approve");
+  const edit = h("ui5-button", { icon: "edit", disabled: true }, "Edit & approve");
+  const reject = h("ui5-button", { design: "Negative", icon: "decline" }, "Reject");
+  const snooze = h("ui5-button", { design: "Transparent", icon: "history" }, "Snooze");
+  const result = h("div", {});
+  function update() { const ok = Object.values(ticks).every(c => c.checked) && user.value.trim(); approve.disabled = !ok; edit.disabled = !ok; }
+  const checklist = () => Object.fromEntries(Object.entries(ticks).map(([k, c]) => [k, c.checked]));
+  async function send(decision, extra = {}) {
+    for (const b of [approve, edit, reject, snooze]) b.disabled = true;
+    result.replaceChildren(busy("Recording the decision…"));
+    try {
+      store.set("user", user.value.trim());
+      const r = await api("/approval", { method: "POST", body: { rec_id: p.rec_id, decision, user: user.value.trim(), checklist: checklist(), level: p.awaiting_level, ...extra } });
+      state.pending = null; state.run = p.run_id; store.set("lastRun", p.run_id);
+      result.replaceChildren(outcome(r, p));
+    } catch (e) { result.replaceChildren(strip("Negative", "Not recorded: " + e.message)); update(); reject.disabled = false; snooze.disabled = false; }
+  }
+  approve.addEventListener("click", () => send("APPROVE"));
+  edit.addEventListener("click", () => ask("Edit the order, then approve", [["qty", "New quantity", String(sc.qty || "")], ["supplier", "New supplier (optional)", sc.supplier || ""]],
+    v => send("EDIT_APPROVE", { edits: { qty: v.qty ? Number(v.qty) : undefined, supplier: v.supplier || undefined } })));
+  reject.addEventListener("click", () => ask("Reject this recommendation", [["reason", "Reason (required)", ""]], v => v.reason ? send("REJECT", { reason: v.reason }) : toast("A reason is required.")));
+  snooze.addEventListener("click", () => ask("Snooze: look at it again later", [["days", "Days", "7"]], v => send("SNOOZE", { snooze_days: Number(v.days) || 7 })));
+
+  return h("div", { class: "stack" },
+    card(`${p.generic}: recommended action`, p.awaiting_level === 2 ? "Waiting for the second approver (Procurement / Director)" : "Waiting for the Chief Pharmacist", opt[1],
+      h("div", { class: "stack" },
+        h("div", { class: "row" }, tag(o[0], o[1]), p.needs_second_approver ? tag("Needs a second approver", "Information", "customer") : null),
+        h("p", { class: "answer" }, sentence),
+        pr ? facts([["Material / plant", `${pr.Material} / ${pr.Plant}`], ["Delivery date", fmt.date(pr.DeliveryDate)], ["Purchasing group", pr.PurchasingGroup]]) : null,
+        h("ui5-button", { design: "Transparent", icon: "activity-2", onclick: () => go("understand", p.form_id) }, "Why is this medicine at risk?"))),
+    card("Rule checks (agent A5)", "Run automatically before anyone sees the option", AGENT.A5[2], checks),
+    card("Manual verification", "Tick every item to enable Approve", "workflow-tasks",
+      h("div", { class: "stack" }, h("div", { class: "checks" }, ...boxes),
+        h("div", {}, h("ui5-label", { "show-colon": true }, "Approver"), h("div", {}, user)),
+        h("div", { class: "row" }, approve, edit, reject, snooze), result)));
+}
+function outcome(r, p) {
+  if (r.status === "ACTIONED") return h("div", { class: "stack" },
+    strip("Positive", `Approved. Purchase requisition ${r.banfn} was created in SAP S/4HANA format (API_PURCHASEREQ_PROCESS_SRV). This is a mock posting into the hospital's requisition table, not a live S/4 system.`),
+    h("ui5-panel", { "header-text": "Purchase requisition payload (S/4 OData format)", collapsed: true }, h("pre", { class: "json" }, JSON.stringify(r.payload, null, 2))),
+    h("div", { class: "row" }, h("ui5-button", { design: "Emphasized", icon: "chain-link", onclick: () => go("prove", p.run_id) }, "See the audit trail")));
+  if (r.status === "AWAITING_SECOND_APPROVER") return h("div", { class: "stack" },
+    strip("Critical", "Approved at level 1. Because of the order value or a substitute medicine, a second person (Procurement / Director) must now approve."),
+    h("ui5-button", { onclick: () => go("decide", p.rec_id) }, "Open for the second approver"));
+  if (r.status === "APPROVED_NO_PR") return strip("Positive", "Approved. This is an internal stock move, so no purchase requisition is needed.");
+  return strip("Information", `Recorded: ${r.status.toLowerCase().replace(/_/g, " ")}.`);
+}
+function ask(title, fields, onOk) {
+  const dlg = document.getElementById("askDlg"); dlg.setAttribute("header-text", title);
+  const inputs = fields.map(([k, label, val]) => [k, h("ui5-input", { value: val, "accessible-name": label, style: "width:100%" })]);
+  document.getElementById("askBody").replaceChildren(...inputs.flatMap(([k, inp], i) => [h("ui5-label", { "show-colon": true }, fields[i][1]), inp]));
+  const ok = document.getElementById("askOk"), cancel = document.getElementById("askCancel");
+  const done = () => { dlg.open = false; ok.onclick = null; cancel.onclick = null; };
+  ok.onclick = () => { const v = Object.fromEntries(inputs.map(([k, inp]) => [k, inp.value.trim()])); done(); onOk(v); };
+  cancel.onclick = done; dlg.open = true;
+}
+
+/* ============================================================ 4. PROVE */
+async function prove() {
+  const runInput = h("ui5-input", { value: state.run || "", placeholder: "Run id, e.g. ff-…", "accessible-name": "Run id", style: "width: 20rem" });
+  const box = h("div", {});
+  const load = async () => {
+    const id = runInput.value.trim(); if (!id) { box.replaceChildren(strip("Information", "Open a medicine first, or type a run id.")); return; }
+    state.run = id; store.set("lastRun", id); box.replaceChildren(busy("Loading the audit trail…"));
+    try { box.replaceChildren(auditView(await api(`/audit/${encodeURIComponent(id)}`))); }
+    catch (e) { box.replaceChildren(strip("Negative", "Could not load the audit trail: " + e.message)); }
+  };
+  $app.replaceChildren(h("div", { class: "stack" },
+    h("h1", { class: "page" }, "Proof: every step is recorded"),
+    h("p", { class: "lead muted" }, "Each agent's input and output is fingerprinted (hashed) and chained to the previous step, like a ledger. Changing any past record breaks the chain, so tampering is visible. This is the evidence an NABH auditor can check."),
+    h("div", { class: "row" }, h("ui5-label", { "show-colon": true }, "Run"), runInput, h("ui5-button", { icon: "refresh", onclick: load }, "Load")), box));
+  if (runInput.value) load();
+}
+function auditView(a) {
+  const run = a.run || {}, ok = a.chain.ok;
+  const report = h("ui5-button", { icon: "document", design: "Emphasized" }, "Open the NABH evidence report");
+  report.addEventListener("click", async () => {
+    report.disabled = true;
+    try { const html = await api(`/audit/${encodeURIComponent(a.run_id)}/report`, { raw: true });
+      const url = URL.createObjectURL(new Blob([html], { type: "text/html" })); window.open(url, "_blank", "noopener"); }
+    catch (e) { toast("Report unavailable: " + e.message); } finally { report.disabled = false; }
+  });
+  const items = a.events.map(e => {
+    const ag = AGENT[e.agent] || [e.agent, "", "notes"];
+    const srcs = e.data_sources || [];
+    const counts = srcs.reduce((m, s) => (m[s.is_proxy] = (m[s.is_proxy] || 0) + 1, m), {});
+    return h("ui5-timeline-item", { "title-text": `${e.seq + 1}. ${ag[0]} (${e.agent})`, "subtitle-text": fmt.ts(e.ts), icon: ag[2] },
+      h("div", { class: "small stack" }, h("div", {}, ag[1]),
+        h("div", { class: "muted" }, `fingerprint in ${fmt.hash(e.input_hash)} · out ${fmt.hash(e.output_hash)} · linked to previous ${fmt.hash(e.prev_hash)}`),
+        srcs.length ? h("div", { class: "row" }, `${srcs.length} data sources:`, ...Object.entries(counts).map(([t, n]) => h("span", {}, dataTag(t), " ×" + n))) : null));
+  });
+  return h("div", { class: "stack" },
+    h("div", { class: "grid g4" },
+      kpi(ok ? "Intact" : "Broken", "Audit chain", ok ? `${a.chain.n_rows} linked records, none altered` : `broken at record ${a.chain.broken_at}: ${a.chain.reason}`, ok ? "pos" : "neg"),
+      kpi(a.events.length, "Steps recorded", "agents A1–A5, the human decision and A6", ""),
+      kpi(run.TRIGGER_TYPE === "SHOCK" ? "Shock" : (run.TRIGGER_TYPE || "–"), "Why it ran", run.TRIGGER_TYPE === "SHOCK" ? "stress test: import costs +30%" : "on demand or nightly", ""),
+      kpi(fmt.ts(run.STARTED_AT), "Started", `status ${String(run.STATUS || "").toLowerCase().replace(/_/g, " ")}`, "")),
+    h("div", { class: "row" }, report),
+    card("What happened, step by step", a.run_id, "history", h("ui5-timeline", { layout: "Vertical", "accessible-name": "Audit trail" }, ...items)));
+}
+
+/* ============================================================ 5. RECALL */
+async function recall() {
+  const idInput = h("ui5-input", { value: store.get("alert", "NSQ-3F40E3F8B095"), "accessible-name": "CDSCO NSQ alert id", style: "width: 18rem" });
+  const box = h("div", {});
+  const load = async () => {
+    const id = idInput.value.trim(); if (!id) return; store.set("alert", id); box.replaceChildren(busy("Searching every pharmacy location…"));
+    try { box.replaceChildren(recallView(await api(`/recall/${encodeURIComponent(id)}`))); }
+    catch (e) { box.replaceChildren(strip("Negative", "Could not trace the alert: " + e.message)); }
+  };
+  $app.replaceChildren(h("div", { class: "stack" },
+    h("h1", { class: "page" }, "Recall: where is the failed batch?"),
+    h("p", { class: "lead muted" }, "When CDSCO reports a batch as Not of Standard Quality, the pharmacist must find it everywhere in the hospital (SOP control CP-14). FlowForge matches the alert against batch stock in every location in one click."),
+    h("div", { class: "row" }, h("ui5-label", { "show-colon": true }, "CDSCO alert"), idInput, h("ui5-button", { design: "Emphasized", icon: "locate-me", onclick: load }, "Find the batch")), box));
+  load();
+}
+function recallView(r) {
+  const a = r.alert || {}, m = r.matches || [];
+  const total = m.reduce((s, x) => s + Number(x.CLABS || 0) + Number(x.CINSM || 0), 0);
+  const MATCH = { "BATCH+MFR+FORM": "Strong match: batch, maker and medicine", "BATCH+MFR": "Batch and maker match", "BATCH+FORM": "Batch and medicine match", BATCH_ONLY: "Batch number only: verify" };
+  return h("div", { class: "stack" },
+    card(a.DRUG || r.alert_id, `Batch ${a.BATCH || "–"} · reported ${fmt.date(a.MONTH)}`, "lab",
+      h("div", { class: "stack" },
+        facts([["What failed", a.REASON || "–"], ["Reported by", a.SOURCE || "–"], ["Maker (as named)", a.MANUFACTURER_ID || "–"]]),
+        h("div", { class: "row small" }, dataTag(a.IS_PROXY), a.SOURCE_URL ? h("ui5-link", { href: a.SOURCE_URL, target: "_blank" }, "CDSCO public NSQ list") : null))),
+    m.length ? strip("Negative", `Found in ${new Set(m.map(x => x.LGORT)).size} locations: ${fmt.n(total)} units. Quarantine them and stop issuing this batch (CP-14).`)
+      : strip("Positive", "This batch is not in the hospital's stock."),
+    h("div", { class: "grid g4" }, ...m.map(x => h("ui5-card", {}, h("div", { class: "loc" },
+      h("div", { class: "row spread" }, h("b", {}, LOCATION[x.LGORT] || x.LGORT), tag(x.LGORT, "Information")),
+      h("div", { class: "big" }, `${fmt.n(x.CLABS)} units`), h("div", { class: "small muted" }, `available · expires ${fmt.date(x.VFDAT)}`),
+      Number(x.CINSM) ? h("div", { class: "small" }, `${fmt.n(x.CINSM)} already in quality inspection`) : null,
+      h("div", { class: "small", style: "margin-top: 0.4rem" }, MATCH[x.MATCH_LEVEL] || x.MATCH_LEVEL))))),
+    h("p", { class: "hint" }, r.note));
+}
+
+/* ============================================================ start */
+renderSteps();
+if (state.key) {
+  api("/health").then(hl => setConn(true, hl.db_backend)).catch(() => setConn(false));
+  go("watch");
+} else { go("watch"); }
+</script>
+</body>
+</html>
