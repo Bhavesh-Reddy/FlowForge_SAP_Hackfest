@@ -40,7 +40,8 @@ def db(tmp_path):
     put(d, "FF_MM_LFA1", [{"LIFNR": m, "NAME1": f"Fixture Pharma {m}", "GSTIN": f"33AAAAA{m}Z5", "DRUG_LICENCE_NO": f"TN/DL/{m}"}
                           for m in ("M01", "M02", "M03", "M04")])
     po(d, "PO1", "M01", "MAT-0001", 1.90)
-    d.execute("UPDATE FF_REF_FORMULATION SET THERAPEUTIC_CLASS = 'PENICILLINS' WHERE FORM_ID IN ('F001', 'F002')")
+    d.execute("UPDATE FF_REF_FORMULATION SET THERAPEUTIC_CLASS = 'PENICILLINS' WHERE FORM_ID IN ('F001', 'F002', 'F003')")
+    put(d, "FF_MM_MARA", [{"MATNR": "MAT-0002", "FORM_ID": "F002", "MEINS": "EA"}])  # F002 is on the formulary
     yield d
     d.close()
 
@@ -113,6 +114,13 @@ def test_uncorrelated_alternate_can_win(db, rules):
     out = a4.run([forecast()], _ctx(db, rules, dry_run=True))
     ther = next(s for s in out if s.option_type is OptionType.THERAPEUTIC_ALT)
     assert not ther.correlated_risk_flag and ther.rank is not None and ther.substitute_formulation_id == "F002"
+
+
+def test_therapeutic_alternates_come_from_the_hospital_formulary(db, rules):
+    # F003 shares the class but has no hospital material (FF_MM_MARA), so it is never offered
+    out = a4.run([forecast()], _ctx(db, rules, dry_run=True))
+    subs = {s.substitute_formulation_id for s in out if s.option_type is OptionType.THERAPEUTIC_ALT}
+    assert subs == {"F002"}
 
 
 def test_buffer_never_exceeds_expiry_safe_qty(db, rules):

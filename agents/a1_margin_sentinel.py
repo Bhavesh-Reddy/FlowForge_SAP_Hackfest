@@ -201,7 +201,7 @@ def _secondary(db: Db, form_id: str, as_of: pd.Period, rules: Rules) -> list[Sec
     cc = _try_query(
         db,
         "SELECT c.TS, c.LOCATION FROM FF_MM_COLDCHAIN c "
-        "WHERE c.EXCURSION_FLAG IN ('Y', 'X', '1', 1) AND c.LOCATION IN ("
+        "WHERE c.EXCURSION_FLAG = 1 AND c.LOCATION IN ("  # TINYINT: HANA rejects 'Y' (error 339)
         "  SELECT b.LGORT FROM FF_MM_MCHB b JOIN FF_MM_MARA a ON a.MATNR = b.MATNR WHERE a.FORM_ID = ?)",
         (form_id,))
     if cc is not None and len(cc):

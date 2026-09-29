@@ -96,7 +96,7 @@ def test_shapes_locations_and_movements(generated):
 
 def test_exactly_one_planted_nsq_batch_at_several_locations(generated):
     planted = [r for r in generated["FF_MM_MCHB"] if r["CHARG"] == "TEST-NSQ-01"]
-    assert len({r["LGORT"] for r in planted}) >= 2
+    assert len({r["LGORT"] for r in planted}) >= 3  # recall demo: 3 locations
     assert {r["MANUFACTURER_ID"] for r in planted} == {"MFR-T"}
     assert all(float(r["CLABS"]) > 0 for r in planted)
     assert not [r for r in generated["FF_MM_MCHB"] if r["CHARG"] == "OTHER-9"]

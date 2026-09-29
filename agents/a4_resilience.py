@@ -41,7 +41,8 @@ DAYS_PER_MONTH = 30.44
 ISSUE_MOVEMENTS = ("201", "261")
 SCENARIO_COLS = (
     "RUN_ID", "SCENARIO_ID", "FORM_ID", "OPTION_TYPE", "SUPPLIER", "MATERIAL", "QTY", "UNIT_RATE_INR",
-    "COST_INR", "COVERAGE_DAYS", "EXPIRY_WASTE_RISK", "CORRELATED_RISK_FLAG", "RANK_NO", "CREATED_AT",
+    "COST_INR", "COVERAGE_DAYS", "EXPIRY_WASTE_RISK", "CORRELATED_RISK_FLAG", "CORRELATED_RISK_REASON", "RANK_NO",
+    "CREATED_AT",
 )
 
 
@@ -195,12 +196,14 @@ def _therapeutic(db: Db, form_id: str, as_of: date, rules: Rules) -> list[Option
     cls = try_query(db, "SELECT THERAPEUTIC_CLASS FROM FF_REF_FORMULATION WHERE FORM_ID = ?", (form_id,))
     if cls is None or cls.empty or not cls.iloc[0]["THERAPEUTIC_CLASS"]:
         return []
-    alts = db.query("SELECT FORM_ID FROM FF_REF_FORMULATION WHERE THERAPEUTIC_CLASS = ? AND FORM_ID <> ? "
-                    "ORDER BY FORM_ID", (cls.iloc[0]["THERAPEUTIC_CLASS"], form_id))
+    # Only substitutes on the hospital formulary (a material in FF_MM_MARA): with the real NPPA list an NLEM
+    # class holds hundreds of formulations, which flooded the gate and made a 40-target run take minutes.
+    alts = db.query("SELECT f.FORM_ID, MIN(m.MATNR) AS MATNR FROM FF_REF_FORMULATION f "
+                    "JOIN FF_MM_MARA m ON m.FORM_ID = f.FORM_ID "
+                    "WHERE f.THERAPEUTIC_CLASS = ? AND f.FORM_ID <> ? GROUP BY f.FORM_ID ORDER BY f.FORM_ID",
+                    (cls.iloc[0]["THERAPEUTIC_CLASS"], form_id))
     out = []
-    for alt in alts["FORM_ID"].astype(str):
-        mara = db.query("SELECT MATNR FROM FF_MM_MARA WHERE FORM_ID = ? ORDER BY MATNR", (alt,))
-        alt_mat = str(mara.iloc[0]["MATNR"]) if len(mara) else None
+    for alt, alt_mat in zip(alts["FORM_ID"].astype(str), alts["MATNR"].astype(str)):
         vendor, net = _last_po(db, alt_mat) if alt_mat else (None, None)
         ceiling, gst = _ceiling(db, alt, as_of, rules)
         net = net if net is not None else ceiling
@@ -360,7 +363,7 @@ def _write(db: Db, scenarios: list[Scenario]) -> None:
     num = (lambda d: None if d is None else (float(d) if db.backend == "sqlite" else d))
     rows = [(s.run_id, s.scenario_id, s.formulation_id, s.option_type.value, s.supplier, s.material, s.qty,
              num(s.unit_rate_inr), num(s.cost), s.coverage_days, s.expiry_waste_risk, int(s.correlated_risk_flag),
-             s.rank, now) for s in scenarios]
+             (s.correlated_risk_reason or None) and s.correlated_risk_reason[:500], s.rank, now) for s in scenarios]
     db.executemany(f"INSERT INTO FF_AG_SCENARIO ({', '.join(SCENARIO_COLS)}) VALUES ({placeholders(SCENARIO_COLS)})",
                    rows)
 
