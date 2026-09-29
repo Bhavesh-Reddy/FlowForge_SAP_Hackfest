@@ -19,7 +19,7 @@ from typing import Any, Callable, Iterator
 import pandas as pd
 from fastapi import APIRouter, Depends, FastAPI, HTTPException, Query, Request, Security
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, HTMLResponse
+from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse
 from fastapi.security import APIKeyHeader
 
 from agents import a1_margin_sentinel as a1
@@ -242,6 +242,12 @@ secured = APIRouter(dependencies=[Depends(require_key)])
 @public.get("/health", response_model=Health)
 def health(request: Request) -> Health:
     return Health(db_backend=request.app.state.settings.db_backend, version=VERSION)
+
+
+@public.get("/", include_in_schema=False)
+def root() -> RedirectResponse:
+    """The bare app URL opens the fallback UI instead of a JSON 404."""
+    return RedirectResponse("/ui")
 
 
 @public.get("/ui", include_in_schema=False)
