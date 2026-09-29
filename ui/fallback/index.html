@@ -19,7 +19,7 @@
     /* darker "ink" shades of the status colours, for readable text on light backgrounds */
     --red-ink: #B63A43; --amber-ink: #8A5A0B; --green-ink: #1E7B55; --teal-ink: #0B6F6D;
     --navy-2: #1B4A78; --shade: rgba(18, 53, 91, 0.08); --shade-2: rgba(18, 53, 91, 0.16);
-    --grad: linear-gradient(135deg, #12355B, #0F9D9A);
+    --grad: linear-gradient(135deg, #0F2E4F, #1B4A78);
     --grad-soft: linear-gradient(135deg, #E8F0F8 0%, #E8F8F7 100%);
     --font: Inter, system-ui, "72", "Segoe UI", Roboto, Arial, sans-serif;
     --r-lg: 18px; --r-md: 12px; --r-sm: 8px; --gap: 1.25rem;
@@ -63,7 +63,7 @@
   .mark svg { width: 24px; height: 24px; }
   .brand-name { font-size: 1.3rem; font-weight: 750; letter-spacing: -0.01em; line-height: 1.1; }
   .brand-tag { font-size: 0.8rem; opacity: 0.85; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .shell-meta { margin-left: auto; font-size: 0.78rem; padding: 0.3rem 0.7rem; border-radius: 999px; white-space: nowrap;
+  .shell-meta { margin-left: 0; font-size: 0.78rem; padding: 0.3rem 0.7rem; border-radius: 999px; white-space: nowrap;
     background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 255, 255, 0.25); display: flex; align-items: center; gap: 0.4rem; }
   .shell-meta .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--amber); }
   .shell-meta.on .dot { background: var(--green); box-shadow: 0 0 0 3px rgba(61, 190, 139, 0.25); }
@@ -222,7 +222,7 @@
   .hero::before { content: ""; position: absolute; width: 420px; height: 420px; right: -140px; top: -210px; border-radius: 50%;
     background: radial-gradient(circle, rgba(15, 157, 154, 0.14), transparent 65%); pointer-events: none; }
   .hero::after { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 5px; background: var(--grad); }
-  .hero h1 { font-size: clamp(1.7rem, 3vw, 2.55rem); line-height: 1.1; letter-spacing: -0.025em; margin: 0; color: var(--navy); font-weight: 800; }
+  .hero h1 { font-size: clamp(1.5rem, 2.4vw, 2rem); line-height: 1.1; letter-spacing: -0.025em; margin: 0; color: var(--navy); font-weight: 800; }
   .hero .sub { font-size: clamp(1.05rem, 1.6vw, 1.3rem); color: var(--teal-ink); margin: 0.55rem 0 0; font-weight: 600; }
   .versus { display: flex; align-items: center; gap: 0.7rem; margin: 1.2rem 0 0.2rem; flex-wrap: wrap; }
   .tok { display: inline-flex; align-items: center; gap: 0.5rem; font-weight: 800; letter-spacing: 0.08em; font-size: 0.85rem; padding: 0.45rem 0.85rem;
@@ -581,84 +581,32 @@
   @media (max-width: 1100px) { .trust { grid-template-columns: 1fr; } .rsum { grid-template-columns: repeat(2, minmax(0, 1fr)); } .rsum .act { grid-column: 1 / -1; } }
 
 
-  /* ============ PROVE */
-  .runbar { display: flex; gap: 0.7rem; align-items: center; flex-wrap: wrap; background: var(--white); border: 1px solid var(--border); border-radius: var(--r-md); padding: 0.6rem 0.8rem; }
-  .trust { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: var(--gap); align-items: stretch; }
-  .shieldbox { position: relative; overflow: hidden; border-radius: 24px; padding: 1.6rem 1.8rem; display: flex; gap: 1.4rem; align-items: center; color: #fff;
-    background: linear-gradient(135deg, #0E6B55, #3DBE8B); box-shadow: 0 18px 36px -22px rgba(30, 123, 85, 0.8); }
-  .shieldbox.bad { background: linear-gradient(135deg, #8E2A33, #E8636B); box-shadow: 0 18px 36px -22px rgba(182, 58, 67, 0.8); }
-  .shieldbox::after { content: ""; position: absolute; right: -70px; top: -70px; width: 240px; height: 240px; border-radius: 50%; border: 30px solid rgba(255, 255, 255, 0.08); }
-  .shieldbox .sh { width: 86px; height: 96px; flex: none; position: relative; }
-  .shieldbox .sh svg { width: 100%; height: 100%; }
-  .shieldbox .big1 { font-size: clamp(1.7rem, 3vw, 2.3rem); font-weight: 800; letter-spacing: 0.04em; line-height: 1.05; }
-  .shieldbox .sub1 { font-size: 0.98rem; opacity: 0.95; margin-top: 0.35rem; max-width: 30rem; }
-  .runfacts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.7rem; }
-  .rf { background: var(--white); border: 1px solid var(--border); border-radius: var(--r-md); padding: 0.75rem 0.9rem; min-width: 0; }
-  .rf .k { font-size: 0.7rem; font-weight: 800; letter-spacing: 0.09em; text-transform: uppercase; color: var(--text-2); }
-  .rf .v { font-size: 1.25rem; font-weight: 780; color: var(--navy); margin-top: 0.15rem; line-height: 1.2; }
-  .rf .d { font-size: 0.78rem; color: var(--text-2); }
-  .docbtn { all: unset; box-sizing: border-box; cursor: pointer; grid-column: 1 / -1; display: grid; grid-template-columns: auto 1fr auto; gap: 0.9rem; align-items: center;
-    background: var(--white); border: 1px solid var(--border); border-radius: var(--r-md); padding: 0.8rem 1rem; position: relative; transition: border-color 0.15s, box-shadow 0.15s; }
-  .docbtn:hover { border-color: var(--teal); box-shadow: 0 10px 24px -16px var(--shade-2); } .docbtn:focus-visible { outline: 2px solid var(--teal); }
-  .docbtn .page { width: 38px; height: 46px; border-radius: 4px 12px 4px 4px; background: var(--grad); display: grid; place-items: center; box-shadow: 0 4px 10px rgba(18, 53, 91, 0.25); }
-  .docbtn .page ui5-icon { color: #fff; }
-  .docbtn .tt { font-weight: 780; color: var(--navy); } .docbtn .sb { font-size: 0.8rem; color: var(--text-2); }
-  .docbtn[aria-busy="true"] { opacity: 0.6; cursor: progress; }
-  .chain { position: relative; display: grid; gap: 0; }
-  .blk { display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 1rem; position: relative; }
-  .blk .rail { display: flex; flex-direction: column; align-items: center; }
-  .blk .dot { width: 50px; height: 50px; border-radius: 16px; display: grid; place-items: center; background: var(--white); border: 2px solid var(--teal);
-    box-shadow: 0 6px 14px -8px rgba(15, 157, 154, 0.8); flex: none; z-index: 1; }
-  .blk .dot ui5-icon { color: var(--teal-ink); width: 1.3rem; height: 1.3rem; }
-  .blk .link { flex: 1; width: 2px; background: repeating-linear-gradient(to bottom, var(--teal) 0 6px, transparent 6px 10px); min-height: 1.4rem; position: relative; }
-  .blk:last-child .link { display: none; }
-  .blk .body { background: var(--white); border: 1px solid var(--border); border-radius: var(--r-md); padding: 0.85rem 1rem; margin-bottom: 0.9rem; min-width: 0;
-    transition: box-shadow 0.15s; }
-  .blk .body:hover { box-shadow: 0 10px 24px -18px var(--shade-2); }
-  .blk .bh { display: flex; gap: 0.6rem; align-items: baseline; flex-wrap: wrap; justify-content: space-between; }
-  .blk .bt { font-weight: 760; color: var(--navy); } .blk .bt small { color: var(--text-2); font-weight: 600; }
-  .blk .time { font-size: 0.8rem; color: var(--text-2); }
-  .blk .q { font-size: 0.9rem; margin: 0.15rem 0 0.5rem; }
-  .hashes { display: flex; gap: 0.4rem; flex-wrap: wrap; font-size: 0.74rem; }
-  .hashes span { font-family: ui-monospace, "Cascadia Code", Consolas, monospace; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 0.1rem 0.45rem; color: var(--text-2); }
-  .hashes span b { color: var(--navy); font-weight: 600; }
-  .srcs { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; margin-top: 0.55rem; font-size: 0.8rem; color: var(--text-2); }
+  /* ============ key points, option toolbar */
+  .plain .pts { margin: 0; padding-left: 1.1rem; display: grid; gap: 0.3rem; }
+  .plain .pts li { padding-left: 0.15rem; line-height: 1.4; } .plain .pts li::marker { color: var(--teal); }
+  .opt-tools { display: flex; justify-content: space-between; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+  .opt-tools .ctl { min-width: 220px; }
 
-  /* ============ RECALL */
-  .eyebrow.alert { color: var(--red-ink); } .eyebrow.alert::before { background: var(--red); }
-  .searchcard { display: flex; gap: 0.8rem; align-items: center; flex-wrap: wrap; background: var(--white); border: 1px solid var(--border); border-left: 5px solid var(--red);
-    border-radius: var(--r-md); padding: 0.9rem 1rem; box-shadow: 0 1px 2px var(--shade); }
-  .searchcard .lbl { font-weight: 700; color: var(--navy); }
-  .example { all: unset; cursor: pointer; font-size: 0.8rem; border: 1px dashed var(--teal); color: var(--teal-ink); border-radius: 999px; padding: 0.2rem 0.65rem; background: var(--teal-l);
-    font-family: ui-monospace, Consolas, monospace; }
-  .example:hover { background: #D6F3F1; } .example:focus-visible { outline: 2px solid var(--teal); }
-  .alertcard { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 1rem; align-items: start; }
-  .alertcard .ico { width: 48px; height: 48px; border-radius: 14px; background: var(--red-l); display: grid; place-items: center; }
-  .alertcard .ico ui5-icon { color: var(--red-ink); width: 1.4rem; height: 1.4rem; }
-  .alertcard .drug { font-size: 1.3rem; font-weight: 780; color: var(--navy); line-height: 1.2; }
-  .alertcard .fail { margin-top: 0.4rem; font-size: 0.95rem; }
-  .rsum { position: relative; overflow: hidden; border-radius: 22px; padding: 1.4rem 1.6rem; color: #fff; background: linear-gradient(135deg, #7E1F2A, #E8636B);
-    box-shadow: 0 18px 36px -22px rgba(182, 58, 67, 0.9); display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)) auto; gap: 1rem; align-items: center; }
-  .rsum.clear { background: linear-gradient(135deg, #0E6B55, #3DBE8B); grid-template-columns: 1fr; }
-  .rsum .k { font-size: 0.72rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.85; }
-  .rsum .v { font-size: clamp(1.4rem, 2.6vw, 2.1rem); font-weight: 800; line-height: 1.1; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
-  .rsum .v.sm { font-size: clamp(1rem, 1.6vw, 1.2rem); }
-  .qbtn { all: unset; cursor: pointer; display: inline-flex; gap: 0.5rem; align-items: center; background: #fff; color: var(--red-ink); font-weight: 800; padding: 0.75rem 1.2rem;
-    border-radius: 999px; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2); white-space: nowrap; transition: transform 0.15s; }
-  .qbtn:hover { transform: translateY(-1px); } .qbtn:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
-  .qbtn ui5-icon { color: var(--red-ink); }
-  .locs { display: grid; gap: var(--gap); grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); }
-  .loc2 { background: var(--white); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 1rem 1.1rem; position: relative; overflow: hidden; }
-  .loc2::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 4px; background: var(--red); }
-  .loc2 .ln { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; }
-  .loc2 .ln b { color: var(--navy); font-size: 1.02rem; }
-  .loc2 .code { font-family: ui-monospace, Consolas, monospace; font-size: 0.72rem; color: var(--text-2); background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 0.05rem 0.4rem; }
-  .loc2 .qty { font-size: 2rem; font-weight: 800; color: var(--red-ink); margin: 0.5rem 0 0.1rem; font-variant-numeric: tabular-nums; }
-  .loc2 .qty small { font-size: 0.9rem; color: var(--text-2); font-weight: 600; }
-  .loc2 .qb { height: 8px; border-radius: 4px; background: #F3E3E5; overflow: hidden; margin: 0.35rem 0 0.6rem; } .loc2 .qb i { display: block; height: 100%; background: var(--red); border-radius: 4px; }
-  .loc2 .meta { display: grid; gap: 0.3rem; font-size: 0.84rem; }
-  .loc2.marked { border-color: var(--amber); } .loc2.marked::before { background: var(--amber); }
-  @media (max-width: 1100px) { .trust { grid-template-columns: 1fr; } .rsum { grid-template-columns: repeat(2, minmax(0, 1fr)); } .rsum .act { grid-column: 1 / -1; } }
+  /* ============ search, sort, category */
+  .gsearch { position: relative; margin-left: auto; flex: 0 1 340px; min-width: 180px; }
+  .gsearch svg { position: absolute; left: 12px; top: 50%; width: 16px; height: 16px; transform: translateY(-50%); fill: none; stroke: rgba(255, 255, 255, 0.8); stroke-width: 2; stroke-linecap: round; pointer-events: none; }
+  .gsearch input { width: 100%; height: 38px; padding: 0 12px 0 36px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.3); background: rgba(255, 255, 255, 0.12); color: #fff; font: inherit; font-size: 0.9rem; }
+  .gsearch input::placeholder { color: rgba(255, 255, 255, 0.75); }
+  .gsearch input:focus { outline: none; background: #fff; color: var(--text); border-color: #fff; }
+  .gsearch input:focus::placeholder { color: var(--text-2); }
+  .gs-drop { position: absolute; top: 44px; left: 0; right: 0; z-index: 40; background: #fff; color: var(--text); border: 1px solid var(--border); border-radius: var(--r-md); box-shadow: 0 16px 36px -14px var(--shade-2); overflow: hidden; }
+  .gs-i { all: unset; box-sizing: border-box; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0.1rem 0.6rem; width: 100%; padding: 0.55rem 0.8rem; cursor: pointer; align-items: center; }
+  .gs-i:hover, .gs-i.on { background: var(--teal-l); }
+  .gs-n { font-weight: 650; color: var(--navy); font-size: 0.88rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .gs-c { grid-column: 1; font-size: 0.74rem; color: var(--text-2); }
+  .gs-i .pill { grid-column: 2; grid-row: 1 / span 2; }
+  .gs-e { padding: 0.8rem; color: var(--text-2); font-size: 0.88rem; }
+  .toolbar { display: grid; grid-template-columns: minmax(220px, 2fr) minmax(170px, 1fr) minmax(170px, 1fr); gap: 0.6rem; margin-bottom: 0.7rem; }
+  .search-lg, .ctl { height: 40px; border: 1px solid var(--border); border-radius: 10px; background: #fff; font: inherit; font-size: 0.9rem; color: var(--text); padding: 0 0.8rem; min-width: 0; }
+  .search-lg { width: 100%; } .search-lg.sm { height: 36px; margin-top: 0.6rem; }
+  .search-lg:focus, .ctl:focus { outline: 2px solid var(--teal); border-color: var(--teal); }
+  .linkbtn { all: unset; cursor: pointer; color: var(--teal-ink); font-weight: 650; font-size: 0.84rem; } .linkbtn:hover { text-decoration: underline; } .linkbtn[hidden] { display: none; }
+  @media (max-width: 900px) { .toolbar { grid-template-columns: 1fr; } .gsearch { flex-basis: 100%; order: 5; } .shell-top { flex-wrap: wrap; } }
 
   /* ============ projector / narrow screens */
   @media (max-width: 1100px) {
@@ -689,8 +637,9 @@
   <div class="shell-top">
     <a class="brand" href="#" id="brand" aria-label="FlowForge home: Watch">
       <span class="mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13h4l2.2-5.5L13 18l2.4-6H21"/></svg></span>
-      <span><span class="brand-name">FlowForge</span><span class="brand-tag" style="display:block">AI-powered medicine shortage early warning</span></span>
+      <span><span class="brand-name">FlowForge</span><span class="brand-tag" style="display:block">Medicine shortage early warning</span></span>
     </a>
+    <div class="gsearch" role="search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="gsInput" type="search" placeholder="Search medicines  ( / )" aria-label="Search medicines" autocomplete="off"><div class="gs-drop" id="gsDrop" hidden></div></div>
     <span class="shell-meta" id="shellMeta"><span class="dot"></span><span id="shellMetaText">Demo Hospital · not connected</span></span>
     <div class="shell-actions">
       <ui5-button id="glossItem" design="Transparent" icon="course-book">Glossary</ui5-button>
@@ -757,13 +706,6 @@
     <ui5-button id="qOk" design="Negative" icon="locked">Mark for quarantine</ui5-button><ui5-button id="qCancel" design="Transparent">Cancel</ui5-button>
   </div>
 </ui5-dialog>
-<!-- quarantine confirmation (visual only: nothing is sent to the backend) -->
-<ui5-dialog id="qDlg" header-text="Quarantine this batch?">
-  <div id="qBody" style="max-width: 560px; padding: 0.5rem 0.25rem"></div>
-  <div slot="footer" class="row" style="justify-content:flex-end; width:100%; padding: 0.5rem">
-    <ui5-button id="qOk" design="Negative" icon="locked">Mark for quarantine</ui5-button><ui5-button id="qCancel" design="Transparent">Cancel</ui5-button>
-  </div>
-</ui5-dialog>
 <ui5-toast id="toast" placement="BottomCenter" duration="4000"></ui5-toast>
 
 <script type="module">
@@ -782,12 +724,12 @@ const BAND = {
   GREEN: { text: "Stable", design: "Positive", icon: "sys-enter-2" },
 };
 const CAUSE = {
-  CEILING_BELOW_COST: ["Costs more to make than the price cap allows", "The estimated cost of making one unit is above what the maker earns under the NPPA price cap. Makers lose money on every unit."],
-  HEADROOM_ERODING: ["Cost is climbing towards the price cap", "The margin between the maker's earnings under the cap and the cost of making it is shrinking month by month."],
-  SINGLE_ORIGIN_API: ["Key ingredient mostly from one country", "Most of the active ingredient (API) is imported from a single country, so one disruption there hits every maker."],
+  CEILING_BELOW_COST: ["Cost above price cap", "The estimated cost of making one unit is above what the maker earns under the NPPA price cap. Makers lose money on every unit."],
+  HEADROOM_ERODING: ["Margin narrowing", "The margin between the maker's earnings under the cap and the cost of making it is shrinking month by month."],
+  SINGLE_ORIGIN_API: ["Single-country ingredient", "Most of the active ingredient (API) is imported from a single country, so one disruption there hits every maker."],
   FEW_PRODUCERS: ["Few makers on record", "We found few (or no) companies making it. This count is a minimum: it comes from public quality records, so the real number can be higher."],
-  QUALITY_NSQ: ["Recent quality failures (CDSCO)", "Batches of this medicine failed government quality tests recently (CDSCO 'Not of Standard Quality' alerts)."],
-  SUPPLIER_OTD_DROP: ["Our supplier's deliveries are slipping", "On-time delivery from the hospital's supplier dropped in recent months."],
+  QUALITY_NSQ: ["Recent quality failures", "Batches of this medicine failed government quality tests recently (CDSCO 'Not of Standard Quality' alerts)."],
+  SUPPLIER_OTD_DROP: ["Late supplier deliveries", "On-time delivery from the hospital's supplier dropped in recent months."],
 };
 const OPTION = {
   BUFFER: ["Buy extra stock from the current supplier", "cart"],
@@ -947,7 +889,7 @@ function countUp(el, value, render = v => fmt.n(v)) {
 function pageHead(eyebrow, title, what, why, aside) {
   return h("div", { class: "page-head" },
     h("div", { style: "min-width: 0; flex: 1 1 520px" }, h("div", { class: "eyebrow" }, eyebrow), h("h1", { class: "page" }, title),
-      h("p", { class: "lead" }, what), why ? h("div", { class: "why-hint" }, h("b", {}, "Why it matters"), h("span", {}, why)) : null),
+      h("p", { class: "lead" }, what), null),
     aside || null);
 }
 function info(text) {
@@ -1036,7 +978,7 @@ document.getElementById("brand").addEventListener("click", e => { e.preventDefau
 document.getElementById("glossBody").append(...GLOSSARY.map(([t, d]) =>
   h("div", { class: "term" }, h("b", {}, ["REAL", "PROXY", "SYNTH"].includes(t) ? dataTag(t) : t), h("span", {}, d))));
 document.getElementById("helpBody").append(
-  h("p", { style: "margin-top:0" }, "The government (NPPA) caps the price of essential medicines. If the imported ingredient gets expensive, making the medicine stops paying and makers quietly stop. The hospital only notices when the shelf is empty. FlowForge spots that squeeze early and helps the pharmacist act before it happens."),
+  h("p", { style: "margin-top:0" }, "The government (NPPA) caps the price of essential medicines. When the cost of making one rises towards its cap, supply can stop. FlowForge flags that squeeze early so the pharmacy can act before stock runs out."),
   h("ui5-title", { level: "H5" }, "The five steps"),
   h("ol", {}, ...STEPS.map(([, a, b]) => h("li", {}, h("b", {}, a + ": "), b))),
   h("ui5-title", { level: "H5" }, "Risk colours"),
@@ -1048,6 +990,7 @@ document.getElementById("helpBody").append(
 
 /* ============================================================ 1. WATCH */
 const BAND_COLOR = { RED: "var(--red)", AMBER: "var(--amber)", GREEN: "var(--green)" };
+const searchText = r => [fmt.med(r), r.therapeutic_class, r.form_id, CAUSE[r.cause_code] && CAUSE[r.cause_code][0]].filter(Boolean).join(" ").toLowerCase();
 const producersText = n => n === null || n === undefined ? "producers not assessed" : `at least ${fmt.n(n)} producer${Number(n) === 1 ? "" : "s"} on record`;
 async function watch() {
   $app.replaceChildren(busy("Loading the watchlist from the database…", ["Reading every tracked price-capped medicine", "Fetching each one's latest risk flag and stock cover"]));
@@ -1060,17 +1003,12 @@ async function watch() {
   const rowTags = [...new Set(rows.map(r => r.data_tag).filter(Boolean))];
   let filter = "ALL", query = "";
 
-  // ---- hero: the problem in one sentence + where every medicine sits today (real margins)
+  // ---- hero: title + where every medicine sits today (real margins)
   const hero = h("section", { class: "hero" },
     h("div", { style: "position: relative; min-width: 0" },
       h("div", { class: "eyebrow" }, "Step 1 · Watch"),
-      h("h1", {}, "The first sign of a shortage isn't an empty shelf."),
-      h("p", { class: "sub" }, "It's a cost rising towards a price that isn't allowed to rise."),
-      h("div", { class: "versus", "aria-label": "Cost versus price cap" },
-        h("span", { class: "tok cost" }, svgMini("rise"), "COST"), h("span", { class: "vs" }, "VS"),
-        h("span", { class: "tok cap" }, svgMini("flat"), "PRICE CAP")),
-      h("p", { class: "lead" }, `What you are looking at: FlowForge's live check of ${rows.length} price-capped essential medicines. For each one it asks: is it still worth making under the government price cap, how many makers are left, and how long our own stock lasts.`),
-      h("div", { class: "why-hint" }, h("b", {}, "Why it matters"), h("span", {}, "When making a medicine stops paying, supply dries up quietly. Spotting the squeeze early gives the pharmacy months, not days."))),
+      h("h1", {}, "Shortage risk overview"),
+      h("p", { class: "sub" }, `${rows.length} price-capped essential medicines, checked on margin, supply and stock cover.`)),
     squeeze(rows));
 
   // ---- KPI cards
@@ -1088,38 +1026,53 @@ async function watch() {
   const banner = h("section", { class: "shock", "aria-label": "Import cost shock scenario" },
     h("div", { class: "eyebrow" }, "Live scenario · stress test"),
     h("h2", {}, "What if import costs rise 30%?"),
-    h("p", {}, "Tariffs, freight or a supply crisis can push the cost of imported ingredients up overnight. FlowForge re-checks every medicine's margin with ingredient costs 30% higher and shows which ones tip into danger."),
+    h("p", {}, "Re-checks every margin with imported ingredient costs 30% higher."),
     goBtn, runBox,
-    h("small", {}, "Nothing is saved or ordered. Takes about 30 seconds on SAP BTP."));
+    h("small", {}, "Simulation only. Nothing is saved or ordered."));
   const mix = card("Risk mix today", `${rows.length} medicines by risk flag`, "pie-chart", donut(rows));
   if (state.shock) showShock(shockBox, state.shock);
 
-  // ---- watchlist
+  // ---- watchlist: search, category, sort, risk filter
+  const SORTS = { urgency: ["Most urgent", null], margin: ["Margin, lowest first", r => r.headroom_pct], cover: ["Stock cover, shortest first", r => r.min_days_of_cover],
+    price: ["Price cap, highest first", r => r.ceiling_price_inr === null ? null : -r.ceiling_price_inr], makers: ["Fewest makers", r => r.producer_count_min], name: ["Name, A to Z", r => fmt.med(r).toLowerCase()] };
+  let cls = "ALL", sortKey = "urgency";
   const list = h("div", { class: "wl", role: "list" });
   const head = h("div", { class: "wl-head", "aria-hidden": "true" },
     h("span", {}, "Medicine"), h("span", {}, "Status"), h("span", {}, "Margin left"), h("span", { class: "c-cause" }, "Main reason"),
     h("span", {}, "Our stock lasts"), h("span", {}, "Data"));
+  const count = h("span", { class: "hint", role: "status" }), clear = h("button", { class: "linkbtn", hidden: true }, "Clear filters");
   function fill() {
-    const q = query.toLowerCase();
-    const shown = rows.filter(r => (filter === "ALL" || r.exit_risk_band === filter) && (!q || fmt.med(r).toLowerCase().includes(q)));
+    const q = query.trim().toLowerCase();
+    let shown = rows.filter(r => (filter === "ALL" || r.exit_risk_band === filter) && (cls === "ALL" || r.therapeutic_class === cls) && (!q || searchText(r).includes(q)));
+    const key = SORTS[sortKey][1];
+    if (key) shown = shown.map(r => [key(r), r]).sort(([a], [b]) => ((a === null || a === undefined) - (b === null || b === undefined)) || (a < b ? -1 : a > b ? 1 : 0)).map(x => x[1]);
     list.replaceChildren(head, ...shown.map(watchRow));
-    if (!shown.length) list.append(h("div", { class: "empty" }, "No medicine matches this filter or search."));
+    if (!shown.length) list.append(h("div", { class: "empty" }, "No medicine matches these filters."));
+    count.textContent = `Showing ${shown.length} of ${rows.length}`;
+    clear.hidden = filter === "ALL" && cls === "ALL" && !q && sortKey === "urgency";
   }
+  const select = (label, opts, onchange) => { const el = h("select", { class: "ctl", "aria-label": label }, ...opts.map(([v, t]) => h("option", { value: v }, t))); el.addEventListener("change", () => onchange(el.value)); return el; };
+  const classes = [...new Set(rows.map(r => r.therapeutic_class).filter(Boolean))].sort();
+  const catSel = select("Category", [["ALL", "All categories"], ...classes.map(c => [c, `${c} (${rows.filter(r => r.therapeutic_class === c).length})`])], v => { cls = v; fill(); });
+  const sortSel = select("Sort by", Object.entries(SORTS).map(([k, [t]]) => [k, "Sort: " + t]), v => { sortKey = v; fill(); });
+  const search = h("input", { class: "search-lg", type: "search", placeholder: "Search by medicine, category or reason", "aria-label": "Search medicines" });
+  search.addEventListener("input", () => { query = search.value; fill(); });
   const seg = h("ui5-segmented-button", { "accessible-name": "Filter by risk" },
     h("ui5-segmented-button-item", { selected: true, "data-v": "ALL" }, `All (${rows.length})`),
     h("ui5-segmented-button-item", { "data-v": "RED" }, `Act now (${n("RED")})`),
     h("ui5-segmented-button-item", { "data-v": "AMBER" }, `Watch (${n("AMBER")})`),
     h("ui5-segmented-button-item", { "data-v": "GREEN" }, `Stable (${n("GREEN")})`));
   seg.addEventListener("selection-change", e => { filter = e.detail.selectedItems[0].dataset.v; fill(); });
-  const search = h("ui5-input", { placeholder: "Search a medicine", "show-clear-icon": true, "accessible-name": "Search a medicine" }, h("ui5-icon", { slot: "icon", name: "search" }));
-  search.addEventListener("input", e => { query = e.target.value; fill(); });
+  clear.addEventListener("click", () => { filter = "ALL"; cls = "ALL"; sortKey = "urgency"; query = ""; search.value = ""; catSel.value = "ALL"; sortSel.value = "urgency";
+    seg.querySelector('[data-v="ALL"]').selected = true; fill(); });
   fill();
 
   showPage(hero, kpis,
     h("div", { class: "mixrow" }, mix, banner), shockBox,
-    card("Medicine watchlist", `${rows.length} medicines · most urgent first · click a medicine to see why it is flagged`, "activity-2",
-      h("div", { class: "wl-tools" }, seg, search), list),
-    h("p", { class: "hint" }, "Every flag is a probabilistic risk flag for review, computed by fixed rules. It never states what a manufacturer intends to do. Producer counts are minimums from public records."));
+    card("Medicine watchlist", `${rows.length} medicines`, "activity-2",
+      h("div", { class: "toolbar" }, search, catSel, sortSel),
+      h("div", { class: "wl-tools" }, seg, h("div", { class: "row" }, count, clear)), list),
+    h("p", { class: "hint" }, "Risk flags are for pharmacist review, not a statement about any manufacturer. Producer counts are minimums."));
 }
 function svgMini(kind) {
   const s = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -1144,7 +1097,7 @@ function squeeze(rows) {
   const noModel = rows.length - pts.length;
   const box = h("div", { class: "squeeze" },
     h("div", { class: "t" }, "Where every medicine stands today"),
-    h("div", { class: "s" }, "Each dot is one medicine, placed by its margin left (what the maker earns under the price cap minus the estimated cost)."));
+    h("div", { class: "s" }, "Each dot is one medicine, placed by margin left."));
   if (!pts.length) { box.append(h("p", { class: "hint" }, "No margin estimates yet.")); return box; }
   const vals = pts.map(r => r.headroom_pct);
   const lo = Math.max(-0.5, Math.min(-0.1, ...vals)), hi = Math.min(0.5, Math.max(0.1, ...vals));
@@ -1253,7 +1206,7 @@ function watchRow(r) {
   return h("button", { class: "wrow " + (r.exit_risk_band || ""), role: "listitem", "data-form": r.form_id,
     "aria-label": `${fmt.med(r)}: ${BAND[r.exit_risk_band]?.text || "not assessed"}. Open details.`, onclick: () => go("understand", r.form_id) },
     h("div", { style: "min-width: 0" }, h("div", { class: "nm" }, fmt.med(r)),
-      h("div", { class: "sub" }, `Price cap ${fmt.inr(r.ceiling_price_inr)}/unit · ${producersText(r.producer_count_min)}`)),
+      h("div", { class: "sub" }, `${r.therapeutic_class ? r.therapeutic_class + " · " : ""}Price cap ${fmt.inr(r.ceiling_price_inr)}/unit · ${producersText(r.producer_count_min)}`)),
     h("div", {}, bandTag(r.exit_risk_band)), bar,
     h("div", { class: "cause" }, c ? c[0] : "–"), stock, h("div", {}, dataTag(r.data_tag)));
 }
@@ -1277,26 +1230,23 @@ async function understand() {
   const expl = d.explanation;
   const verdict = h("section", { class: "verdict " + (band || "") },
     h("div", { class: "main" },
-      h("div", { class: "eyebrow" }, "Step 2 · Understand · why is this medicine flagged?"),
+      h("div", { class: "eyebrow" }, "Step 2 · Understand"),
       h("div", { class: "name" }, fmt.med(f)),
       h("div", { class: "cls" }, `${f.THERAPEUTIC_CLASS || ""} · ${nlemText(f.NLEM_LEVEL)}`),
       h("div", { class: "status" }, fc ? bandTag(band, "Shortage risk: ", true) : tag("Not assessed", "Neutral"),
         fc && fc.exit_risk !== null ? h("span", { class: "score" }, "exit-risk score ", h("b", {}, fmt.pct(fc.exit_risk)),
           info("The exit-risk score adds up the warning signs (thin margin, fast decline, few makers, one-country ingredient, quality alerts, late deliveries) with fixed weights from rules/weights.yaml. It is a flag for review, not a prediction of any company's decision.")) : null),
-      cause ? h("p", { class: "reason" }, cause[0] + ".") : h("p", { class: "reason" }, "No main reason recorded."),
-      cause ? h("p", { class: "reason-d" }, cause[1]) : null,
+      cause ? h("p", { class: "reason" }, cause[0], info(cause[1])) : h("p", { class: "reason" }, "No main reason recorded."),
       expl ? h("div", { class: "plain" }, h("div", { class: "who" }, h("ui5-icon", { name: expl.used_llm ? "lightbulb" : "document" }),
-        expl.used_llm ? "In plain words · written by the AI from the checked fact sheet" : "In plain words · generated from the rules (no AI model used)"), h("div", {}, expl.text)) : null),
+        expl.used_llm ? "Key points · drafted from the checked fact sheet" : "Key points · generated from the rules"), h("ul", { class: "pts" }, ...points(expl.text).map(t => h("li", {}, t)))) : null),
     h("div", { class: "side" },
       h("div", { class: "capbox" }, h("div", { class: "k" }, "Price ceiling"),
         h("div", { class: "v" }, fmt.inr(f.CEILING_PRICE), h("span", { style: "font-size: 0.9rem; color: var(--text-2); font-weight: 600" }, " / unit")),
         h("div", { class: "d" }, "Maximum allowed selling price, excluding GST, set by NPPA ", dataTag(f.IS_PROXY)),
         h("div", { class: "d" }, f.CEILING_SO_NUMBER || "")),
-      h("div", {}, h("div", { class: "capbox" }, h("div", { class: "k", style: "margin-bottom: 0.4rem" }, "What the AI agents checked")),
+      h("div", {}, h("div", { class: "capbox" }, h("div", { class: "k", style: "margin-bottom: 0.4rem" }, "Checks run")),
         h("div", { class: "agents" }, ...["A1 Margin", "A2 Supply", "A3 Forecast", "A4 Options", "A5 Rules"].flatMap((t, i) => [i ? h("span", { class: "ar" }, "→") : null, h("span", { class: "ag" }, t)])),
-        h("div", { class: "d", style: "font-size: 0.8rem; color: var(--text-2); margin-top: 0.4rem" }, "Each agent answers one question below. A human decides in step 3.")),
-      h("div", { class: "why-hint", style: "margin: 0; border-radius: var(--r-md)" }, h("b", {}, "Why it matters"),
-        h("span", {}, "A flag is only useful if a pharmacist can check the reasoning. Every number below shows where it came from."))));
+        h("div", { class: "d", style: "font-size: 0.8rem; color: var(--text-2); margin-top: 0.4rem" }, "A pharmacist decides in step 3."))));
 
   // ---- Q1: margin
   let q1body;
@@ -1359,8 +1309,8 @@ async function understand() {
 
   // ---- options
   const scen = (d.scenarios || []).slice().sort((a, b) => (a.rank ?? 99) - (b.rank ?? 99));
-  const recId = (scen.find(sc => sc.rank !== null && recBy[sc.scenario_id]?.overall === "READY") || scen.find(sc => sc.rank !== null) || {}).scenario_id;
-  const optCards = scen.map(sc => {
+  const recSc = scen.find(sc => sc.rank !== null && recBy[sc.scenario_id]?.overall === "READY") || scen.find(sc => sc.rank !== null) || null;
+  const optCard = sc => {
     const rec = recBy[sc.scenario_id], ov = rec && OVERALL[rec.overall];
     const opt = OPTION[sc.option_type] || [sc.option_type, "product"];
     const rejected = sc.rank === null;
@@ -1369,8 +1319,8 @@ async function understand() {
     const act = rec && (rec.overall === "READY" || rec.overall === "NEEDS_CHANGES")
       ? h("ui5-button", { design: rec.overall === "READY" ? "Emphasized" : "Default", "end-icon": "slim-arrow-right", onclick: () => go("decide", sc.scenario_id) }, "Review") : null;
     const reason = sc.correlated_risk_reason ? String(sc.correlated_risk_reason).split(f.FORM_ID).join("this medicine") : "";
-    return h("div", { class: "opt" + (rejected ? " rej" : "") + (sc.scenario_id === recId ? " rec" : "") },
-      sc.scenario_id === recId ? h("span", { class: "ribbon" }, "RECOMMENDED") : null,
+    return h("div", { class: "opt" + (rejected ? " rej" : "") + (sc === recSc ? " rec" : "") },
+      sc === recSc ? h("span", { class: "ribbon" }, recBy[sc.scenario_id]?.overall === "READY" ? "RECOMMENDED" : "TOP RANKED") : null,
       h("div", { class: "oh" }, h("span", { class: "ico" }, h("ui5-icon", { name: opt[1] })),
         h("div", { style: "min-width: 0" }, h("div", { class: "ot" }, opt[0]),
           h("div", { class: "od" }, [sc.supplier ? "supplier " + sc.supplier : "", sc.substitute_formulation_id ? "substitute " + sc.substitute_formulation_id : "", sc.rank ? "rank " + sc.rank : "not ranked"].filter(Boolean).join(" · ")))),
@@ -1380,11 +1330,31 @@ async function understand() {
         h("div", {}, h("div", { class: "k" }, "Covers"), h("div", { class: "v" }, `${fmt.n(sc.coverage_days)} d`))),
       reason ? h("div", { class: "why-rej" }, h("b", {}, "Why rejected: "), reason) : null,
       h("div", { class: "oact" }, status, act));
-  });
-  const q4 = card("What can we do?", "Options from agent A4, each checked against the price law and hospital rules by agent A5", AGENT.A4[2],
+  };
+  // recommended option is always first; the sort applies to the other viable options; rejected ones go last
+  const ovOf = sc => recBy[sc.scenario_id]?.overall, num = v => (v === null || v === undefined ? Infinity : Number(v));
+  const OSORT = {
+    rank: ["Best ranked", () => 0],
+    ready: ["Ready for approval first", (a, b) => (ovOf(b) === "READY") - (ovOf(a) === "READY")],
+    cost: ["Lowest cost", (a, b) => num(a.cost) - num(b.cost)],
+    cover: ["Longest cover", (a, b) => num(b.coverage_days === null ? -1 : b.coverage_days) - num(a.coverage_days === null ? -1 : a.coverage_days)],
+    type: ["Option type", (a, b) => String((OPTION[a.option_type] || [""])[0]).localeCompare(String((OPTION[b.option_type] || [""])[0]))],
+  };
+  const optsBox = h("div", { class: "opts" });
+  function fillOpts(k) {
+    const live = scen.filter(sc => sc.rank !== null && sc !== recSc).sort((a, b) => OSORT[k][1](a, b) || (a.rank ?? 99) - (b.rank ?? 99));
+    const rej = scen.filter(sc => sc.rank === null);
+    optsBox.replaceChildren(...[recSc, ...live, ...rej].filter(Boolean).map(optCard));
+  }
+  const optSort = h("select", { class: "ctl", "aria-label": "Sort options" }, ...Object.entries(OSORT).map(([k, [t]]) => h("option", { value: k }, "Sort: " + t)));
+  optSort.addEventListener("change", () => fillOpts(optSort.value));
+  fillOpts("rank");
+  const nRej = scen.filter(sc => sc.rank === null).length;
+  const q4 = card("What can we do?", "Options (A4) checked against price law and hospital rules (A5)", AGENT.A4[2],
     scen.length ? h("div", { class: "stack" },
-      h("p", { class: "hint", style: "margin: 0" }, "Options that share the same weak point as today's supply (same ingredient country or starting material) are rejected: they would fail together. Quantities are sized so nothing expires before use."),
-      h("div", { class: "opts" }, ...optCards)) : strip("Positive", "No action needed: our stock covers the risk window."));
+      h("p", { class: "hint", style: "margin: 0" }, "Options sharing today's supply weak point are rejected. Quantities are sized so nothing expires before use."),
+      h("div", { class: "opt-tools" }, h("span", { class: "hint" }, `${scen.length - nRej} viable · ${nRej} rejected`), optSort),
+      optsBox) : strip("Positive", "No action needed: our stock covers the risk window."));
 
   showPage(
     h("div", {}, h("button", { class: "backlink", onclick: () => go("watch") }, svgIcon("back"), "Back to the watchlist")),
@@ -1393,6 +1363,13 @@ async function understand() {
     chartCard(series, s),
     q4,
     h("p", { class: "hint" }, d.disclaimer));
+}
+// Split the explanation text into short points (sentences, then semicolon clauses). Display only: no number is changed.
+function points(text) {
+  const out = [];
+  String(text || "").replace(/excl\. /g, "excl.\u0001").split(/(?<=[.!?])\s+(?=[A-Z])/).forEach(sen =>
+    sen.split(/;\s+/).forEach(c => { c = c.replace(/\u0001/g, " ").trim().replace(/\.$/, ""); if (c) out.push(c[0].toUpperCase() + c.slice(1)); }));
+  return out;
 }
 function qCard(num, q, by, infoText, body) {
   return h("section", { class: "card qcard" },
@@ -1407,8 +1384,8 @@ async function pickMedicine() {
   const top = state.watch.filter(r => r.exit_risk_band === "RED").slice(0, 6);
   const list = top.length ? top : state.watch.slice(0, 6);
   showPage(
-    pageHead("Step 2 · Understand", "Why is a medicine at risk?", "Pick a medicine to see FlowForge's reasoning: its margin, its makers and our stock, each answered with real numbers.",
-      "The most urgent medicines are shown first, so you can start where it matters."),
+    pageHead("Step 2 · Understand", "Why is a medicine at risk?", "Select a medicine to see its margin, supply and stock cover.",
+      null),
     h("div", { class: "pick-grid" }, ...list.map(r => h("button", { class: "pick", onclick: () => go("understand", r.form_id) },
       h("div", { class: "row spread" }, bandTag(r.exit_risk_band), dataTag(r.data_tag)),
       h("div", { class: "nm" }, fmt.med(r)),
@@ -1517,8 +1494,10 @@ async function decide() {
   const stage = flow3();
 
   const listBox = h("div", { class: "qlist2", role: "listbox", "aria-label": "Recommendations waiting for a decision" }), detail = h("div", { class: "stack" });
+  let dq = "";
   function fillList() {
-    const items = mode === "best" ? best : all.slice().sort((a, b) => (a.generic || "").localeCompare(b.generic || "") || rank(a) - rank(b));
+    const base = mode === "best" ? best : all.slice().sort((a, b) => (a.generic || "").localeCompare(b.generic || "") || rank(a) - rank(b));
+    const items = base.filter(p => (p.generic || p.form_id || "").toLowerCase().includes(dq));
     if (!items.length) { listBox.replaceChildren(h("div", { class: "empty" }, "Nothing is waiting for a decision.")); return; }
     listBox.replaceChildren(...items.map(p => {
       const opt = OPTION[p.scenario?.option_type] || ["", "product"];
@@ -1537,7 +1516,7 @@ async function decide() {
       stage.setStage(0);
       detail.replaceChildren(h("section", { class: "rhero" }, h("div", { class: "top" }, h("span", { class: "ico" }, h("ui5-icon", { name: "workflow-tasks" })),
         h("div", {}, h("div", { class: "ttl" }, "Pick a recommendation"), h("div", { class: "muted small" }, "Choose a medicine on the left to start the review."))),
-        h("p", { class: "sentence" }, "Items marked Ready passed every automatic rule check. You will read the proposed action, see the rule checks, tick your own checklist and then approve, edit, reject or snooze.")));
+        h("p", { class: "sentence" }, "Items marked Ready passed every automatic check.")));
       return;
     }
     detail.replaceChildren(...recDetail(p, stage));
@@ -1546,17 +1525,19 @@ async function decide() {
     h("ui5-segmented-button-item", { selected: mode === "best", "data-v": "best" }, `Best per medicine (${best.length})`),
     h("ui5-segmented-button-item", { selected: mode === "all", "data-v": "all" }, `All options (${all.length})`));
   seg.addEventListener("selection-change", e => { mode = e.detail.selectedItems[0].dataset.v; fillList(); });
+  const dsearch = h("input", { class: "search-lg sm", type: "search", placeholder: "Search medicines", "aria-label": "Search recommendations" });
+  dsearch.addEventListener("input", () => { dq = dsearch.value.trim().toLowerCase(); fillList(); });
   fillList(); showRec();
   showPage(
     pageHead("Step 3 · Decide", "The Chief Pharmacist decides",
-      "What you are looking at: every action FlowForge recommends, waiting for a person. Each one already passed the automatic price-law and hospital-rule checks.",
-      "Nothing is bought by the AI. A named pharmacist reviews, ticks a checklist and approves; only then is a purchase requisition created."),
+      "Recommended actions awaiting pharmacist approval. Each has passed the automatic rule checks.",
+      null),
     stage,
     h("div", { class: "cockpit" },
       h("div", { class: "queue" }, h("section", { class: "card" },
         h("div", { class: "card-h", style: "margin-bottom: 0.7rem" }, h("span", { class: "ico" }, h("ui5-icon", { name: "workflow-tasks" })),
           h("div", {}, h("div", { class: "t" }, "Waiting for a decision"), h("div", { class: "s" }, `${best.filter(p => p.overall === "READY").length} medicines have a ready option`))),
-        seg, listBox)),
+        seg, dsearch, listBox)),
       detail));
 }
 function recDetail(p, stage) {
@@ -1592,7 +1573,7 @@ function recDetail(p, stage) {
       h("div", {}, h("b", {}, CHECK[c.check_id] || c.name), extra, h("div", { class: "src" }, `${c.rule_source || ""}${ev.note ? " · " + ev.note : ""}`)));
   };
   const notPass = p.checks.filter(c => c.status !== "PASS"), pass = p.checks.filter(c => c.status === "PASS");
-  const checksCard = card("Automatic rule checks", "Agent A5 checks the price law (DPCO) and the hospital's SOP before anyone sees the option", AGENT.A5[2],
+  const checksCard = card("Automatic rule checks", "Agent A5 · DPCO price law and hospital SOP", AGENT.A5[2],
     h("div", { class: "chk-sum" }, h("div", { class: "n" }, `${nPass} `, h("small", {}, `of ${nAll} passed`)),
       h("div", { class: "row" }, tag(`${nPass} pass`, "Positive", "sys-enter-2"), nWarn ? tag(`${nWarn} warning${nWarn > 1 ? "s" : ""}`, "Critical", "alert") : null,
         nBlock ? tag(`${nBlock} blocked`, "Negative", "error") : null)),
@@ -1615,7 +1596,7 @@ function recDetail(p, stage) {
   const cnt6 = h("span", { class: "cnt" }), fill = h("i", { style: "width: 0%" }), lock = h("div", { class: "lockmsg" });
   const readyCard = h("section", { class: "card ready" },
     h("div", { class: "card-h" }, h("span", { class: "ico" }, h("ui5-icon", { name: "workflow-tasks" })),
-      h("div", {}, h("div", { class: "t" }, "Approval readiness"), h("div", { class: "s" }, "Your own checks. Approve unlocks when all 6 are ticked and your name is entered."))),
+      h("div", {}, h("div", { class: "t" }, "Approval readiness"), h("div", { class: "s" }, "Approve unlocks when all 6 are ticked and an approver is named."))),
     h("div", { class: "readybar" }, cnt6, h("span", { class: "tr", role: "progressbar", "aria-label": "Checklist progress" }, fill)),
     h("div", { class: "checks" }, ...boxes),
     h("div", { class: "apprv" }, h("div", { class: "who" }, h("ui5-label", { "show-colon": true }, "Approver"), user),
@@ -1693,9 +1674,9 @@ async function prove() {
     catch (e) { box.replaceChildren(strip("Negative", "Could not load the audit trail: " + e.message)); }
   };
   showPage(
-    pageHead("Step 4 · Prove", "Show me why I should trust this decision",
-      "What you are looking at: the tamper-evident record of one FlowForge run. Each agent's input and output is fingerprinted (hashed) and linked to the step before, like a ledger.",
-      "Change any past record and the chain breaks, visibly. This is the evidence an NABH hospital auditor can check."),
+    pageHead("Step 4 · Prove", "Audit trail",
+      "Tamper-evident record of one run. Each step is hashed and linked to the one before.",
+      null),
     h("div", { class: "runbar" }, h("ui5-label", { "show-colon": true }, "Run"), runInput, h("ui5-button", { icon: "refresh", onclick: load }, "Load"),
       h("span", { class: "hint" }, "The latest run is filled in for you.")),
     box);
@@ -1763,8 +1744,8 @@ async function recall() {
   };
   const eyebrow = h("div", { class: "eyebrow alert" }, "Step 5 · Recall · quality emergency");
   const head = pageHead("", "Recall: where is the failed batch?",
-    "What you are looking at: when CDSCO, India's drug regulator, reports a batch as Not of Standard Quality (NSQ), the pharmacy must find it everywhere in the hospital.",
-    "One click replaces a manual search of every store room and ward (hospital SOP control CP-14).");
+    "Locate a batch reported Not of Standard Quality (NSQ) by CDSCO across every store.",
+    null);
   head.querySelector(".eyebrow").replaceWith(eyebrow);
   showPage(head,
     h("div", { class: "searchcard" }, h("span", { class: "lbl" }, "CDSCO alert"), idInput,
@@ -1826,6 +1807,27 @@ function openQuarantine(a, m, total, nLoc, cards) {
   document.getElementById("qCancel").onclick = () => { dlg.open = false; };
   dlg.open = true;
 }
+
+/* ============================================================ header search */
+(() => {
+  const inp = document.getElementById("gsInput"), drop = document.getElementById("gsDrop"); let sel = -1, hits = [];
+  const close = () => { drop.hidden = true; sel = -1; };
+  const pick = r => { inp.value = ""; close(); inp.blur(); go("understand", r.form_id); };
+  const paint = () => drop.replaceChildren(...(hits.length ? hits.map((r, i) => h("button", { class: "gs-i" + (i === sel ? " on" : ""), onmousedown: e => { e.preventDefault(); pick(r); } },
+    h("span", { class: "gs-n" }, fmt.med(r)), h("span", { class: "gs-c" }, r.therapeutic_class || ""), bandTag(r.exit_risk_band))) : [h("div", { class: "gs-e" }, "No matching medicine")]));
+  async function run() {
+    const q = inp.value.trim().toLowerCase(); if (!q) return close();
+    if (!state.watch && state.key) { try { state.watch = await api("/watchlist?limit=200&assessed_only=true"); } catch { return; } }
+    hits = (state.watch || []).filter(r => searchText(r).includes(q)).slice(0, 8); sel = hits.length ? 0 : -1; paint(); drop.hidden = false;
+  }
+  inp.addEventListener("input", run);
+  inp.addEventListener("keydown", e => {
+    if (e.key === "ArrowDown" || e.key === "ArrowUp") { e.preventDefault(); if (hits.length) { sel = (sel + (e.key === "ArrowDown" ? 1 : -1) + hits.length) % hits.length; paint(); } }
+    else if (e.key === "Enter" && hits[sel]) pick(hits[sel]); else if (e.key === "Escape") { inp.value = ""; close(); }
+  });
+  inp.addEventListener("blur", () => setTimeout(close, 120));
+  document.addEventListener("keydown", e => { const t = document.activeElement.tagName; if (e.key === "/" && !/^(INPUT|TEXTAREA|SELECT|UI5)/.test(t)) { e.preventDefault(); inp.focus(); } });
+})();
 
 /* ============================================================ start */
 renderSteps();
