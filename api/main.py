@@ -19,7 +19,7 @@ from typing import Any, Callable, Iterator
 import pandas as pd
 from fastapi import APIRouter, Depends, FastAPI, HTTPException, Query, Request, Security
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, HTMLResponse
+from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse
 from fastapi.security import APIKeyHeader
 
 from agents import a1_margin_sentinel as a1
@@ -244,6 +244,12 @@ def health(request: Request) -> Health:
     return Health(db_backend=request.app.state.settings.db_backend, version=VERSION)
 
 
+@public.get("/", include_in_schema=False)
+def root() -> RedirectResponse:
+    """The bare app URL opens the fallback UI instead of a JSON 404."""
+    return RedirectResponse("/ui")
+
+
 @public.get("/ui", include_in_schema=False)
 def fallback_ui() -> FileResponse:
     """The fallback UI (S10), served same-origin so no CORS setup is needed. Static file; data needs the API key."""
@@ -385,8 +391,9 @@ def scenario_shock(req: ShockRequest, request: Request, db: Db = Depends(get_con
     rules = rules_of(request)
     rc = RunContext(run_id=f"whatif-{uuid.uuid4().hex[:8]}", dry_run=True, as_of=orch.as_of_date(db))
     ctx = AgentCtx(db, rules, rc)
-    base = {s.formulation_id: s for s in a1.run(ids, ctx)}
-    shocked = a1.run(ids, ctx, api_cost_multiplier=req.multiplier)
+    cache: dict = {}  # secondary signals are the same for both calls: fetch them once
+    base = {s.formulation_id: s for s in a1.run(ids, ctx, secondary_cache=cache)}
+    shocked = a1.run(ids, ctx, api_cost_multiplier=req.multiplier, secondary_cache=cache)
     names = {r["FORM_ID"]: r for r in _records(
         db, f"SELECT FORM_ID, GENERIC, STRENGTH FROM FF_REF_FORMULATION WHERE FORM_ID IN ({placeholders(ids)})", tuple(ids))}
     rows = [ShockRow(form_id=s.formulation_id, generic=names.get(s.formulation_id, {}).get("GENERIC"),
@@ -400,10 +407,11 @@ def _approving(a: dict[str, Any] | None) -> bool:
     return bool(a) and a["ACTION"] in (ApprovalAction.APPROVE.value, ApprovalAction.EDIT_APPROVE.value)
 
 
-def _awaiting_level(db: Db, rec: dict[str, Any], rules: Rules, now: datetime) -> int | None:
+def _awaiting_level(db: Db, rec: dict[str, Any], rules: Rules, now: datetime,
+                    approvals: list[dict[str, Any]] | None = None) -> int | None:
     """1 or 2 if the recommendation still needs a human at that level, else None."""
     rec_id = rec["SCENARIO_ID"]
-    latest = a6.latest_by_level(a6.load_approvals(db, rec_id))
+    latest = a6.latest_by_level(approvals if approvals is not None else a6.load_approvals(db, rec_id))
     if not latest:
         return 1
     if any(a["ACTION"] == ApprovalAction.REJECT.value for a in latest.values()):
@@ -433,16 +441,31 @@ def approvals_pending(request: Request, db: Db = Depends(get_conn)) -> list[Pend
                         "WHERE a.RUN_ID = r.RUN_ID AND a.SCENARIO_ID = r.SCENARIO_ID) "
                         f"ORDER BY r.CREATED_AT DESC, r.RUN_ID DESC, r.SCENARIO_ID LIMIT {PENDING_SCAN_LIMIT}")
     latest_run: dict[str, str] = {}
-    out = []
+    current = []
     for rec in recs:
-        if latest_run.setdefault(rec["FORM_ID"], rec["RUN_ID"]) != rec["RUN_ID"]:
-            continue  # superseded by a newer run of the same formulation
-        level = _awaiting_level(db, rec, rules, now)
+        if latest_run.setdefault(rec["FORM_ID"], rec["RUN_ID"]) == rec["RUN_ID"]:
+            current.append(rec)  # older runs of the same formulation are superseded
+    # One query per run for approvals, scenarios and checks instead of three per recommendation: from BTP
+    # to HANA each round trip costs ~0.2 s, and ~190 recommendations took ~2 minutes.
+    run_ids = sorted({r["RUN_ID"] for r in current})
+    approvals: dict[str, list[dict[str, Any]]] = {}
+    scenarios: dict[str, dict[str, Any]] = {}
+    checks_by: dict[str, list[CheckResult]] = {}
+    for run_id in run_ids:
+        for a in _records(db, "SELECT SCENARIO_ID, LEVEL_NO, DECIDED_AT, APPROVER, ACTION, CHECKLIST_JSON, REASON, "
+                              "EDITED_QTY, EDITED_SUPPLIER, SNOOZE_DAYS FROM FF_AG_APPROVAL WHERE RUN_ID = ? "
+                              "ORDER BY DECIDED_AT", (run_id,)):
+            approvals.setdefault(a.pop("SCENARIO_ID"), []).append(a)
+        for s in _records(db, "SELECT * FROM FF_AG_SCENARIO WHERE RUN_ID = ?", (run_id,)):
+            scenarios[s["SCENARIO_ID"]] = s
+        checks_by.update(_checks(db, run_id))
+    out = []
+    for rec in current:
+        level = _awaiting_level(db, rec, rules, now, approvals.get(rec["SCENARIO_ID"], []))
         if level is None:
             continue
-        scen = _one(db, "SELECT * FROM FF_AG_SCENARIO WHERE RUN_ID = ? AND SCENARIO_ID = ?",
-                    (rec["RUN_ID"], rec["SCENARIO_ID"]))
-        checks = _checks(db, rec["RUN_ID"], rec["SCENARIO_ID"]).get(rec["SCENARIO_ID"], [])
+        scen = scenarios.get(rec["SCENARIO_ID"])
+        checks = checks_by.get(rec["SCENARIO_ID"], [])
         r = recommendation_of(rec, checks)
         out.append(PendingApproval(rec_id=rec["SCENARIO_ID"], run_id=rec["RUN_ID"], form_id=rec["FORM_ID"],
                                    generic=rec["GENERIC"], overall=rec["OVERALL"],

@@ -218,7 +218,8 @@ def _secondary(db: Db, form_id: str, as_of: pd.Period, rules: Rules) -> list[Sec
 # ---------------------------------------------------------------- run
 
 
-def _evaluate(form_id: str, inp: _Inputs, c: _Ctx, api_cost_multiplier: float
+def _evaluate(form_id: str, inp: _Inputs, c: _Ctx, api_cost_multiplier: float,
+              secondary_cache: dict[str, list[SecondarySignal]] | None = None
               ) -> tuple[RiskSignal, dict[str, Any]]:
     rules = c.rules
     tags: dict[str, DataTag] = {}
@@ -284,7 +285,7 @@ def _evaluate(form_id: str, inp: _Inputs, c: _Ctx, api_cost_multiplier: float
         months_to_breach=mtb,
         realisation_inr=_money(r),
         unit_cost_inr=_money(u),
-        secondary_signals=_secondary(c.db, form_id, as_of_p, rules),
+        secondary_signals=_cached_secondary(c.db, form_id, as_of_p, rules, secondary_cache),
         data_quality=DataQuality(confidence=round(real_share, 4), tags=tags),
     )
     return sig, extra
@@ -304,11 +305,24 @@ def _write(db: Db, sigs: list[RiskSignal]) -> None:
     db.executemany(f"INSERT INTO FF_AG_SIGNAL ({', '.join(SIGNAL_COLS)}) VALUES ({_in(SIGNAL_COLS)})", rows)
 
 
-def run(form_ids: Sequence[str], ctx: Any, api_cost_multiplier: float = 1.0) -> list[RiskSignal]:
+def _cached_secondary(db: Db, form_id: str, as_of: pd.Period, rules: Rules,
+                      cache: dict[str, list[SecondarySignal]] | None) -> list[SecondarySignal]:
+    if cache is None:
+        return _secondary(db, form_id, as_of, rules)
+    key = f"{form_id}|{as_of}"
+    if key not in cache:
+        cache[key] = _secondary(db, form_id, as_of, rules)
+    return cache[key]
+
+
+def run(form_ids: Sequence[str], ctx: Any, api_cost_multiplier: float = 1.0,
+        secondary_cache: dict[str, list[SecondarySignal]] | None = None) -> list[RiskSignal]:
     """Compute one RiskSignal per formulation and write them to FF_AG_SIGNAL (unless run.dry_run).
 
     `ctx` is a Db, or an object with `.db` and optional `.rules` (Rules) and `.run` (RunContext).
     `api_cost_multiplier` scales the whole API cost series (a sustained shock, e.g. 1.3 = +30%).
+    `secondary_cache` (optional dict) shares the NSQ / OTD / cold-chain signals between two calls with
+    the same as-of date, e.g. the baseline and shocked runs of a what-if: they do not depend on the shock.
     """
     if api_cost_multiplier <= 0:
         raise ValueError("api_cost_multiplier must be > 0")
@@ -319,7 +333,7 @@ def run(form_ids: Sequence[str], ctx: Any, api_cost_multiplier: float = 1.0) -> 
     if not ids:
         return []
     inp = _load_inputs(c.db, ids)
-    results = [_evaluate(f, inp, c, api_cost_multiplier) for f in ids]
+    results = [_evaluate(f, inp, c, api_cost_multiplier, secondary_cache) for f in ids]
     sigs = [s for s, _ in results]
     if not c.run.dry_run:
         _write(c.db, sigs)
