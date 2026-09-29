@@ -12,3 +12,5 @@ data/
 reports/
 docs/
 tests/fixtures/*.json
+node_modules/
+ui/fiori/
