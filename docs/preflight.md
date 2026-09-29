@@ -17,8 +17,10 @@ Tick every box before the slot. Owner in brackets. Never paste the HANA password
 
 ## T − 60 min: API and screens
 
-- [ ] **CF app awake** [B3]: `cf app flowforge-api` shows *running*; open `https://<route>/health` → `{"status":"ok","db_backend":"hana"}`.
-      A trial app may have been stopped overnight: `cf start flowforge-api`.
+- [ ] **CF app awake** [B3/B1]: app `flowforge-api` in BTP trial org `5f0267d6trial` / space `dev` (us10), route `https://flowforge-api-comedic-platypus-ah.cfapps.us10-001.hana.ondemand.com`.
+      `cf app flowforge-api` shows *running*; open `https://<route>/health` → `{"status":"ok","db_backend":"hana"}`.
+      A trial app may have been stopped overnight: `cf start flowforge-api`. The BTP trial runs 30 days and can be
+      extended from the trial cockpit (up to 90 days): check the days left the week before the finale.
 - [ ] **API key works** [B3]: `curl -H "X-API-Key: <key>" https://<route>/watchlist?limit=3` returns rows. Keep the key on paper, not on screen.
 - [ ] **Build Apps** [B3]: app opens, Watchlist loads through the `FLOWFORGE_API` destination, REAL / PROXY / SYNTH badges visible.
 - [ ] **Fallback UI** [B3]: `https://<route>/ui` → Connect with URL + key → Watchlist loads. Also start the local API once
