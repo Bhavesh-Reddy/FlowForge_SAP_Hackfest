@@ -2,7 +2,7 @@
 
     python -m agents.report --rec <run_id>:<form_id>:<nn> [--out reports/]
 
-Self-contained HTML (inline CSS, no scripts) so it prints to PDF from any browser.
+Self-contained HTML (inline CSS; one print button) so it saves to PDF from any browser.
 """
 from __future__ import annotations
 
@@ -62,7 +62,11 @@ details summary { cursor: pointer; font-weight: 700; color: var(--navy); }
 details h3, section h3 { font-size: 14px; margin: 16px 0 6px; }
 code, pre { font: 12px ui-monospace, Consolas, monospace; } pre { white-space: pre-wrap; word-break: break-all; background: var(--bg); padding: 8px; border-radius: 8px; }
 footer { margin-top: 20px; font-size: 12px; color: var(--muted); }
-@media print { body { background: #fff; } header { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
+.pdf { margin-top: 14px; font: 700 14px Inter, system-ui, sans-serif; color: var(--navy); background: #fff; border: 0; border-radius: 999px;
+       padding: 8px 16px; cursor: pointer; box-shadow: 0 6px 16px rgba(0,0,0,.2); }
+.pdf:hover { background: var(--teal-l); }
+@media print { body { background: #fff; } header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .pdf { display: none; } section.card, .summary { break-inside: avoid; } }
 """
 
 # Plain-language labels (the same words as the FlowForge UI).
@@ -289,7 +293,8 @@ def render(data: dict[str, Any]) -> str:
                f"on {_e(latest['DECIDED_AT'])} UTC.")
     else:
         who = "<b>No one has decided yet</b>: it is waiting for the Chief Pharmacist. Nothing is bought without a person."
-    did = (f"Purchase requisition <b>{_e(act['BANFN'])}</b> was created in SAP S/4HANA format (a mock posting, not a live system)."
+    did = (f"Purchase requisition <b>{_e(act['BANFN'])}</b> was created in SAP S/4HANA format "
+           f"({_e(act['S4_SERVICE'])}; a mock posting, not a live system) on {_e(act['POSTED_AT'])} UTC."
            if act else "No purchase requisition was created.")
     trust = (f"The audit chain is <b class='ok'>intact</b>: {chain.n_rows} linked records, none altered."
              if chain.ok else f"The audit chain is <b class='broken'>broken</b>: {_e(str(chain))}.")
@@ -334,20 +339,6 @@ def render(data: dict[str, Any]) -> str:
                        for (lbl, t), ag in sorted(friendly.items()))
     counts = {t: sum(1 for (_, tt) in friendly if tt == t) for t in ("REAL", "PROXY", "SYNTH")}
 
-    # ---- technical appendix for auditors (unchanged content)
-    src_tech = [{**v, "used by": ", ".join(sorted(v["used by"]))} for v in sorted(sources.values(), key=lambda x: x["source"])]
-    audit_rows = [{"seq": r["SEQ"], "agent": r["AGENT"], "ts (UTC)": r["TS"], "input_hash": r["INPUT_HASH"][:16],
-                   "output_hash": r["OUTPUT_HASH"][:16], "prev_hash": (a6._nz(r["PREV_HASH"]) or "-")[:16],
-                   "row_hash": r["ROW_HASH"]} for r in data["audit"]]
-    rv = (_json(data["audit"][0]["RULE_VERSIONS_JSON"]) if data["audit"] else None) or {}
-    act_tech = ""
-    if act:
-        act_tech = (f"<h3>Purchase requisition payload</h3><p>PR <b>{_e(act['BANFN'])}</b> posted {_e(act['POSTED_AT'])} UTC to the "
-                    f"FF_MM_EBAN mock, shaped on S/4HANA <code>{_e(act['S4_SERVICE'])}</code>. Payload sha256 "
-                    f"<code>{_e(act['PAYLOAD_HASH'])}</code>.</p><pre>{_e(json.dumps(_json(act['PAYLOAD_JSON']), indent=2))}</pre>"
-                    "<p>API Business Hub master-data check (read-only):</p>"
-                    + _table(_json(act["MASTERDATA_JSON"]) or [], ("service", "key", "status", "note"), "status"))
-    rules = ", ".join(f"<code>{_e(k)} {_e(v)}</code>" for k, v in sorted(rv.items())) or "n/a"
     generated = datetime.now(timezone.utc).isoformat(timespec="seconds")
     no_facts = '<tr><td colspan="3" class="muted">No facts recorded.</td></tr>'
 
@@ -360,6 +351,7 @@ def render(data: dict[str, Any]) -> str:
 <div class="sub">Generated {generated} · recommendation <code>{_e(data['rec_id'])}</code></div>
 <div class="pills"><span class="pill">Shortage risk: {_e(band_txt)}</span><span class="pill">Decision: {_e(decision)}</span>
 <span class="pill">Audit chain: {'intact' if chain.ok else 'BROKEN'}</span></div>
+<button class="pdf" onclick="window.print()">&#8595; Download as PDF</button>
 </div></header>
 <div class="wrap">
 <div class="summary"><h2>In plain words</h2><ol>
@@ -392,19 +384,11 @@ def render(data: dict[str, Any]) -> str:
 
 <section class="card"><h2>6 · Evidence and integrity</h2>
 <div class="chain {'ok' if chain.ok else 'broken'}">{'✓' if chain.ok else '✗'} {trust}</div>
+<p class="small muted">Verification: {_e(str(chain))}.</p>
 <p class="lead" style="margin-top:12px">{len(friendly)} data sources: {counts['REAL']} REAL, {counts['PROXY']} PROXY, {counts['SYNTH']} SYNTH.</p>
 <table><tr><th>Source</th><th>Type</th><th>Used by agent</th></tr>{src_rows}</table></section>
 
-<details><summary>Technical appendix for auditors (hashes, raw sources, rule versions)</summary>
-<h3>Audit chain</h3><p class="{'ok' if chain.ok else 'broken'}">{_e(str(chain))}</p>
-{_table(audit_rows, ('seq', 'agent', 'ts (UTC)', 'input_hash', 'output_hash', 'prev_hash', 'row_hash'))}
-<h3>Raw sources</h3>{_table(src_tech, ('source', 'tag', 'fetched_at', 'url', 'used by'))}
-<h3>Rule files</h3><p>{rules}</p>
-{act_tech}
-<h3>Identifiers</h3><p class="small">run <code>{_e(data['run_id'])}</code> · form <code>{_e(rec['FORM_ID'])}</code> ·
- A5 verdict {_e(rec['OVERALL'])} · cause code {_e(fc.get('CAUSE_CODE'))}</p>
-</details>
-<footer>FlowForge · SAP Hackfest 2026 · print this page to PDF for the NABH file.</footer>
+<footer>FlowForge · SAP Hackfest 2026 · use "Download as PDF" (Save as PDF) to file this in the NABH record.</footer>
 </div></body></html>
 """
 

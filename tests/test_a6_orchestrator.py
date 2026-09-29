@@ -189,5 +189,4 @@ def test_report_has_who_what_why_hashes(db, rules):
     html = report.render(report.gather(db, REC))
     for s in ("pharm.lead", "FF00000001", "API_PURCHASEREQ_PROCESS_SRV", "chain ok", "probabilistic risk flag"):
         assert s in html
-    row_hash = db.query("SELECT ROW_HASH FROM FF_AG_AUDIT_LOG WHERE RUN_ID = ? AND SEQ = 0", (RUN,)).iloc[0]["ROW_HASH"]
-    assert row_hash in html
+    assert "Download as PDF" in html and "In plain words" in html  # readable summary; hashes live on the Prove page
