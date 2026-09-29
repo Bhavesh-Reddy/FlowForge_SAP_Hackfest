@@ -117,7 +117,13 @@ def pal_available(db: Db) -> bool:
     try:
         import hana_ml  # noqa: F401
 
-        return int(db.query("SELECT COUNT(*) AS N FROM SYS.AFL_AREAS WHERE AREA_NAME = 'AFLPAL'").iloc[0, 0]) > 0
+        if int(db.query("SELECT COUNT(*) AS N FROM SYS.AFL_AREAS WHERE AREA_NAME = 'AFLPAL'").iloc[0, 0]) == 0:
+            return False
+        # Installed is not enough: without the execute role every PAL call fails (the shared Hackfest user
+        # has only PUBLIC), and each failed attempt costs a new hana-ml connection per material.
+        role = db.query("SELECT COUNT(*) AS N FROM SYS.EFFECTIVE_ROLES WHERE USER_NAME = CURRENT_USER "
+                        "AND ROLE_NAME LIKE 'AFL%AFLPAL%EXECUTE%'")
+        return int(role.iloc[0, 0]) > 0
     except Exception:
         return False
 

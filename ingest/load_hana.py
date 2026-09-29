@@ -391,8 +391,11 @@ def _upsert_sql(db: Db, table: Table, cols: list[str]) -> str:
     return f'INSERT INTO "{table.name}" ({names}) VALUES ({marks}) ON CONFLICT ({pk}) {action}'
 
 
-def upsert_rows(db: Db, table: Table, rows: Rows, chunk: int = 500) -> int:
-    """Validate, type-convert and upsert rows by primary key. Idempotent."""
+def upsert_rows(db: Db, table: Table, rows: Rows, chunk: int = 500, fresh: bool = False) -> int:
+    """Validate, type-convert and upsert rows by primary key. Idempotent.
+
+    fresh=True (tables just recreated by --reset): plain INSERT in larger batches on HANA, which is much
+    faster over a slow link than UPSERT ... WITH PRIMARY KEY; fails on duplicate keys instead of merging."""
     if table.name in APPEND_ONLY:
         raise ValueError(f"{table.name} is append-only (A6 writes it); it cannot be seeded")
     groups: dict[tuple[str, ...], list[tuple]] = defaultdict(list)
@@ -414,16 +417,21 @@ def upsert_rows(db: Db, table: Table, rows: Rows, chunk: int = 500) -> int:
     n = 0
     for cols, values in groups.items():
         sql = _upsert_sql(db, table, list(cols))
+        if fresh and db.backend == "hana":
+            names = ", ".join(f'"{c}"' for c in cols)
+            sql = f'INSERT INTO "{table.name}" ({names}) VALUES ({", ".join("?" for _ in cols)})'
+            chunk = max(chunk, 2000)
         for start in range(0, len(values), chunk):
             n += db.executemany(sql, values[start:start + chunk])
     return n
 
 
-def seed(db: Db, dirs: tuple[Path, ...] | list[Path] = SEED_DIRS) -> tuple[dict[str, int], list[str]]:
-    """Upsert all seed CSVs. Returns (rows per table, skipped files)."""
+def seed(db: Db, dirs: tuple[Path, ...] | list[Path] = SEED_DIRS,
+         fresh: bool = False) -> tuple[dict[str, int], list[str]]:
+    """Upsert all seed CSVs (fresh=True right after a reset: see upsert_rows). Returns (rows per table, skipped)."""
     tables = schema_tables()
     rows, skipped = collect_seed_rows(dirs, tables)
-    return {t: upsert_rows(db, tables[t], r) for t, r in sorted(rows.items())}, skipped
+    return {t: upsert_rows(db, tables[t], r, fresh=fresh) for t, r in sorted(rows.items())}, skipped
 
 
 # ---------------------------------------------------------------- CLI

@@ -155,7 +155,7 @@ def _ved(target: dict[str, str]) -> str:
 
 
 def build_materials(targets: list[dict[str, str]], producers: dict[str, list[str]],
-                    ceiling: dict[str, float]) -> list[Material]:
+                    ceiling: dict[str, float], recall_form_id: str | None = None) -> list[Material]:
     mats = []
     for i, t in enumerate(sorted(targets, key=lambda r: r["FORM_ID"])):
         rng = _rng("material", t["FORM_ID"])
@@ -164,6 +164,8 @@ def build_materials(targets: list[dict[str, str]], producers: dict[str, list[str
         onco = any(k in gen for k in ONCOLOGY_KEYWORDS)
         if onco:
             locs = ["CENT", "ONCO"]
+        elif t["FORM_ID"] == recall_form_id:  # the recall demo needs the NSQ batch in 3+ locations
+            locs = ["CENT", "ABLK", "BBLK", "CBLK"]
         else:
             locs = ["CENT"] + [l for l in ("ABLK", "BBLK", "CBLK", "ONCO") if rng.random() < (0.35 if l == "ONCO" else 0.75)]
         primary = VENDORS[int(rng.integers(0, len(VENDORS)))][0]
@@ -304,8 +306,8 @@ def generate(targets: list[dict[str, str]], producers: dict[str, list[str]], cei
     """All FF_MM_* rows plus FF_CFG_PARAM. Deterministic for the same inputs."""
     months_back = AS_OF.year * 12 + AS_OF.month - 1 - MONTHS
     start = date(months_back // 12, months_back % 12 + 1, min(AS_OF.day, 28))
-    mats = build_materials(targets, producers, ceiling)
     alert = choose_nsq_alert(nsq, {t["FORM_ID"] for t in targets})
+    mats = build_materials(targets, producers, ceiling, recall_form_id=alert["FORM_ID"])
     alert_month = date.fromisoformat(alert["MONTH"][:10])
     planted = {"FORM_ID": alert["FORM_ID"], "BATCH": alert["BATCH"].strip(), "MANUFACTURER_ID": alert["MANUFACTURER_ID"],
                "MFD": alert_month - timedelta(days=60)}
@@ -328,8 +330,8 @@ def generate(targets: list[dict[str, str]], producers: dict[str, list[str]], cei
                 row["CLABS"] = _q(row["CLABS"] + b.qty)
     mchb = list(stock.values())
     planted_rows = [r for r in mchb if r["CHARG"] == planted["BATCH"]]
-    if len(planted_rows) < 2:
-        raise AssertionError("the planted NSQ batch must remain at two or more locations at AS_OF")
+    if len({r["LGORT"] for r in planted_rows}) < 3:
+        raise AssertionError("the planted NSQ batch must remain at three or more locations at AS_OF (recall demo)")
     # a few batches under quality inspection (quarantine) at AS_OF, never the planted one
     qrng = _rng("quarantine")
     others = [r for r in mchb if r["CHARG"] != planted["BATCH"] and r["CLABS"] > 0]

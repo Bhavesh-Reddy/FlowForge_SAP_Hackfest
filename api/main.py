@@ -181,6 +181,7 @@ def scenario_of(r: dict[str, Any]) -> Scenario:
         supplier=r["SUPPLIER"], material=r["MATERIAL"], qty=float(r["QTY"]), unit_rate_inr=_money(r["UNIT_RATE_INR"]),
         cost=_money(r["COST_INR"]), coverage_days=float(r["COVERAGE_DAYS"]),
         expiry_waste_risk=r["EXPIRY_WASTE_RISK"] or 0.0, correlated_risk_flag=bool(r["CORRELATED_RISK_FLAG"] or 0),
+        correlated_risk_reason=r.get("CORRELATED_RISK_REASON"),
         rank=int(r["RANK_NO"]) if r["RANK_NO"] is not None else None)
 
 

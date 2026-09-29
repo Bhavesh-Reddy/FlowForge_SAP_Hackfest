@@ -27,7 +27,7 @@ Updated: 2026-09-26 by Bhavesh
 | S10 | Build Apps guide + fallback UI | B3 | PR open |
 | S11 | LLM explanation | B3 | PR open |
 | S12 | Para-19 backtest | B2 + P2 | PR open |
-| S13 | Integration + demo hardening | Bhavesh | todo |
+| S13 | Integration + demo hardening | Bhavesh | PR open |
 
 ## Blocked / open questions
 - A4 (B2): therapeutic alternates come from the NLEM class, which groups opposite-acting drugs ("oxytocics and anti-oxytocics": Oxytocin -> Nifedipine was ranked #1). A5 still WARNs for clinical sign-off and needs level 2, but A4 should take substitutes from a formulary map, not the NLEM class
