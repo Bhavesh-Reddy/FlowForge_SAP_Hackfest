@@ -6,83 +6,719 @@
 <title>FlowForge · Medicine shortage early warning</title>
 <link rel="icon" href="data:,">
 <!--
-  FlowForge fallback UI (S10, redesigned in S13): SAP Fiori look with SAP UI5 Web Components (Horizon theme),
-  bundled locally in assets/ui5.js so it also works offline. Same REST API as SAP Build Apps; every data call
+  FlowForge fallback UI (S10; Fiori redesign S13; premium redesign v2): SAP UI5 Web Components (Horizon theme) with the
+  FlowForge palette, bundled locally in assets/ui5.js so it works fully offline (no CDN fonts or data). Same REST API as SAP Build Apps; every data call
   sends the X-API-Key header. All text is set with textContent (no innerHTML from data).
 -->
 <style>
-  :root { --ff-gap: 1rem; }
-  html, body { margin: 0; background: var(--sapBackgroundColor, #f5f6f7); color: var(--sapTextColor, #1d2d3e);
-    font-family: var(--sapFontFamily, "72", "72full", Arial, Helvetica, sans-serif); font-size: 0.875rem; }
-  body:not(.ready) main, body:not(.ready) nav { visibility: hidden; }
+  /* ============ design tokens: every colour lives here */
+  :root {
+    --bg: #F4F8FB; --navy: #12355B; --teal: #0F9D9A; --teal-h: #0B7F7C; --teal-l: #E8F8F7;
+    --red: #E8636B; --red-l: #FDECEE; --amber: #F4B860; --amber-l: #FEF4E3; --green: #3DBE8B; --green-l: #E6F7F0;
+    --text: #1F2D3D; --text-2: #5B6B7B; --white: #FFFFFF; --border: #D9E4EC;
+    /* darker "ink" shades of the status colours, for readable text on light backgrounds */
+    --red-ink: #B63A43; --amber-ink: #8A5A0B; --green-ink: #1E7B55; --teal-ink: #0B6F6D;
+    --navy-2: #1B4A78; --shade: rgba(18, 53, 91, 0.08); --shade-2: rgba(18, 53, 91, 0.16);
+    --grad: linear-gradient(135deg, #12355B, #0F9D9A);
+    --grad-soft: linear-gradient(135deg, #E8F0F8 0%, #E8F8F7 100%);
+    --font: Inter, system-ui, "72", "Segoe UI", Roboto, Arial, sans-serif;
+    --r-lg: 18px; --r-md: 12px; --r-sm: 8px; --gap: 1.25rem;
+  }
+  /* SAP UI5 Web Components read these theme variables: align them with the FlowForge palette */
+  html:root {
+    --sapFontFamily: var(--font); --sapBrandColor: var(--teal); --sapBackgroundColor: var(--bg); --sapTextColor: var(--text);
+    --sapContent_LabelColor: var(--text-2); --sapContent_FocusColor: var(--teal); --sapSelectedColor: var(--teal);
+    --sapButton_Emphasized_Background: var(--teal); --sapButton_Emphasized_BorderColor: var(--teal);
+    --sapButton_Emphasized_Hover_Background: var(--teal-h); --sapButton_Emphasized_Hover_BorderColor: var(--teal-h);
+    --sapButton_Emphasized_Active_Background: var(--teal-h);
+    --sapButton_TextColor: var(--teal-ink); --sapButton_BorderColor: var(--border); --sapButton_Hover_Background: var(--teal-l);
+    --sapButton_Hover_TextColor: var(--teal-ink); --sapButton_Lite_TextColor: var(--teal-ink); --sapButton_Lite_Hover_Background: var(--teal-l);
+    --sapLinkColor: var(--teal-ink); --sapField_BorderColor: var(--border); --sapField_Hover_BorderColor: var(--teal);
+    --sapContent_IconColor: var(--teal-ink); --sapList_SelectionBackgroundColor: var(--teal-l);
+    --sapButton_Selected_Background: var(--teal-l); --sapButton_Selected_BorderColor: var(--teal); --sapButton_Selected_TextColor: var(--teal-ink);
+    --sapButton_Selected_Hover_Background: #D6F3F1;
+    --sapButton_Selected_Background: var(--teal-l); --sapButton_Selected_BorderColor: var(--teal); --sapButton_Selected_TextColor: var(--teal-ink);
+    --sapButton_Reject_Background: var(--red-l); --sapButton_Reject_BorderColor: var(--red); --sapButton_Reject_TextColor: var(--red-ink);
+    --sapButton_Negative_Background: var(--red-l); --sapButton_Negative_BorderColor: var(--red); --sapButton_Negative_TextColor: var(--red-ink);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font); font-size: 15px; line-height: 1.45;
+    -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+  body { background: radial-gradient(1200px 500px at 100% 0%, rgba(15, 157, 154, 0.07), transparent 60%),
+    radial-gradient(900px 420px at 0% 30%, rgba(18, 53, 91, 0.05), transparent 60%), var(--bg); min-height: 100vh; }
+  body:not(.ready) main, body:not(.ready) header.shell, body:not(.ready) .dock { visibility: hidden; }
   #boot { padding: 2rem; font-size: 1rem; }
-  main { max-width: 1320px; margin: 0 auto; padding: 1rem 1.25rem 3rem; }
-  .muted { color: var(--sapContent_LabelColor, #556b82); }
-  .small { font-size: 0.8125rem; }
-  .row { display: flex; gap: var(--ff-gap); flex-wrap: wrap; align-items: center; }
+  b, strong { font-weight: 650; }
+
+  /* ============ shell */
+  header.shell { background: var(--grad); color: var(--white); position: relative; overflow: hidden;
+    box-shadow: 0 6px 24px rgba(18, 53, 91, 0.22); }
+  header.shell::before { content: ""; position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(520px 180px at 88% -40%, rgba(255, 255, 255, 0.18), transparent 70%),
+      radial-gradient(360px 160px at 8% 140%, rgba(255, 255, 255, 0.10), transparent 70%); }
+  .shell-top { position: relative; display: flex; align-items: center; gap: 1rem; max-width: 1280px; margin: 0 auto; padding: 0.8rem 1.5rem 0.2rem; }
+  .brand { display: flex; align-items: center; gap: 0.75rem; color: inherit; text-decoration: none; min-width: 0; }
+  .mark { width: 40px; height: 40px; border-radius: 12px; flex: none; display: grid; place-items: center;
+    background: rgba(255, 255, 255, 0.16); border: 1px solid rgba(255, 255, 255, 0.35); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25); }
+  .mark svg { width: 24px; height: 24px; }
+  .brand-name { font-size: 1.3rem; font-weight: 750; letter-spacing: -0.01em; line-height: 1.1; }
+  .brand-tag { font-size: 0.8rem; opacity: 0.85; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .shell-meta { margin-left: auto; font-size: 0.78rem; padding: 0.3rem 0.7rem; border-radius: 999px; white-space: nowrap;
+    background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 255, 255, 0.25); display: flex; align-items: center; gap: 0.4rem; }
+  .shell-meta .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--amber); }
+  .shell-meta.on .dot { background: var(--green); box-shadow: 0 0 0 3px rgba(61, 190, 139, 0.25); }
+  .shell-actions { display: flex; gap: 0.25rem; }
+  .shell-actions ui5-button { --sapButton_Lite_TextColor: #fff; --sapContent_IconColor: #fff; --sapButton_Lite_Hover_Background: rgba(255, 255, 255, 0.16);
+    --sapButton_Lite_Active_Background: rgba(255, 255, 255, 0.24); --sapButton_Hover_TextColor: #fff; --sapButton_Lite_Hover_TextColor: #fff; }
+
+  /* ============ journey stepper */
+  nav.steps { position: relative; max-width: 1280px; margin: 0 auto; padding: 0.55rem 1.5rem 0.9rem; }
+  nav.steps ol { list-style: none; display: flex; margin: 0; padding: 0; }
+  nav.steps li { flex: 1 1 0; position: relative; min-width: 0; }
+  nav.steps li + li::before { content: ""; position: absolute; top: 22px; left: calc(-50% + 30px); right: calc(50% + 30px); height: 2px;
+    background: rgba(255, 255, 255, 0.28); border-radius: 2px; }
+  nav.steps li.done + li::before, nav.steps li.done + li.current::before { background: rgba(255, 255, 255, 0.9); }
+  nav.steps button { all: unset; box-sizing: border-box; cursor: pointer; width: 100%; display: flex; flex-direction: column; align-items: center;
+    gap: 0.3rem; text-align: center; padding: 0.1rem 0.25rem; border-radius: 14px; color: rgba(255, 255, 255, 0.72); }
+  nav.steps button:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+  nav.steps .node { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; position: relative;
+    border: 2px solid rgba(255, 255, 255, 0.45); background: rgba(255, 255, 255, 0.08); transition: transform 0.2s, background 0.2s; }
+  nav.steps .node svg { width: 20px; height: 20px; }
+  nav.steps .num { position: absolute; top: -6px; right: -8px; font-size: 0.66rem; font-weight: 700; width: 18px; height: 18px; border-radius: 50%;
+    display: grid; place-items: center; background: rgba(255, 255, 255, 0.22); color: #fff; }
+  nav.steps .t1 { font-weight: 650; font-size: 0.9rem; color: inherit; }
+  nav.steps .t2 { font-size: 0.72rem; opacity: 0.85; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+  nav.steps button:hover .node { background: rgba(255, 255, 255, 0.18); }
+  nav.steps li.done button { color: #fff; }
+  nav.steps li.done .node { background: #fff; border-color: #fff; color: var(--teal); }
+  nav.steps li.done .num { background: var(--teal); }
+  nav.steps li.current button { color: #fff; }
+  nav.steps li.current .node { width: 50px; height: 50px; margin-top: -3px; background: #fff; border-color: #fff; color: var(--navy);
+    box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.22), 0 8px 18px rgba(0, 0, 0, 0.22); }
+  nav.steps li.current .num { background: var(--navy); }
+  nav.steps li.current .t1 { font-weight: 750; }
+
+  /* ============ page layout */
+  main { max-width: 1280px; margin: 0 auto; padding: 1.75rem 1.5rem 7rem; }
+  .enter > * { animation: rise 0.45s ease both; }
+  .enter > *:nth-child(2) { animation-delay: 0.05s; } .enter > *:nth-child(3) { animation-delay: 0.1s; }
+  .enter > *:nth-child(4) { animation-delay: 0.15s; } .enter > *:nth-child(n+5) { animation-delay: 0.2s; }
+  @keyframes rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+  .stack > * + * { margin-top: var(--gap); }
+  .row { display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center; }
   .spread { justify-content: space-between; }
-  .grid { display: grid; gap: var(--ff-gap); }
-  .g2 { grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); }
-  .g3 { grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); align-items: stretch; }
-  .g4 { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
-  .stack > * + * { margin-top: var(--ff-gap); }
-  .pad { padding: 0.75rem 1rem 1rem; }
-  ui5-card { width: 100%; }
-  h1.page { font-size: 1.5rem; font-weight: 700; margin: 0.25rem 0 0.25rem; }
-  .lead { font-size: 0.95rem; margin: 0 0 0.75rem; max-width: 72rem; }
-  /* guided flow */
-  nav.steps { background: var(--sapObjectHeader_Background, #fff); border-bottom: 1px solid var(--sapGroup_TitleBorderColor, #d9d9d9); }
-  nav.steps ol { list-style: none; display: flex; margin: 0 auto; padding: 0 1.25rem; max-width: 1320px; gap: 0.25rem; overflow-x: auto; }
-  nav.steps li { flex: 1 1 0; min-width: 150px; }
-  nav.steps button { all: unset; box-sizing: border-box; cursor: pointer; display: flex; gap: 0.6rem; align-items: center;
-    width: 100%; padding: 0.7rem 0.5rem; border-bottom: 3px solid transparent; }
-  nav.steps button:focus-visible { outline: 2px solid var(--sapContent_FocusColor, #0070f2); outline-offset: -2px; }
-  nav.steps .num { width: 1.75rem; height: 1.75rem; border-radius: 50%; display: grid; place-items: center; font-weight: 700;
-    border: 1px solid var(--sapButton_BorderColor, #bcc3ca); color: var(--sapContent_LabelColor, #556b82); flex: none; }
-  nav.steps .t1 { font-weight: 700; display: block; }
-  nav.steps .t2 { font-size: 0.75rem; color: var(--sapContent_LabelColor, #556b82); display: block; }
-  nav.steps button[aria-current="step"] { border-bottom-color: var(--sapBrandColor, #0070f2); }
-  nav.steps button[aria-current="step"] .num { background: var(--sapBrandColor, #0070f2); color: #fff; border-color: transparent; }
-  /* KPI tiles */
-  .kpi { padding: 0.9rem 1rem; }
-  .kpi .v { font-size: 2rem; font-weight: 700; line-height: 1.1; }
-  .kpi .l { font-weight: 700; margin-top: 0.15rem; }
-  .kpi .d { font-size: 0.75rem; color: var(--sapContent_LabelColor, #556b82); margin-top: 0.2rem; }
-  .v.neg { color: var(--sapNegativeColor, #aa0808); } .v.crit { color: var(--sapCriticalColor, #e76500); }
-  .v.pos { color: var(--sapPositiveColor, #256f3a); }
-  /* facts */
-  dl.facts { display: grid; grid-template-columns: minmax(150px, 40%) 1fr; gap: 0.45rem 1rem; margin: 0; max-width: 760px; }
-  .checks { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 0.25rem 1rem; align-items: start; }
-  dl.facts dt { color: var(--sapContent_LabelColor, #556b82); }
-  dl.facts dd { margin: 0; font-weight: 600; }
-  .answer { font-size: 1rem; font-weight: 700; margin: 0.1rem 0 0.6rem; }
-  .why { background: var(--sapInformationBackgroundColor, #e1f4ff); border-radius: 0.5rem; padding: 0.75rem 1rem; }
-  .clickable { cursor: pointer; }
-  .loc { padding: 0.9rem 1rem; }
-  .loc .big { font-size: 1.4rem; font-weight: 700; }
-  .legend { display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; font-size: 0.8125rem; }
-  .legend span.sw { display: inline-block; width: 1.4rem; height: 0; border-top: 3px solid; vertical-align: middle; margin-right: 0.3rem; }
-  svg text { font-family: inherit; fill: var(--sapContent_LabelColor, #556b82); font-size: 11px; }
-  pre.json { background: var(--sapShell_Background, #f2f2f2); padding: 0.75rem; border-radius: 0.5rem; overflow: auto; max-height: 18rem;
-    font-size: 0.75rem; margin: 0; }
-  .split { display: grid; grid-template-columns: minmax(300px, 420px) 1fr; gap: var(--ff-gap); align-items: start; }
-  @media (max-width: 900px) { .split { grid-template-columns: 1fr; } .g2 { grid-template-columns: 1fr; } }
-  .qlist { max-height: 70vh; overflow: auto; }
-  .hint { font-size: 0.8125rem; color: var(--sapContent_LabelColor, #556b82); }
+  .grid { display: grid; gap: var(--gap); }
+  .g2 { grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); }
+  .g3 { grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); align-items: stretch; }
+  .g4 { grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr)); }
+  .muted { color: var(--text-2); }
+  .small { font-size: 0.84rem; }
+  .hint { font-size: 0.84rem; color: var(--text-2); }
   .sr { position: absolute; left: -9999px; }
-  ui5-table { --ff: 0; }
+  .clickable { cursor: pointer; }
+  .pad { padding: 0.5rem 0.25rem; }
+
+  .page-head { display: flex; gap: 1.5rem; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; }
+  .eyebrow { font-size: 0.74rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--teal-ink); margin-bottom: 0.35rem;
+    display: flex; align-items: center; gap: 0.5rem; }
+  .eyebrow::before { content: ""; width: 22px; height: 3px; border-radius: 3px; background: var(--teal); }
+  h1.page { font-size: clamp(1.55rem, 2.4vw, 2.1rem); font-weight: 780; letter-spacing: -0.02em; margin: 0; color: var(--navy); line-height: 1.15; }
+  .lead { font-size: 1.02rem; margin: 0.45rem 0 0; max-width: 62rem; color: var(--text); }
+  .why-hint { display: inline-flex; gap: 0.5rem; align-items: flex-start; margin-top: 0.55rem; font-size: 0.86rem; color: var(--text-2);
+    background: var(--white); border: 1px solid var(--border); border-radius: 999px; padding: 0.3rem 0.85rem 0.3rem 0.35rem; max-width: 100%; }
+  .why-hint b { color: var(--teal-ink); background: var(--teal-l); border-radius: 999px; padding: 0.05rem 0.55rem; font-size: 0.75rem;
+    white-space: nowrap; font-weight: 700; }
+
+  /* ============ cards */
+  .card { background: var(--white); border: 1px solid var(--border); border-radius: var(--r-lg); box-shadow: 0 1px 2px var(--shade), 0 10px 30px -18px var(--shade-2);
+    padding: 1.25rem 1.35rem; min-width: 0; }
+  .card-h { display: flex; gap: 0.85rem; align-items: center; margin-bottom: 1rem; }
+  .card-h .ico { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; flex: none; background: var(--teal-l); }
+  .card-h .ico ui5-icon { color: var(--teal-ink); width: 1.2rem; height: 1.2rem; }
+  .card-h .t { font-size: 1.08rem; font-weight: 720; color: var(--navy); line-height: 1.2; }
+  .card-h .s { font-size: 0.84rem; color: var(--text-2); }
+  .card-h .aside { margin-left: auto; }
+
+  /* ============ status pills, data tags, chips */
+  .pill { display: inline-flex; align-items: center; gap: 0.4rem; border-radius: 999px; padding: 0.22rem 0.7rem 0.22rem 0.5rem; font-weight: 700;
+    font-size: 0.8rem; white-space: nowrap; border: 1px solid transparent; line-height: 1.3; }
+  .pill ui5-icon { width: 0.9rem; height: 0.9rem; }
+  .pill.red { background: var(--red-l); color: var(--red-ink); border-color: rgba(232, 99, 107, 0.35); } .pill.red ui5-icon { color: var(--red-ink); }
+  .pill.amber { background: var(--amber-l); color: var(--amber-ink); border-color: rgba(244, 184, 96, 0.5); } .pill.amber ui5-icon { color: var(--amber-ink); }
+  .pill.green { background: var(--green-l); color: var(--green-ink); border-color: rgba(61, 190, 139, 0.4); } .pill.green ui5-icon { color: var(--green-ink); }
+  .pill.teal { background: var(--teal-l); color: var(--teal-ink); border-color: rgba(15, 157, 154, 0.3); } .pill.teal ui5-icon { color: var(--teal-ink); }
+  .pill.grey { background: var(--bg); color: var(--text-2); border-color: var(--border); } .pill.grey ui5-icon { color: var(--text-2); }
+  .pill.lg { font-size: 0.95rem; padding: 0.35rem 0.95rem 0.35rem 0.7rem; }
+  .dt { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.66rem; font-weight: 750; letter-spacing: 0.06em; padding: 0.1rem 0.45rem;
+    border-radius: 6px; border: 1px solid; vertical-align: middle; white-space: nowrap; cursor: help; line-height: 1.4; }
+  .dt::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+  .dt.real { color: var(--green-ink); border-color: rgba(61, 190, 139, 0.5); background: var(--green-l); }
+  .dt.proxy { color: var(--navy-2); border-color: rgba(27, 74, 120, 0.3); background: #EAF1F8; }
+  .dt.synth { color: var(--text-2); border-color: var(--border); background: var(--white); border-style: dashed; }
+
+  /* ============ notes (replaces message strips) */
+  .note { display: flex; gap: 0.7rem; align-items: flex-start; padding: 0.8rem 1rem; border-radius: var(--r-md); border: 1px solid; font-size: 0.92rem; }
+  .note ui5-icon { flex: none; margin-top: 0.1rem; }
+  .note.Positive { background: var(--green-l); border-color: rgba(61, 190, 139, 0.4); } .note.Positive ui5-icon { color: var(--green-ink); }
+  .note.Negative { background: var(--red-l); border-color: rgba(232, 99, 107, 0.4); } .note.Negative ui5-icon { color: var(--red-ink); }
+  .note.Critical { background: var(--amber-l); border-color: rgba(244, 184, 96, 0.55); } .note.Critical ui5-icon { color: var(--amber-ink); }
+  .note.Information { background: var(--teal-l); border-color: rgba(15, 157, 154, 0.3); } .note.Information ui5-icon { color: var(--teal-ink); }
+
+  /* ============ loading */
+  .loading { background: var(--white); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 1.25rem 1.35rem; }
+  .loading .msg { display: flex; align-items: center; gap: 0.75rem; font-weight: 600; color: var(--navy); }
+  .loading .steps-l { margin: 0.6rem 0 0 2.6rem; padding: 0; list-style: none; color: var(--text-2); font-size: 0.88rem; }
+  .loading .steps-l li { padding: 0.12rem 0; } .loading .steps-l li::before { content: "·  "; color: var(--teal); font-weight: 800; }
+  .skel { height: 14px; border-radius: 7px; margin-top: 0.8rem; background: linear-gradient(90deg, #EAF0F5 25%, #F5F8FB 50%, #EAF0F5 75%);
+    background-size: 200% 100%; animation: shimmer 1.3s linear infinite; }
+  .skel.w60 { width: 60%; } .skel.w80 { width: 80%; } .skel.w40 { width: 40%; }
+  @keyframes shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+
+  /* ============ facts, misc */
+  dl.facts { display: grid; grid-template-columns: minmax(130px, 45%) 1fr; gap: 0.5rem 1rem; margin: 0; }
+  dl.facts dt { color: var(--text-2); font-size: 0.88rem; }
+  dl.facts dd { margin: 0; font-weight: 600; font-size: 0.92rem; }
+  svg text { font-family: var(--font); fill: var(--text-2); font-size: 11px; }
+  pre.json { background: var(--bg); border: 1px solid var(--border); padding: 0.75rem; border-radius: var(--r-sm); overflow: auto; max-height: 18rem;
+    font-size: 0.75rem; margin: 0; }
+  .legend { display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; font-size: 0.82rem; color: var(--text-2); }
+  .legend span.sw { display: inline-block; width: 1.4rem; height: 0; border-top: 3px solid; vertical-align: middle; margin-right: 0.35rem; }
+
+  /* ============ docked bottom bar: legend + back / next */
+  .dock { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; background: rgba(255, 255, 255, 0.92); backdrop-filter: blur(8px);
+    border-top: 1px solid var(--border); box-shadow: 0 -6px 20px rgba(18, 53, 91, 0.06); }
+  .dock-in { max-width: 1280px; margin: 0 auto; padding: 0.6rem 1.5rem; display: flex; align-items: center; gap: 1rem; }
+  .dock-legend { all: unset; cursor: pointer; display: flex; gap: 0.9rem; align-items: center; flex-wrap: wrap; font-size: 0.76rem; color: var(--text-2); min-width: 0; }
+  .dock-legend:focus-visible { outline: 2px solid var(--teal); outline-offset: 3px; border-radius: 6px; }
+  .dock-legend .grp { display: flex; gap: 0.4rem; align-items: center; }
+  .dock-legend .sep { width: 1px; height: 18px; background: var(--border); }
+  .swatch { display: inline-flex; align-items: center; gap: 0.3rem; white-space: nowrap; }
+  .swatch i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+  .swatch.red i { background: var(--red); } .swatch.amber i { background: var(--amber); } .swatch.green i { background: var(--green); }
+  .dock-nav { margin-left: auto; display: flex; gap: 0.6rem; align-items: center; flex: none; }
+  .next-btn { all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: 0.6rem; background: var(--grad); color: #fff;
+    font-weight: 700; font-size: 0.95rem; padding: 0.62rem 1.15rem 0.62rem 1.3rem; border-radius: 999px; box-shadow: 0 6px 18px rgba(15, 157, 154, 0.35);
+    transition: transform 0.15s, box-shadow 0.15s; white-space: nowrap; }
+  .next-btn:hover { transform: translateY(-1px); box-shadow: 0 10px 22px rgba(15, 157, 154, 0.42); }
+  .next-btn:focus-visible { outline: 3px solid var(--navy); outline-offset: 2px; }
+  .next-btn small { font-weight: 500; opacity: 0.85; font-size: 0.78rem; }
+  .next-btn svg { width: 18px; height: 18px; }
+  .back-btn { all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: 0.35rem; color: var(--teal-ink); font-weight: 650;
+    font-size: 0.9rem; padding: 0.5rem 0.8rem; border-radius: 999px; border: 1px solid var(--border); background: var(--white); white-space: nowrap; }
+  .back-btn:hover { background: var(--teal-l); } .back-btn:focus-visible { outline: 2px solid var(--teal); }
+  .back-btn svg { width: 16px; height: 16px; }
+
+  /* ============ glossary */
+  .gloss { display: grid; gap: 0.6rem; }
+  .gloss .term { display: grid; grid-template-columns: 9.5rem 1fr; gap: 1rem; align-items: baseline; padding: 0.7rem 0.9rem; border-radius: var(--r-md);
+    background: var(--bg); border: 1px solid var(--border); }
+  .gloss .term b { color: var(--navy); }
+
+
+  /* ============ WATCH: hero */
+  .hero { position: relative; display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 2rem; align-items: center;
+    background: var(--white); border: 1px solid var(--border); border-radius: 24px; padding: 2rem 2.1rem; overflow: hidden;
+    box-shadow: 0 1px 2px var(--shade), 0 18px 40px -26px var(--shade-2); }
+  .hero::before { content: ""; position: absolute; width: 420px; height: 420px; right: -140px; top: -210px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(15, 157, 154, 0.14), transparent 65%); pointer-events: none; }
+  .hero::after { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 5px; background: var(--grad); }
+  .hero h1 { font-size: clamp(1.7rem, 3vw, 2.55rem); line-height: 1.1; letter-spacing: -0.025em; margin: 0; color: var(--navy); font-weight: 800; }
+  .hero .sub { font-size: clamp(1.05rem, 1.6vw, 1.3rem); color: var(--teal-ink); margin: 0.55rem 0 0; font-weight: 600; }
+  .versus { display: flex; align-items: center; gap: 0.7rem; margin: 1.2rem 0 0.2rem; flex-wrap: wrap; }
+  .tok { display: inline-flex; align-items: center; gap: 0.5rem; font-weight: 800; letter-spacing: 0.08em; font-size: 0.85rem; padding: 0.45rem 0.85rem;
+    border-radius: 10px; border: 1px solid; }
+  .tok svg { width: 22px; height: 16px; }
+  .tok.cost { color: #A2530C; background: #FFF3E6; border-color: #F5C99A; }
+  .tok.cap { color: var(--navy); background: #EAF1F8; border-color: #C3D5E8; }
+  .versus .vs { font-weight: 800; color: var(--text-2); font-size: 0.8rem; letter-spacing: 0.1em; }
+  .hero .lead { font-size: 0.97rem; }
+  .squeeze { position: relative; background: var(--grad-soft); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 1rem 1.1rem 0.8rem; }
+  .squeeze .t { font-weight: 720; color: var(--navy); } .squeeze .s { font-size: 0.8rem; color: var(--text-2); }
+  .squeeze svg { display: block; width: 100%; max-width: 640px; height: auto; margin: 0.4rem auto 0; }
+  .squeeze .facts2 { display: flex; gap: 1.2rem; flex-wrap: wrap; margin-top: 0.35rem; font-size: 0.82rem; color: var(--text-2); }
+  .squeeze .facts2 b { font-size: 1.15rem; color: var(--text); margin-right: 0.25rem; }
+  .squeeze .facts2 .neg b { color: var(--red-ink); }
+
+  /* ============ WATCH: KPI cards (each tinted differently) */
+  .kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--gap); }
+  .kpi2 { position: relative; border-radius: var(--r-lg); padding: 1.1rem 1.2rem 1rem; border: 1px solid; overflow: hidden; min-width: 0;
+    box-shadow: 0 1px 2px var(--shade); transition: transform 0.2s, box-shadow 0.2s; }
+  .kpi2:hover { transform: translateY(-2px); box-shadow: 0 12px 26px -16px var(--shade-2); }
+  .kpi2::after { content: ""; position: absolute; right: -34px; top: -34px; width: 96px; height: 96px; border-radius: 50%; opacity: 0.16; }
+  .kpi2 .top { display: flex; align-items: center; gap: 0.55rem; font-size: 0.75rem; font-weight: 800; letter-spacing: 0.1em; }
+  .kpi2 .top .ib { width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center; background: var(--white); }
+  .kpi2 .top ui5-icon { width: 1rem; height: 1rem; }
+  .kpi2 .v { font-size: clamp(2.2rem, 3.6vw, 3rem); font-weight: 800; line-height: 1; margin: 0.65rem 0 0.25rem; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+  .kpi2 .d { font-size: 0.85rem; color: var(--text); min-height: 2.4em; }
+  .kpi2 .bar { height: 6px; border-radius: 3px; background: rgba(255, 255, 255, 0.8); margin-top: 0.6rem; overflow: hidden; }
+  .kpi2 .bar i { display: block; height: 100%; border-radius: 3px; }
+  .kpi2 .foot { display: flex; justify-content: space-between; align-items: center; margin-top: 0.45rem; font-size: 0.75rem; color: var(--text-2); gap: 0.4rem; }
+  .kpi2.red { background: linear-gradient(160deg, #FFF 0%, var(--red-l) 100%); border-color: rgba(232, 99, 107, 0.35); }
+  .kpi2.red .top, .kpi2.red .v { color: var(--red-ink); } .kpi2.red ui5-icon { color: var(--red-ink); } .kpi2.red .bar i, .kpi2.red::after { background: var(--red); }
+  .kpi2.amber { background: linear-gradient(160deg, #FFF 0%, var(--amber-l) 100%); border-color: rgba(244, 184, 96, 0.5); }
+  .kpi2.amber .top, .kpi2.amber .v { color: var(--amber-ink); } .kpi2.amber ui5-icon { color: var(--amber-ink); } .kpi2.amber .bar i, .kpi2.amber::after { background: var(--amber); }
+  .kpi2.green { background: linear-gradient(160deg, #FFF 0%, var(--green-l) 100%); border-color: rgba(61, 190, 139, 0.4); }
+  .kpi2.green .top, .kpi2.green .v { color: var(--green-ink); } .kpi2.green ui5-icon { color: var(--green-ink); } .kpi2.green .bar i, .kpi2.green::after { background: var(--green); }
+  .kpi2.navy { background: linear-gradient(160deg, #FFF 0%, #E6EEF7 100%); border-color: #C3D5E8; }
+  .kpi2.navy .top, .kpi2.navy .v { color: var(--navy); } .kpi2.navy ui5-icon { color: var(--navy); } .kpi2.navy .bar i, .kpi2.navy::after { background: var(--navy-2); }
+
+  /* ============ WATCH: risk mix + scenario banner */
+  .mixrow { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.4fr); gap: var(--gap); align-items: stretch; }
+  .donutwrap { display: flex; align-items: center; gap: 1.4rem; flex-wrap: wrap; }
+  .donutwrap svg { width: 150px; height: 150px; flex: none; }
+  .donut-legend { display: grid; gap: 0.55rem; min-width: 0; }
+  .donut-legend .li { display: grid; grid-template-columns: 12px 1fr auto; gap: 0.6rem; align-items: center; font-size: 0.9rem; }
+  .donut-legend i { width: 12px; height: 12px; border-radius: 4px; }
+  .donut-legend b { font-variant-numeric: tabular-nums; }
+  .shock { position: relative; overflow: hidden; border-radius: var(--r-lg); padding: 1.4rem 1.5rem; color: #fff; background: var(--grad);
+    box-shadow: 0 16px 34px -20px rgba(18, 53, 91, 0.7); display: flex; flex-direction: column; gap: 0.7rem; }
+  .shock::before { content: ""; position: absolute; right: -60px; bottom: -80px; width: 260px; height: 260px; border-radius: 50%;
+    border: 36px solid rgba(255, 255, 255, 0.07); }
+  .shock .eyebrow { color: rgba(255, 255, 255, 0.85); } .shock .eyebrow::before { background: #fff; }
+  .shock h2 { margin: 0; font-size: clamp(1.3rem, 2.2vw, 1.65rem); letter-spacing: -0.01em; line-height: 1.15; }
+  .shock p { margin: 0; color: rgba(255, 255, 255, 0.9); font-size: 0.93rem; max-width: 40rem; }
+  .shock .go { all: unset; cursor: pointer; align-self: flex-start; display: inline-flex; align-items: center; gap: 0.55rem; background: #fff; color: var(--navy);
+    font-weight: 750; padding: 0.7rem 1.2rem; border-radius: 999px; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18); transition: transform 0.15s; position: relative; }
+  .shock .go:hover { transform: translateY(-1px); } .shock .go:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+  .shock .go[disabled] { opacity: 0.6; cursor: default; transform: none; }
+  .shock .go svg { width: 18px; height: 18px; }
+  .shock small { color: rgba(255, 255, 255, 0.78); font-size: 0.78rem; position: relative; }
+  .shock .run { position: relative; background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 255, 255, 0.28); border-radius: var(--r-md);
+    padding: 0.8rem 1rem; }
+  .shock .run .msg { display: flex; gap: 0.6rem; align-items: center; font-weight: 700; }
+  .shock .run ul { margin: 0.45rem 0 0 2.2rem; padding: 0; list-style: none; font-size: 0.86rem; color: rgba(255, 255, 255, 0.88); }
+  .shock .run ul li::before { content: "•  "; color: #9FF0E6; }
+  .shock .run ui5-busy-indicator { --sapContent_BusyColor: #fff; --sapBrandColor: #fff; }
+  .shock-res .chips { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+  .ba { display: inline-flex; align-items: center; gap: 0.5rem; border: 1px solid var(--border); border-radius: 12px; padding: 0.5rem 0.8rem; background: var(--white); }
+  .ba .lab { font-size: 0.78rem; color: var(--text-2); font-weight: 650; }
+  .ba .num { font-weight: 800; font-size: 1.15rem; font-variant-numeric: tabular-nums; }
+  .ba .arrow { color: var(--text-2); }
+  .changes { display: grid; gap: 0.5rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 440px), 1fr)); }
+  .chg { all: unset; box-sizing: border-box; cursor: pointer; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0.8rem;
+    align-items: center; padding: 0.65rem 0.85rem; border: 1px solid var(--border); border-radius: var(--r-md); background: var(--white); transition: background 0.15s, border-color 0.15s; }
+  .chg:hover { background: var(--teal-l); border-color: rgba(15, 157, 154, 0.4); } .chg:focus-visible { outline: 2px solid var(--teal); }
+  .chg .bands { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; justify-content: flex-end; }
+
+  /* ============ WATCH: watchlist */
+  .wl-tools { display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center; justify-content: space-between; margin-bottom: 0.8rem; }
+  .wl { display: grid; gap: 0.35rem; }
+  .wl-head, .wrow { display: grid; grid-template-columns: minmax(170px, 2fr) 128px minmax(150px, 1.35fr) minmax(150px, 1.5fr) 124px 62px;
+    gap: 0.9rem; align-items: center; }
+  .wl-head { font-size: 0.72rem; font-weight: 750; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-2); padding: 0.2rem 0.9rem; }
+  .wrow { all: unset; box-sizing: border-box; display: grid; grid-template-columns: minmax(170px, 2fr) 128px minmax(150px, 1.35fr) minmax(150px, 1.5fr) 124px 62px;
+    gap: 0.9rem; align-items: center; cursor: pointer; padding: 0.7rem 0.9rem; border-radius: var(--r-md); border: 1px solid var(--border);
+    background: var(--white); position: relative; transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s; }
+  .wrow::before { content: ""; position: absolute; left: 0; top: 10px; bottom: 10px; width: 4px; border-radius: 0 4px 4px 0; background: var(--border); }
+  .wrow.RED::before { background: var(--red); } .wrow.AMBER::before { background: var(--amber); } .wrow.GREEN::before { background: var(--green); }
+  .wrow:hover { border-color: rgba(15, 157, 154, 0.45); box-shadow: 0 10px 24px -16px var(--shade-2); transform: translateY(-1px); }
+  .wrow:focus-visible { outline: 2px solid var(--teal); outline-offset: 1px; }
+  .wrow .nm { font-weight: 700; color: var(--navy); font-size: 0.97rem; line-height: 1.25; }
+  .wrow .sub { font-size: 0.76rem; color: var(--text-2); margin-top: 0.1rem; line-height: 1.3; }
+  .wrow .cause { font-size: 0.86rem; line-height: 1.3; }
+  .mbar { display: grid; grid-template-columns: 1fr auto; gap: 0.55rem; align-items: center; }
+  .mbar .track { position: relative; height: 8px; border-radius: 4px; background: #EDF2F6; }
+  .mbar .track::after { content: ""; position: absolute; left: 50%; top: -3px; bottom: -3px; width: 2px; background: var(--text-2); opacity: 0.45; border-radius: 1px; }
+  .mbar .fill { position: absolute; top: 0; bottom: 0; border-radius: 4px; }
+  .mbar .val { font-weight: 750; font-size: 0.86rem; font-variant-numeric: tabular-nums; min-width: 3.4rem; text-align: right; }
+  .stockc { display: grid; gap: 0.25rem; }
+  .stockc .d { font-weight: 750; font-size: 0.9rem; display: flex; align-items: center; gap: 0.3rem; }
+  .stockc .d ui5-icon { width: 0.85rem; height: 0.85rem; }
+  .stockc .sb { height: 5px; border-radius: 3px; background: #EDF2F6; overflow: hidden; } .stockc .sb i { display: block; height: 100%; border-radius: 3px; }
+  .stockc.low .d { color: var(--red-ink); } .stockc.low ui5-icon { color: var(--red-ink); } .stockc.low .sb i { background: var(--red); }
+  .stockc.ok .d { color: var(--text); } .stockc.ok ui5-icon { color: var(--teal-ink); } .stockc.ok .sb i { background: var(--teal); }
+  .empty { text-align: center; padding: 2rem 1rem; color: var(--text-2); border: 1px dashed var(--border); border-radius: var(--r-md); background: var(--white); }
+
+  @media (max-width: 1100px) {
+    .hero { grid-template-columns: 1fr; padding: 1.6rem; }
+    .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .mixrow { grid-template-columns: 1fr; }
+    .wl-head, .wrow { grid-template-columns: minmax(150px, 1.7fr) 118px minmax(140px, 1.3fr) 110px 58px; }
+    .wl-head .c-cause, .wrow .cause { display: none; }
+  }
+  @media (max-width: 720px) {
+    .kpis { grid-template-columns: 1fr; }
+    .wl-head { display: none; }
+    .wrow { grid-template-columns: 1fr auto; row-gap: 0.5rem; }
+    .wrow .mbar, .wrow .stockc { grid-column: 1 / -1; }
+  }
+
+
+  /* ============ UNDERSTAND */
+  .backlink { all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: 0.35rem; color: var(--teal-ink); font-weight: 650; font-size: 0.9rem; }
+  .backlink svg { width: 16px; height: 16px; } .backlink:hover { text-decoration: underline; } .backlink:focus-visible { outline: 2px solid var(--teal); border-radius: 4px; }
+  .verdict { position: relative; overflow: hidden; border-radius: 24px; background: var(--white); border: 1px solid var(--border);
+    box-shadow: 0 1px 2px var(--shade), 0 18px 40px -26px var(--shade-2); display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); }
+  .verdict .main { padding: 1.7rem 1.9rem 1.5rem; position: relative; min-width: 0; }
+  .verdict .main::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 6px; background: var(--border); }
+  .verdict.RED .main::before { background: var(--red); } .verdict.AMBER .main::before { background: var(--amber); } .verdict.GREEN .main::before { background: var(--green); }
+  .verdict .name { font-size: clamp(1.8rem, 3.2vw, 2.6rem); font-weight: 800; letter-spacing: -0.025em; color: var(--navy); margin: 0.2rem 0 0.15rem; line-height: 1.05; }
+  .verdict .cls { color: var(--text-2); font-size: 0.92rem; }
+  .verdict .status { display: flex; gap: 0.7rem; align-items: center; flex-wrap: wrap; margin: 1rem 0 0.8rem; }
+  .verdict .score { font-size: 0.9rem; color: var(--text-2); } .verdict .score b { color: var(--text); font-size: 1.05rem; }
+  .verdict .reason { font-size: clamp(1.1rem, 1.8vw, 1.35rem); font-weight: 700; color: var(--text); line-height: 1.3; margin: 0; }
+  .verdict .reason-d { margin: 0.35rem 0 0; color: var(--text-2); font-size: 0.95rem; max-width: 46rem; }
+  .verdict .side { background: var(--grad-soft); border-left: 1px solid var(--border); padding: 1.5rem 1.6rem; display: flex; flex-direction: column; gap: 0.9rem; min-width: 0; }
+  .capbox .k { font-size: 0.72rem; font-weight: 800; letter-spacing: 0.1em; color: var(--text-2); text-transform: uppercase; }
+  .capbox .v { font-size: 2.1rem; font-weight: 800; color: var(--navy); letter-spacing: -0.02em; line-height: 1.1; }
+  .capbox .d { font-size: 0.84rem; color: var(--text-2); }
+  .agents { display: flex; flex-wrap: wrap; gap: 0.35rem; align-items: center; }
+  .agents .ag { font-size: 0.74rem; font-weight: 700; background: var(--white); border: 1px solid var(--border); color: var(--navy); border-radius: 999px; padding: 0.18rem 0.55rem; }
+  .agents .ar { color: var(--text-2); font-size: 0.7rem; }
+  .plain { margin-top: 1rem; background: var(--bg); border: 1px solid var(--border); border-radius: var(--r-md); padding: 0.8rem 1rem; font-size: 0.9rem; }
+  .plain .who { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.72rem; font-weight: 750; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--teal-ink); margin-bottom: 0.3rem; }
+  .qcard { display: flex; flex-direction: column; }
+  .qnum { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: var(--navy); color: #fff; font-weight: 800; font-size: 0.85rem; flex: none; }
+  .qhead { display: flex; gap: 0.7rem; align-items: center; margin-bottom: 0.2rem; }
+  .qhead .q { font-size: 1.1rem; font-weight: 750; color: var(--navy); line-height: 1.2; }
+  .qhead .by { font-size: 0.78rem; color: var(--text-2); }
+  .big { margin: 0.9rem 0 0.2rem; display: flex; align-items: baseline; gap: 0.45rem; flex-wrap: wrap; }
+  .big .pre { font-size: 0.85rem; color: var(--text-2); font-weight: 650; }
+  .big .n { font-size: clamp(2.3rem, 3.6vw, 3.1rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1; font-variant-numeric: tabular-nums; }
+  .big .u { font-size: 0.95rem; color: var(--text-2); font-weight: 600; }
+  .n.red { color: var(--red-ink); } .n.amber { color: var(--amber-ink); } .n.green { color: var(--green-ink); } .n.navy { color: var(--navy); }
+  .bigcap { font-size: 0.86rem; color: var(--text-2); margin-bottom: 0.9rem; }
+  .hbars { display: grid; gap: 0.55rem; margin-bottom: 0.9rem; }
+  .hb { display: grid; grid-template-columns: 7.2rem 1fr auto; gap: 0.6rem; align-items: center; font-size: 0.84rem; }
+  .hb .tr { height: 10px; background: #EDF2F6; border-radius: 5px; overflow: hidden; } .hb .tr i { display: block; height: 100%; border-radius: 5px; }
+  .hb .val { font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; display: flex; gap: 0.35rem; align-items: center; }
+  .meter { margin: 0.2rem 0 0.9rem; }
+  .meter .lab { display: flex; justify-content: space-between; font-size: 0.84rem; margin-bottom: 0.3rem; gap: 0.5rem; }
+  .meter .tr { height: 10px; border-radius: 5px; background: linear-gradient(90deg, var(--green-l), var(--amber-l), var(--red-l)); position: relative; border: 1px solid var(--border); }
+  .meter .tr i { position: absolute; top: -4px; width: 4px; height: 16px; border-radius: 2px; background: var(--navy); }
+  .wards { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+  .wards span { font-size: 0.76rem; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 0.1rem 0.45rem; }
+  .qfoot { margin-top: auto; padding-top: 0.8rem; border-top: 1px dashed var(--border); display: flex; gap: 0.4rem; flex-wrap: wrap; align-items: center; font-size: 0.76rem; color: var(--text-2); }
+  .sig { display: grid; grid-template-columns: auto 1fr; gap: 0.6rem; align-items: start; font-size: 0.86rem; padding: 0.55rem 0.7rem; border-radius: var(--r-sm);
+    background: var(--amber-l); border: 1px solid rgba(244, 184, 96, 0.45); }
+  .sig ui5-icon { color: var(--amber-ink); width: 1rem; height: 1rem; margin-top: 0.1rem; }
+  .chartcard .chartwrap { position: relative; }
+  .chartcard svg.main-chart { display: block; width: 100%; height: auto; }
+  .chart-note { display: flex; gap: 0.7rem; align-items: flex-start; background: var(--teal-l); border-radius: var(--r-md); padding: 0.7rem 0.9rem; font-size: 0.88rem; margin-top: 0.6rem; }
+  .chart-note ui5-icon { color: var(--teal-ink); flex: none; margin-top: 0.1rem; }
+  .opts { display: grid; gap: var(--gap); grid-template-columns: repeat(auto-fit, minmax(min(100%, 270px), 1fr)); }
+  .opt { position: relative; border: 1px solid var(--border); border-radius: var(--r-lg); padding: 1.1rem 1.15rem 1rem; background: var(--white);
+    display: flex; flex-direction: column; gap: 0.7rem; transition: transform 0.15s, box-shadow 0.15s; min-width: 0; }
+  .opt:hover { transform: translateY(-2px); box-shadow: 0 12px 26px -18px var(--shade-2); }
+  .opt.rec { border: 2px solid var(--teal); box-shadow: 0 14px 30px -20px rgba(15, 157, 154, 0.6); background: linear-gradient(180deg, var(--teal-l), var(--white) 45%); }
+  .opt.rej { background: #F7F9FB; opacity: 0.8; } .opt.rej:hover { transform: none; box-shadow: none; }
+  .opt .ribbon { position: absolute; top: -11px; left: 1rem; background: var(--teal); color: #fff; font-size: 0.7rem; font-weight: 800; letter-spacing: 0.08em;
+    padding: 0.2rem 0.6rem; border-radius: 999px; box-shadow: 0 4px 10px rgba(15, 157, 154, 0.4); }
+  .opt .oh { display: flex; gap: 0.7rem; align-items: flex-start; }
+  .opt .oh .ico { width: 38px; height: 38px; border-radius: 11px; display: grid; place-items: center; background: var(--teal-l); flex: none; }
+  .opt.rej .oh .ico { background: #ECEFF3; } .opt .oh ui5-icon { color: var(--teal-ink); } .opt.rej .oh ui5-icon { color: var(--text-2); }
+  .opt .ot { font-weight: 720; color: var(--navy); line-height: 1.25; } .opt.rej .ot { color: var(--text-2); text-decoration: line-through; text-decoration-color: rgba(91, 107, 123, 0.5); }
+  .opt .od { font-size: 0.78rem; color: var(--text-2); margin-top: 0.15rem; }
+  .ostats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.5rem; }
+  .ostats div { background: var(--bg); border-radius: var(--r-sm); padding: 0.4rem 0.45rem; min-width: 0; }
+  .ostats .k { font-size: 0.68rem; font-weight: 750; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-2); }
+  .ostats .v { font-weight: 750; font-variant-numeric: tabular-nums; font-size: 0.9rem; overflow-wrap: anywhere; }
+  .opt .why-rej { font-size: 0.82rem; color: var(--red-ink); background: var(--red-l); border-radius: var(--r-sm); padding: 0.45rem 0.6rem; }
+  .opt .oact { margin-top: auto; display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+  .pick-grid { display: grid; gap: var(--gap); grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); }
+  .pick { all: unset; box-sizing: border-box; cursor: pointer; background: var(--white); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 1rem 1.1rem;
+    display: flex; flex-direction: column; gap: 0.5rem; transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s; }
+  .pick:hover { transform: translateY(-2px); border-color: rgba(15, 157, 154, 0.45); box-shadow: 0 12px 26px -18px var(--shade-2); }
+  .pick:focus-visible { outline: 2px solid var(--teal); }
+  .pick .nm { font-weight: 750; color: var(--navy); font-size: 1.02rem; }
+  @media (max-width: 1100px) {
+    .verdict { grid-template-columns: 1fr; } .verdict .side { border-left: 0; border-top: 1px solid var(--border); }
+  }
+
+
+  /* ============ DECIDE */
+  .flow3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; background: var(--white); border: 1px solid var(--border);
+    border-radius: 999px; padding: 0.35rem; box-shadow: 0 1px 2px var(--shade); }
+  .flow3 .st { display: flex; align-items: center; gap: 0.6rem; justify-content: center; padding: 0.55rem 0.8rem; border-radius: 999px; color: var(--text-2);
+    font-weight: 750; letter-spacing: 0.08em; font-size: 0.8rem; position: relative; transition: background 0.25s, color 0.25s; min-width: 0; }
+  .flow3 .st .c { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; border: 2px solid var(--border); font-size: 0.75rem; flex: none; background: var(--white); }
+  .flow3 .st .c svg { width: 14px; height: 14px; }
+  .flow3 .st small { display: block; font-weight: 500; letter-spacing: 0; font-size: 0.74rem; color: inherit; opacity: 0.85; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .flow3 .st.done { color: var(--teal-ink); } .flow3 .st.done .c { background: var(--teal); border-color: var(--teal); color: #fff; }
+  .flow3 .st.now { background: var(--grad); color: #fff; box-shadow: 0 8px 18px -8px rgba(15, 157, 154, 0.7); }
+  .flow3 .st.now .c { border-color: #fff; color: var(--navy); }
+  .cockpit { display: grid; grid-template-columns: minmax(290px, 380px) minmax(0, 1fr); gap: var(--gap); align-items: start; }
+  .queue { position: sticky; top: 1rem; }
+  .queue .card { padding: 1rem; }
+  .qlist2 { display: grid; gap: 0.45rem; max-height: calc(100vh - 16rem); min-height: 16rem; overflow: auto; padding: 0.2rem 0.3rem 0.4rem 0.1rem; margin-top: 0.8rem; }
+  .ritem { all: unset; box-sizing: border-box; cursor: pointer; display: grid; grid-template-columns: 38px minmax(0, 1fr) auto; gap: 0.7rem; align-items: center;
+    padding: 0.6rem 0.7rem; border-radius: var(--r-md); border: 1px solid var(--border); background: var(--white); transition: border-color 0.15s, background 0.15s, box-shadow 0.15s; }
+  .ritem:hover { border-color: rgba(15, 157, 154, 0.45); background: #FBFEFE; }
+  .ritem:focus-visible { outline: 2px solid var(--teal); outline-offset: 1px; }
+  .ritem[aria-selected="true"] { border: 2px solid var(--teal); background: var(--teal-l); box-shadow: 0 8px 20px -14px rgba(15, 157, 154, 0.8); padding: calc(0.6rem - 1px) calc(0.7rem - 1px); }
+  .ritem .ico { width: 38px; height: 38px; border-radius: 11px; display: grid; place-items: center; background: var(--bg); border: 1px solid var(--border); }
+  .ritem .ico ui5-icon { color: var(--navy); }
+  .ritem .nm { font-weight: 720; color: var(--navy); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ritem .ds { font-size: 0.78rem; color: var(--text-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .rhero { position: relative; overflow: hidden; border-radius: var(--r-lg); padding: 1.35rem 1.45rem; background: var(--white); border: 1px solid var(--border);
+    box-shadow: 0 1px 2px var(--shade), 0 14px 30px -22px var(--shade-2); }
+  .rhero::before { content: ""; position: absolute; left: 0; top: 0; right: 0; height: 5px; background: var(--grad); }
+  .rhero .top { display: flex; gap: 0.8rem; align-items: center; }
+  .rhero .ico { width: 46px; height: 46px; border-radius: 14px; display: grid; place-items: center; background: var(--teal-l); flex: none; }
+  .rhero .ico ui5-icon { color: var(--teal-ink); width: 1.35rem; height: 1.35rem; }
+  .rhero .ttl { font-size: 1.35rem; font-weight: 780; color: var(--navy); letter-spacing: -0.01em; line-height: 1.15; }
+  .rhero .sentence { font-size: 1.08rem; font-weight: 600; line-height: 1.45; margin: 0.9rem 0 0.8rem; max-width: 52rem; }
+  .prbox { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.5rem; margin-bottom: 0.6rem; }
+  .prbox div { background: var(--bg); border: 1px solid var(--border); border-radius: var(--r-sm); padding: 0.45rem 0.6rem; }
+  .prbox .k { font-size: 0.68rem; font-weight: 750; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-2); }
+  .prbox .v { font-weight: 700; font-size: 0.92rem; }
+  .chk-sum { display: flex; align-items: center; gap: 1.2rem; flex-wrap: wrap; }
+  .chk-sum .n { font-size: 2.4rem; font-weight: 800; color: var(--navy); line-height: 1; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+  .chk-sum .n small { font-size: 1rem; color: var(--text-2); font-weight: 650; letter-spacing: 0; }
+  .segbar { display: flex; height: 10px; border-radius: 5px; overflow: hidden; background: #EDF2F6; margin: 0.8rem 0 0.2rem; gap: 2px; }
+  .segbar i { display: block; height: 100%; }
+  .chkrow { display: grid; grid-template-columns: 5.2rem minmax(0, 1fr); gap: 0.75rem; align-items: start; padding: 0.55rem 0.2rem; border-top: 1px solid #EEF3F7; font-size: 0.88rem; }
+  .chkrow .src { color: var(--text-2); font-size: 0.8rem; }
+  details.more { margin-top: 0.4rem; } details.more summary { cursor: pointer; color: var(--teal-ink); font-weight: 650; font-size: 0.9rem; padding: 0.4rem 0; list-style: none; }
+  details.more summary::-webkit-details-marker { display: none; }
+  details.more summary::before { content: "▸ "; } details.more[open] summary::before { content: "▾ "; }
+  .ready { border: 2px solid var(--border); transition: border-color 0.3s, box-shadow 0.3s; }
+  .ready.go { border-color: var(--teal); box-shadow: 0 16px 36px -22px rgba(15, 157, 154, 0.8); }
+  .readybar { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.9rem; flex-wrap: wrap; }
+  .readybar .cnt { font-size: 1.6rem; font-weight: 800; color: var(--navy); font-variant-numeric: tabular-nums; }
+  .readybar .cnt small { font-size: 0.9rem; color: var(--text-2); font-weight: 600; }
+  .readybar .tr { flex: 1 1 200px; height: 10px; border-radius: 5px; background: #EDF2F6; overflow: hidden; }
+  .readybar .tr i { display: block; height: 100%; background: var(--grad); border-radius: 5px; transition: width 0.3s; }
+  .checks { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 0.35rem 1rem; align-items: start;
+    background: var(--bg); border: 1px solid var(--border); border-radius: var(--r-md); padding: 0.6rem 0.6rem; }
+  .apprv { display: flex; gap: 1rem; align-items: flex-end; flex-wrap: wrap; margin-top: 1rem; }
+  .apprv .who { display: grid; gap: 0.25rem; }
+  .apprv .btns { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
+  .lockmsg { font-size: 0.82rem; color: var(--text-2); display: flex; align-items: center; gap: 0.35rem; margin-top: 0.6rem; }
+  .lockmsg ui5-icon { width: 0.9rem; height: 0.9rem; color: var(--text-2); }
+  .success { position: relative; overflow: hidden; border-radius: var(--r-lg); padding: 1.4rem 1.5rem; margin-top: 1rem;
+    background: linear-gradient(135deg, var(--green-l), #F4FCF8); border: 1px solid rgba(61, 190, 139, 0.5); display: grid; grid-template-columns: auto 1fr; gap: 1.1rem; align-items: center; }
+  .success .tick { width: 58px; height: 58px; border-radius: 50%; background: var(--green); display: grid; place-items: center; box-shadow: 0 0 0 8px rgba(61, 190, 139, 0.18);
+    animation: pop 0.45s cubic-bezier(.2, 1.4, .4, 1) both; }
+  .success .tick svg { width: 30px; height: 30px; color: #fff; }
+  .success .t { font-size: 1.25rem; font-weight: 800; color: var(--green-ink); }
+  .success .pr { font-size: 1.9rem; font-weight: 800; color: var(--navy); letter-spacing: 0.02em; font-variant-numeric: tabular-nums; }
+  .success.amber { background: linear-gradient(135deg, var(--amber-l), #FFFBF3); border-color: rgba(244, 184, 96, 0.6); }
+  .success.amber .tick { background: var(--amber); box-shadow: 0 0 0 8px rgba(244, 184, 96, 0.2); } .success.amber .t { color: var(--amber-ink); }
+  @keyframes pop { from { transform: scale(0.4); opacity: 0; } to { transform: none; opacity: 1; } }
+  @media (max-width: 1100px) { .cockpit { grid-template-columns: 1fr; } .queue { position: static; } .qlist2 { max-height: 22rem; } }
+  @media (max-width: 720px) { .flow3 { border-radius: var(--r-lg); grid-template-columns: 1fr; } }
+
+
+  /* ============ PROVE */
+  .runbar { display: flex; gap: 0.7rem; align-items: center; flex-wrap: wrap; background: var(--white); border: 1px solid var(--border); border-radius: var(--r-md); padding: 0.6rem 0.8rem; }
+  .trust { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: var(--gap); align-items: stretch; }
+  .shieldbox { position: relative; overflow: hidden; border-radius: 24px; padding: 1.6rem 1.8rem; display: flex; gap: 1.4rem; align-items: center; color: #fff;
+    background: linear-gradient(135deg, #0E6B55, #3DBE8B); box-shadow: 0 18px 36px -22px rgba(30, 123, 85, 0.8); }
+  .shieldbox.bad { background: linear-gradient(135deg, #8E2A33, #E8636B); box-shadow: 0 18px 36px -22px rgba(182, 58, 67, 0.8); }
+  .shieldbox::after { content: ""; position: absolute; right: -70px; top: -70px; width: 240px; height: 240px; border-radius: 50%; border: 30px solid rgba(255, 255, 255, 0.08); }
+  .shieldbox .sh { width: 86px; height: 96px; flex: none; position: relative; }
+  .shieldbox .sh svg { width: 100%; height: 100%; }
+  .shieldbox .big1 { font-size: clamp(1.7rem, 3vw, 2.3rem); font-weight: 800; letter-spacing: 0.04em; line-height: 1.05; }
+  .shieldbox .sub1 { font-size: 0.98rem; opacity: 0.95; margin-top: 0.35rem; max-width: 30rem; }
+  .runfacts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.7rem; }
+  .rf { background: var(--white); border: 1px solid var(--border); border-radius: var(--r-md); padding: 0.75rem 0.9rem; min-width: 0; }
+  .rf .k { font-size: 0.7rem; font-weight: 800; letter-spacing: 0.09em; text-transform: uppercase; color: var(--text-2); }
+  .rf .v { font-size: 1.25rem; font-weight: 780; color: var(--navy); margin-top: 0.15rem; line-height: 1.2; }
+  .rf .d { font-size: 0.78rem; color: var(--text-2); }
+  .docbtn { all: unset; box-sizing: border-box; cursor: pointer; grid-column: 1 / -1; display: grid; grid-template-columns: auto 1fr auto; gap: 0.9rem; align-items: center;
+    background: var(--white); border: 1px solid var(--border); border-radius: var(--r-md); padding: 0.8rem 1rem; position: relative; transition: border-color 0.15s, box-shadow 0.15s; }
+  .docbtn:hover { border-color: var(--teal); box-shadow: 0 10px 24px -16px var(--shade-2); } .docbtn:focus-visible { outline: 2px solid var(--teal); }
+  .docbtn .page { width: 38px; height: 46px; border-radius: 4px 12px 4px 4px; background: var(--grad); display: grid; place-items: center; box-shadow: 0 4px 10px rgba(18, 53, 91, 0.25); }
+  .docbtn .page ui5-icon { color: #fff; }
+  .docbtn .tt { font-weight: 780; color: var(--navy); } .docbtn .sb { font-size: 0.8rem; color: var(--text-2); }
+  .docbtn[aria-busy="true"] { opacity: 0.6; cursor: progress; }
+  .chain { position: relative; display: grid; gap: 0; }
+  .blk { display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 1rem; position: relative; }
+  .blk .rail { display: flex; flex-direction: column; align-items: center; }
+  .blk .dot { width: 50px; height: 50px; border-radius: 16px; display: grid; place-items: center; background: var(--white); border: 2px solid var(--teal);
+    box-shadow: 0 6px 14px -8px rgba(15, 157, 154, 0.8); flex: none; z-index: 1; }
+  .blk .dot ui5-icon { color: var(--teal-ink); width: 1.3rem; height: 1.3rem; }
+  .blk .link { flex: 1; width: 2px; background: repeating-linear-gradient(to bottom, var(--teal) 0 6px, transparent 6px 10px); min-height: 1.4rem; position: relative; }
+  .blk:last-child .link { display: none; }
+  .blk .body { background: var(--white); border: 1px solid var(--border); border-radius: var(--r-md); padding: 0.85rem 1rem; margin-bottom: 0.9rem; min-width: 0;
+    transition: box-shadow 0.15s; }
+  .blk .body:hover { box-shadow: 0 10px 24px -18px var(--shade-2); }
+  .blk .bh { display: flex; gap: 0.6rem; align-items: baseline; flex-wrap: wrap; justify-content: space-between; }
+  .blk .bt { font-weight: 760; color: var(--navy); } .blk .bt small { color: var(--text-2); font-weight: 600; }
+  .blk .time { font-size: 0.8rem; color: var(--text-2); }
+  .blk .q { font-size: 0.9rem; margin: 0.15rem 0 0.5rem; }
+  .hashes { display: flex; gap: 0.4rem; flex-wrap: wrap; font-size: 0.74rem; }
+  .hashes span { font-family: ui-monospace, "Cascadia Code", Consolas, monospace; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 0.1rem 0.45rem; color: var(--text-2); }
+  .hashes span b { color: var(--navy); font-weight: 600; }
+  .srcs { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; margin-top: 0.55rem; font-size: 0.8rem; color: var(--text-2); }
+
+  /* ============ RECALL */
+  .eyebrow.alert { color: var(--red-ink); } .eyebrow.alert::before { background: var(--red); }
+  .searchcard { display: flex; gap: 0.8rem; align-items: center; flex-wrap: wrap; background: var(--white); border: 1px solid var(--border); border-left: 5px solid var(--red);
+    border-radius: var(--r-md); padding: 0.9rem 1rem; box-shadow: 0 1px 2px var(--shade); }
+  .searchcard .lbl { font-weight: 700; color: var(--navy); }
+  .example { all: unset; cursor: pointer; font-size: 0.8rem; border: 1px dashed var(--teal); color: var(--teal-ink); border-radius: 999px; padding: 0.2rem 0.65rem; background: var(--teal-l);
+    font-family: ui-monospace, Consolas, monospace; }
+  .example:hover { background: #D6F3F1; } .example:focus-visible { outline: 2px solid var(--teal); }
+  .alertcard { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 1rem; align-items: start; }
+  .alertcard .ico { width: 48px; height: 48px; border-radius: 14px; background: var(--red-l); display: grid; place-items: center; }
+  .alertcard .ico ui5-icon { color: var(--red-ink); width: 1.4rem; height: 1.4rem; }
+  .alertcard .drug { font-size: 1.3rem; font-weight: 780; color: var(--navy); line-height: 1.2; }
+  .alertcard .fail { margin-top: 0.4rem; font-size: 0.95rem; }
+  .rsum { position: relative; overflow: hidden; border-radius: 22px; padding: 1.4rem 1.6rem; color: #fff; background: linear-gradient(135deg, #7E1F2A, #E8636B);
+    box-shadow: 0 18px 36px -22px rgba(182, 58, 67, 0.9); display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)) auto; gap: 1rem; align-items: center; }
+  .rsum.clear { background: linear-gradient(135deg, #0E6B55, #3DBE8B); grid-template-columns: 1fr; }
+  .rsum .k { font-size: 0.72rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.85; }
+  .rsum .v { font-size: clamp(1.4rem, 2.6vw, 2.1rem); font-weight: 800; line-height: 1.1; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+  .rsum .v.sm { font-size: clamp(1rem, 1.6vw, 1.2rem); }
+  .qbtn { all: unset; cursor: pointer; display: inline-flex; gap: 0.5rem; align-items: center; background: #fff; color: var(--red-ink); font-weight: 800; padding: 0.75rem 1.2rem;
+    border-radius: 999px; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2); white-space: nowrap; transition: transform 0.15s; }
+  .qbtn:hover { transform: translateY(-1px); } .qbtn:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+  .qbtn ui5-icon { color: var(--red-ink); }
+  .locs { display: grid; gap: var(--gap); grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); }
+  .loc2 { background: var(--white); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 1rem 1.1rem; position: relative; overflow: hidden; }
+  .loc2::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 4px; background: var(--red); }
+  .loc2 .ln { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; }
+  .loc2 .ln b { color: var(--navy); font-size: 1.02rem; }
+  .loc2 .code { font-family: ui-monospace, Consolas, monospace; font-size: 0.72rem; color: var(--text-2); background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 0.05rem 0.4rem; }
+  .loc2 .qty { font-size: 2rem; font-weight: 800; color: var(--red-ink); margin: 0.5rem 0 0.1rem; font-variant-numeric: tabular-nums; }
+  .loc2 .qty small { font-size: 0.9rem; color: var(--text-2); font-weight: 600; }
+  .loc2 .qb { height: 8px; border-radius: 4px; background: #F3E3E5; overflow: hidden; margin: 0.35rem 0 0.6rem; } .loc2 .qb i { display: block; height: 100%; background: var(--red); border-radius: 4px; }
+  .loc2 .meta { display: grid; gap: 0.3rem; font-size: 0.84rem; }
+  .loc2.marked { border-color: var(--amber); } .loc2.marked::before { background: var(--amber); }
+  @media (max-width: 1100px) { .trust { grid-template-columns: 1fr; } .rsum { grid-template-columns: repeat(2, minmax(0, 1fr)); } .rsum .act { grid-column: 1 / -1; } }
+
+
+  /* ============ PROVE */
+  .runbar { display: flex; gap: 0.7rem; align-items: center; flex-wrap: wrap; background: var(--white); border: 1px solid var(--border); border-radius: var(--r-md); padding: 0.6rem 0.8rem; }
+  .trust { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: var(--gap); align-items: stretch; }
+  .shieldbox { position: relative; overflow: hidden; border-radius: 24px; padding: 1.6rem 1.8rem; display: flex; gap: 1.4rem; align-items: center; color: #fff;
+    background: linear-gradient(135deg, #0E6B55, #3DBE8B); box-shadow: 0 18px 36px -22px rgba(30, 123, 85, 0.8); }
+  .shieldbox.bad { background: linear-gradient(135deg, #8E2A33, #E8636B); box-shadow: 0 18px 36px -22px rgba(182, 58, 67, 0.8); }
+  .shieldbox::after { content: ""; position: absolute; right: -70px; top: -70px; width: 240px; height: 240px; border-radius: 50%; border: 30px solid rgba(255, 255, 255, 0.08); }
+  .shieldbox .sh { width: 86px; height: 96px; flex: none; position: relative; }
+  .shieldbox .sh svg { width: 100%; height: 100%; }
+  .shieldbox .big1 { font-size: clamp(1.7rem, 3vw, 2.3rem); font-weight: 800; letter-spacing: 0.04em; line-height: 1.05; }
+  .shieldbox .sub1 { font-size: 0.98rem; opacity: 0.95; margin-top: 0.35rem; max-width: 30rem; }
+  .runfacts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.7rem; }
+  .rf { background: var(--white); border: 1px solid var(--border); border-radius: var(--r-md); padding: 0.75rem 0.9rem; min-width: 0; }
+  .rf .k { font-size: 0.7rem; font-weight: 800; letter-spacing: 0.09em; text-transform: uppercase; color: var(--text-2); }
+  .rf .v { font-size: 1.25rem; font-weight: 780; color: var(--navy); margin-top: 0.15rem; line-height: 1.2; }
+  .rf .d { font-size: 0.78rem; color: var(--text-2); }
+  .docbtn { all: unset; box-sizing: border-box; cursor: pointer; grid-column: 1 / -1; display: grid; grid-template-columns: auto 1fr auto; gap: 0.9rem; align-items: center;
+    background: var(--white); border: 1px solid var(--border); border-radius: var(--r-md); padding: 0.8rem 1rem; position: relative; transition: border-color 0.15s, box-shadow 0.15s; }
+  .docbtn:hover { border-color: var(--teal); box-shadow: 0 10px 24px -16px var(--shade-2); } .docbtn:focus-visible { outline: 2px solid var(--teal); }
+  .docbtn .page { width: 38px; height: 46px; border-radius: 4px 12px 4px 4px; background: var(--grad); display: grid; place-items: center; box-shadow: 0 4px 10px rgba(18, 53, 91, 0.25); }
+  .docbtn .page ui5-icon { color: #fff; }
+  .docbtn .tt { font-weight: 780; color: var(--navy); } .docbtn .sb { font-size: 0.8rem; color: var(--text-2); }
+  .docbtn[aria-busy="true"] { opacity: 0.6; cursor: progress; }
+  .chain { position: relative; display: grid; gap: 0; }
+  .blk { display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 1rem; position: relative; }
+  .blk .rail { display: flex; flex-direction: column; align-items: center; }
+  .blk .dot { width: 50px; height: 50px; border-radius: 16px; display: grid; place-items: center; background: var(--white); border: 2px solid var(--teal);
+    box-shadow: 0 6px 14px -8px rgba(15, 157, 154, 0.8); flex: none; z-index: 1; }
+  .blk .dot ui5-icon { color: var(--teal-ink); width: 1.3rem; height: 1.3rem; }
+  .blk .link { flex: 1; width: 2px; background: repeating-linear-gradient(to bottom, var(--teal) 0 6px, transparent 6px 10px); min-height: 1.4rem; position: relative; }
+  .blk:last-child .link { display: none; }
+  .blk .body { background: var(--white); border: 1px solid var(--border); border-radius: var(--r-md); padding: 0.85rem 1rem; margin-bottom: 0.9rem; min-width: 0;
+    transition: box-shadow 0.15s; }
+  .blk .body:hover { box-shadow: 0 10px 24px -18px var(--shade-2); }
+  .blk .bh { display: flex; gap: 0.6rem; align-items: baseline; flex-wrap: wrap; justify-content: space-between; }
+  .blk .bt { font-weight: 760; color: var(--navy); } .blk .bt small { color: var(--text-2); font-weight: 600; }
+  .blk .time { font-size: 0.8rem; color: var(--text-2); }
+  .blk .q { font-size: 0.9rem; margin: 0.15rem 0 0.5rem; }
+  .hashes { display: flex; gap: 0.4rem; flex-wrap: wrap; font-size: 0.74rem; }
+  .hashes span { font-family: ui-monospace, "Cascadia Code", Consolas, monospace; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 0.1rem 0.45rem; color: var(--text-2); }
+  .hashes span b { color: var(--navy); font-weight: 600; }
+  .srcs { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; margin-top: 0.55rem; font-size: 0.8rem; color: var(--text-2); }
+
+  /* ============ RECALL */
+  .eyebrow.alert { color: var(--red-ink); } .eyebrow.alert::before { background: var(--red); }
+  .searchcard { display: flex; gap: 0.8rem; align-items: center; flex-wrap: wrap; background: var(--white); border: 1px solid var(--border); border-left: 5px solid var(--red);
+    border-radius: var(--r-md); padding: 0.9rem 1rem; box-shadow: 0 1px 2px var(--shade); }
+  .searchcard .lbl { font-weight: 700; color: var(--navy); }
+  .example { all: unset; cursor: pointer; font-size: 0.8rem; border: 1px dashed var(--teal); color: var(--teal-ink); border-radius: 999px; padding: 0.2rem 0.65rem; background: var(--teal-l);
+    font-family: ui-monospace, Consolas, monospace; }
+  .example:hover { background: #D6F3F1; } .example:focus-visible { outline: 2px solid var(--teal); }
+  .alertcard { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 1rem; align-items: start; }
+  .alertcard .ico { width: 48px; height: 48px; border-radius: 14px; background: var(--red-l); display: grid; place-items: center; }
+  .alertcard .ico ui5-icon { color: var(--red-ink); width: 1.4rem; height: 1.4rem; }
+  .alertcard .drug { font-size: 1.3rem; font-weight: 780; color: var(--navy); line-height: 1.2; }
+  .alertcard .fail { margin-top: 0.4rem; font-size: 0.95rem; }
+  .rsum { position: relative; overflow: hidden; border-radius: 22px; padding: 1.4rem 1.6rem; color: #fff; background: linear-gradient(135deg, #7E1F2A, #E8636B);
+    box-shadow: 0 18px 36px -22px rgba(182, 58, 67, 0.9); display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)) auto; gap: 1rem; align-items: center; }
+  .rsum.clear { background: linear-gradient(135deg, #0E6B55, #3DBE8B); grid-template-columns: 1fr; }
+  .rsum .k { font-size: 0.72rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.85; }
+  .rsum .v { font-size: clamp(1.4rem, 2.6vw, 2.1rem); font-weight: 800; line-height: 1.1; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+  .rsum .v.sm { font-size: clamp(1rem, 1.6vw, 1.2rem); }
+  .qbtn { all: unset; cursor: pointer; display: inline-flex; gap: 0.5rem; align-items: center; background: #fff; color: var(--red-ink); font-weight: 800; padding: 0.75rem 1.2rem;
+    border-radius: 999px; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2); white-space: nowrap; transition: transform 0.15s; }
+  .qbtn:hover { transform: translateY(-1px); } .qbtn:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+  .qbtn ui5-icon { color: var(--red-ink); }
+  .locs { display: grid; gap: var(--gap); grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); }
+  .loc2 { background: var(--white); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 1rem 1.1rem; position: relative; overflow: hidden; }
+  .loc2::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 4px; background: var(--red); }
+  .loc2 .ln { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; }
+  .loc2 .ln b { color: var(--navy); font-size: 1.02rem; }
+  .loc2 .code { font-family: ui-monospace, Consolas, monospace; font-size: 0.72rem; color: var(--text-2); background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 0.05rem 0.4rem; }
+  .loc2 .qty { font-size: 2rem; font-weight: 800; color: var(--red-ink); margin: 0.5rem 0 0.1rem; font-variant-numeric: tabular-nums; }
+  .loc2 .qty small { font-size: 0.9rem; color: var(--text-2); font-weight: 600; }
+  .loc2 .qb { height: 8px; border-radius: 4px; background: #F3E3E5; overflow: hidden; margin: 0.35rem 0 0.6rem; } .loc2 .qb i { display: block; height: 100%; background: var(--red); border-radius: 4px; }
+  .loc2 .meta { display: grid; gap: 0.3rem; font-size: 0.84rem; }
+  .loc2.marked { border-color: var(--amber); } .loc2.marked::before { background: var(--amber); }
+  @media (max-width: 1100px) { .trust { grid-template-columns: 1fr; } .rsum { grid-template-columns: repeat(2, minmax(0, 1fr)); } .rsum .act { grid-column: 1 / -1; } }
+
+  /* ============ projector / narrow screens */
+  @media (max-width: 1100px) {
+    nav.steps .t2 { display: none; }
+    .brand-tag { display: none; }
+  }
+  @media (max-width: 760px) {
+    .shell-meta { display: none; }
+    nav.steps .t1 { font-size: 0.74rem; }
+    .dock-legend { display: none; }
+    .gloss .term { grid-template-columns: 1fr; gap: 0.2rem; }
+    main { padding: 1.25rem 1rem 7rem; }
+  }
+  @media (max-height: 640px) {
+    .shell-top { padding-top: 0.5rem; } nav.steps { padding-bottom: 0.55rem; }
+    nav.steps .node { width: 38px; height: 38px; } nav.steps li.current .node { width: 42px; height: 42px; }
+    nav.steps li + li::before { top: 19px; } main { padding-top: 1.25rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+  }
 </style>
 </head>
 <body>
 <div id="boot">Loading FlowForge…</div>
 
-<ui5-shellbar id="shell" primary-title="FlowForge" secondary-title="Medicine shortage early warning · Demo Hospital">
-  <ui5-shellbar-item id="connItem" icon="disconnected" text="Connection"></ui5-shellbar-item>
-  <ui5-shellbar-item id="helpItem" icon="question-mark" text="How to read FlowForge"></ui5-shellbar-item>
-</ui5-shellbar>
-
-<nav class="steps" aria-label="Guided flow"><ol id="steps"></ol></nav>
+<header class="shell">
+  <div class="shell-top">
+    <a class="brand" href="#" id="brand" aria-label="FlowForge home: Watch">
+      <span class="mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13h4l2.2-5.5L13 18l2.4-6H21"/></svg></span>
+      <span><span class="brand-name">FlowForge</span><span class="brand-tag" style="display:block">AI-powered medicine shortage early warning</span></span>
+    </a>
+    <span class="shell-meta" id="shellMeta"><span class="dot"></span><span id="shellMetaText">Demo Hospital · not connected</span></span>
+    <div class="shell-actions">
+      <ui5-button id="glossItem" design="Transparent" icon="course-book">Glossary</ui5-button>
+      <ui5-button id="connItem" design="Transparent" icon="disconnected">Connection</ui5-button>
+      <ui5-button id="helpItem" design="Transparent" icon="question-mark" tooltip="How to read FlowForge" accessible-name="How to read FlowForge"></ui5-button>
+    </div>
+  </div>
+  <nav class="steps" aria-label="The FlowForge story in five steps"><ol id="steps"></ol></nav>
+</header>
 <main id="app" tabindex="-1"></main>
+
+<!-- docked bottom bar: legend + back / next step -->
+<div class="dock" role="region" aria-label="Legend and step navigation"><div class="dock-in">
+  <button class="dock-legend" id="dockLegend" title="Open the glossary">
+    <span class="grp"><span class="dt real">REAL</span><span class="dt proxy">PROXY</span><span class="dt synth">SYNTH</span><span>where each number comes from</span></span>
+    <span class="sep"></span>
+    <span class="grp"><span class="swatch red"><i></i>Act now</span><span class="swatch amber"><i></i>Watch</span><span class="swatch green"><i></i>OK</span></span>
+  </button>
+  <div class="dock-nav" id="dockNav"></div>
+</div></div>
+
+<!-- glossary dialog -->
+<ui5-dialog id="glossDlg" header-text="Glossary: the words on these screens">
+  <div class="gloss" id="glossBody" style="max-width: 720px; padding: 0.5rem 0.25rem"></div>
+  <div slot="footer" class="row" style="justify-content:flex-end; width:100%; padding: 0.5rem">
+    <ui5-button id="glossClose" design="Emphasized">Close</ui5-button>
+  </div>
+</ui5-dialog>
 
 <!-- connection dialog -->
 <ui5-dialog id="connDlg" header-text="Connect to the FlowForge API">
@@ -112,6 +748,20 @@
 <ui5-dialog id="askDlg"><div class="pad stack" id="askBody" style="min-width: min(460px, 80vw)"></div>
   <div slot="footer" class="row" style="justify-content:flex-end; width:100%; padding: 0.5rem">
     <ui5-button id="askOk" design="Emphasized">OK</ui5-button><ui5-button id="askCancel" design="Transparent">Cancel</ui5-button>
+  </div>
+</ui5-dialog>
+<!-- quarantine confirmation (visual only: nothing is sent to the backend) -->
+<ui5-dialog id="qDlg" header-text="Quarantine this batch?">
+  <div id="qBody" style="max-width: 560px; padding: 0.5rem 0.25rem"></div>
+  <div slot="footer" class="row" style="justify-content:flex-end; width:100%; padding: 0.5rem">
+    <ui5-button id="qOk" design="Negative" icon="locked">Mark for quarantine</ui5-button><ui5-button id="qCancel" design="Transparent">Cancel</ui5-button>
+  </div>
+</ui5-dialog>
+<!-- quarantine confirmation (visual only: nothing is sent to the backend) -->
+<ui5-dialog id="qDlg" header-text="Quarantine this batch?">
+  <div id="qBody" style="max-width: 560px; padding: 0.5rem 0.25rem"></div>
+  <div slot="footer" class="row" style="justify-content:flex-end; width:100%; padding: 0.5rem">
+    <ui5-button id="qOk" design="Negative" icon="locked">Mark for quarantine</ui5-button><ui5-button id="qCancel" design="Transparent">Cancel</ui5-button>
   </div>
 </ui5-dialog>
 <ui5-toast id="toast" placement="BottomCenter" duration="4000"></ui5-toast>
@@ -191,6 +841,35 @@ const STEPS = [
   ["prove", "Prove", "Tamper-evident audit trail"],
   ["recall", "Recall", "Find a failed batch"],
 ];
+// Line icons (static markup, never data): eye, magnifier, approval check, shield, package, check, arrows.
+const SVG = {
+  watch: '<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+  understand: '<circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/>',
+  decide: '<circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.7 2.7L16 9.8"/>',
+  prove: '<path d="M12 3l7 3v5c0 5-3.2 8.4-7 10-3.8-1.6-7-5-7-10V6l7-3z"/><path d="M9 12l2 2 4-4"/>',
+  recall: '<path d="M3 7.5L12 3l9 4.5v9L12 21l-9-4.5v-9z"/><path d="M3 7.5l9 4.5 9-4.5M12 12v9"/>',
+  check: '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+  next: '<path d="M5 12h14M13 6l6 6-6 6"/>',
+  back: '<path d="M19 12H5M11 6l-6 6 6 6"/>',
+};
+function svgIcon(name, width = 2) {
+  const s = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  s.setAttribute("viewBox", "0 0 24 24"); s.setAttribute("fill", "none"); s.setAttribute("stroke", "currentColor");
+  s.setAttribute("stroke-width", width); s.setAttribute("stroke-linecap", "round"); s.setAttribute("stroke-linejoin", "round");
+  s.setAttribute("aria-hidden", "true"); s.innerHTML = SVG[name]; return s;
+}
+const GLOSSARY = [
+  ["NPPA", "The National Pharmaceutical Pricing Authority, the government body that sets the maximum price of essential medicines in India."],
+  ["Ceiling price", "The maximum price a medicine may be sold at (before GST), fixed by NPPA; it only moves once a year with inflation."],
+  ["Margin", "What a maker keeps per unit: what it earns under the ceiling price minus what it costs to make; when it reaches zero, making the medicine stops paying."],
+  ["NSQ", "\"Not of Standard Quality\": a medicine batch that failed a government lab test, published by CDSCO, India's drug regulator."],
+  ["DPCO", "The Drugs (Prices Control) Order 2013, the law behind ceiling prices; FlowForge blocks any purchase above the ceiling plus GST."],
+  ["NLEM", "The National List of Essential Medicines: the medicines every hospital must be able to supply."],
+  ["REAL", "The number comes from public government data (NPPA, NLEM, CDSCO)."],
+  ["PROXY", "The number is an estimate derived from public data, for example a typical recipe for making the medicine."],
+  ["SYNTH", "The number is synthetic demo data, such as the demo hospital's stock and the imported ingredient cost."],
+  ["Risk flag", "Every result is a flag for a pharmacist to review, computed by fixed rules; it never claims what a manufacturer will do."],
+];
 
 /* ============================================================ storage, api, dom */
 const store = {
@@ -230,16 +909,47 @@ function h(tag, attrs, ...kids) {
 }
 const $app = document.getElementById("app");
 const toast = msg => { const t = document.getElementById("toast"); t.textContent = msg; t.open = true; };
-function busy(msg) { return h("div", { class: "row pad" }, h("ui5-busy-indicator", { active: true, size: "M" }), h("span", { class: "muted" }, msg)); }
-function strip(design, ...text) { return h("ui5-message-strip", { design, "hide-close-button": true }, ...text); }
-function card(title, subtitle, icon, ...body) {
-  const header = h("ui5-card-header", { slot: "header", "title-text": title, "subtitle-text": subtitle || "" },
-    icon ? h("ui5-icon", { slot: "avatar", name: icon }) : null);
-  return h("ui5-card", {}, header, h("div", { class: "pad" }, ...body));
+// Loading state: never a blank screen. `steps` lists what is happening (plain text, no fake progress).
+function busy(msg, steps = []) {
+  return h("div", { class: "loading", role: "status" },
+    h("div", { class: "msg" }, h("ui5-busy-indicator", { active: true, size: "S" }), msg),
+    steps.length ? h("ul", { class: "steps-l" }, ...steps.map(t => h("li", {}, t))) : null,
+    h("div", { class: "skel w80" }), h("div", { class: "skel w60" }), h("div", { class: "skel w40" }));
 }
-function tag(text, design, icon) { return h("ui5-tag", { design: design || "Neutral" }, icon ? h("ui5-icon", { slot: "icon", name: icon }) : null, text); }
-function bandTag(band, prefix = "") { const b = BAND[band]; return b ? tag(prefix + b.text, b.design, b.icon) : tag("Not assessed", "Neutral"); }
-function dataTag(t) { const d = TAG[t] || [t || "?", "Neutral", ""]; const el = tag(d[0], d[1]); el.title = d[2]; return el; }
+const NOTE_ICON = { Positive: "sys-enter-2", Negative: "error", Critical: "alert", Information: "information" };
+function strip(design, ...text) { return h("div", { class: "note " + design, role: design === "Negative" ? "alert" : "status" }, h("ui5-icon", { name: NOTE_ICON[design] || "information" }), h("div", {}, ...text)); }
+function card(title, subtitle, icon, ...body) {
+  return h("section", { class: "card" },
+    h("div", { class: "card-h" }, icon ? h("span", { class: "ico" }, h("ui5-icon", { name: icon })) : null,
+      h("div", {}, h("div", { class: "t" }, title), subtitle ? h("div", { class: "s" }, subtitle) : null)),
+    ...body);
+}
+const DESIGN_CLS = { Positive: "green", Negative: "red", Critical: "amber", Information: "teal", Neutral: "grey" };
+function tag(text, design, icon) { return h("span", { class: "pill " + (DESIGN_CLS[design] || "grey") }, icon ? h("ui5-icon", { name: icon }) : null, text); }
+function bandTag(band, prefix = "", big = false) {
+  const b = BAND[band];
+  const el = b ? tag(prefix + b.text, b.design, b.icon) : tag("Not assessed", "Neutral");
+  if (big) el.classList.add("lg");
+  return el;
+}
+function dataTag(t) { const d = TAG[t] || [t || "?", "Neutral", "Source not labelled"]; return h("span", { class: "dt " + String(d[0]).toLowerCase(), title: d[0] + ": " + d[2] }, d[0]); }
+// Count a real API number up from 0 (skipped when the viewer prefers reduced motion).
+const REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+function countUp(el, value, render = v => fmt.n(v)) {
+  el.textContent = render(value);
+  if (REDUCED || !Number.isFinite(Number(value)) || Number(value) === 0) return el;
+  const t0 = performance.now(), dur = 700, target = Number(value);
+  const step = now => { const k = Math.min(1, (now - t0) / dur); el.textContent = render(k < 1 ? target * (1 - Math.pow(1 - k, 3)) : target); if (k < 1) requestAnimationFrame(step); };
+  requestAnimationFrame(step);
+  return el;
+}
+// Page header: title, "what you are looking at", "why it matters".
+function pageHead(eyebrow, title, what, why, aside) {
+  return h("div", { class: "page-head" },
+    h("div", { style: "min-width: 0; flex: 1 1 520px" }, h("div", { class: "eyebrow" }, eyebrow), h("h1", { class: "page" }, title),
+      h("p", { class: "lead" }, what), why ? h("div", { class: "why-hint" }, h("b", {}, "Why it matters"), h("span", {}, why)) : null),
+    aside || null);
+}
 function info(text) {
   const b = h("ui5-button", { icon: "hint", design: "Transparent", tooltip: "What does this mean?", "accessible-name": "What does this mean?" });
   b.addEventListener("click", () => { const p = document.getElementById("tip"); document.getElementById("tipBody").textContent = text; p.opener = b; p.open = true; });
@@ -260,11 +970,22 @@ const nlemText = lv => lv ? "Essential medicine (NLEM 2022) for " + lv.split(","
 
 /* ============================================================ shell: steps, connection, help */
 function renderSteps() {
-  const ol = document.getElementById("steps");
-  ol.replaceChildren(...STEPS.map(([id, t1, t2], i) => h("li", {}, h("button", {
-    "aria-current": state.step === id ? "step" : null, onclick: () => go(id) },
-    h("span", { class: "num" }, String(i + 1)), h("span", {}, h("span", { class: "t1" }, t1), h("span", { class: "t2" }, t2))))));
+  const ol = document.getElementById("steps"), cur = STEPS.findIndex(x => x[0] === state.step);
+  ol.replaceChildren(...STEPS.map(([id, t1, t2], i) => h("li", { class: i < cur ? "done" : i === cur ? "current" : "" }, h("button", {
+    "aria-current": i === cur ? "step" : null, "aria-label": `Step ${i + 1}: ${t1}. ${t2}${i < cur ? " (done)" : ""}`, onclick: () => go(id) },
+    h("span", { class: "node" }, svgIcon(i < cur ? "check" : id, i < cur ? 2.6 : 2), h("span", { class: "num" }, String(i + 1))),
+    h("span", { class: "t1" }, t1), h("span", { class: "t2" }, t2)))));
+  renderDock(cur);
 }
+function renderDock(cur) {
+  const nav = document.getElementById("dockNav");
+  const prev = STEPS[cur - 1], next = STEPS[cur + 1];
+  nav.replaceChildren(...[
+    prev ? h("button", { class: "back-btn", onclick: () => go(prev[0]) }, svgIcon("back"), "Back") : null,
+    next ? h("button", { class: "next-btn", onclick: () => go(next[0]) }, h("span", {}, h("small", {}, `Step ${cur + 2} · `), `Next: ${next[1]}`), svgIcon("next", 2.4))
+      : h("button", { class: "next-btn", onclick: () => go(STEPS[0][0]) }, h("span", {}, h("small", {}, "Story complete · "), "Start again"), svgIcon("next", 2.4))].filter(Boolean));
+}
+function showPage(...kids) { $app.replaceChildren(h("div", { class: "stack enter" }, ...kids)); }
 async function go(step, arg) {
   state.step = step; renderSteps(); window.scrollTo(0, 0);
   if (step === "understand" && arg) { state.form = arg; store.set("form", arg); }
@@ -297,15 +1018,23 @@ async function connect() {
 function setConn(ok, backend) {
   const it = document.getElementById("connItem");
   it.icon = ok ? "connected" : "disconnected";
-  it.text = ok ? `Connected · ${backend === "hana" ? "SAP HANA Cloud" : "SQLite"}` : "Connection";
-  document.getElementById("shell").setAttribute("secondary-title",
-    "Medicine shortage early warning · Demo Hospital" + (ok ? (backend === "hana" ? " · SAP BTP + SAP HANA Cloud" : " · offline copy") : ""));
+  it.textContent = ok ? "Connected" : "Connection";
+  document.getElementById("shellMeta").classList.toggle("on", !!ok);
+  document.getElementById("shellMetaText").textContent =
+    "Demo Hospital · " + (ok ? (backend === "hana" ? "live on SAP BTP + SAP HANA Cloud" : "offline copy (SQLite)") : "not connected");
 }
 document.getElementById("connItem").addEventListener("click", openConn);
 document.getElementById("connGo").addEventListener("click", connect);
 document.getElementById("connClose").addEventListener("click", () => { connDlg.open = false; });
 document.getElementById("helpItem").addEventListener("click", () => { document.getElementById("helpDlg").open = true; });
 document.getElementById("helpClose").addEventListener("click", () => { document.getElementById("helpDlg").open = false; });
+const openGloss = () => { document.getElementById("glossDlg").open = true; };
+document.getElementById("glossItem").addEventListener("click", openGloss);
+document.getElementById("dockLegend").addEventListener("click", openGloss);
+document.getElementById("glossClose").addEventListener("click", () => { document.getElementById("glossDlg").open = false; });
+document.getElementById("brand").addEventListener("click", e => { e.preventDefault(); go("watch"); });
+document.getElementById("glossBody").append(...GLOSSARY.map(([t, d]) =>
+  h("div", { class: "term" }, h("b", {}, ["REAL", "PROXY", "SYNTH"].includes(t) ? dataTag(t) : t), h("span", {}, d))));
 document.getElementById("helpBody").append(
   h("p", { style: "margin-top:0" }, "The government (NPPA) caps the price of essential medicines. If the imported ingredient gets expensive, making the medicine stops paying and makers quietly stop. The hospital only notices when the shelf is empty. FlowForge spots that squeeze early and helps the pharmacist act before it happens."),
   h("ui5-title", { level: "H5" }, "The five steps"),
@@ -318,95 +1047,221 @@ document.getElementById("helpBody").append(
 );
 
 /* ============================================================ 1. WATCH */
+const BAND_COLOR = { RED: "var(--red)", AMBER: "var(--amber)", GREEN: "var(--green)" };
+const producersText = n => n === null || n === undefined ? "producers not assessed" : `at least ${fmt.n(n)} producer${Number(n) === 1 ? "" : "s"} on record`;
 async function watch() {
-  $app.replaceChildren(busy("Loading the watchlist from the database…"));
+  $app.replaceChildren(busy("Loading the watchlist from the database…", ["Reading every tracked price-capped medicine", "Fetching each one's latest risk flag and stock cover"]));
   const rows = await api("/watchlist?limit=200&assessed_only=true");
   state.watch = rows;
   if (rows[0] && rows[0].run_id) { state.run = state.run || rows[0].run_id; }
   const n = b => rows.filter(r => r.exit_risk_band === b).length;
-  const lowCover = rows.filter(r => r.min_days_of_cover !== null && r.min_days_of_cover < 30).length;
+  const stocked = rows.filter(r => r.min_days_of_cover !== null);
+  const lowCover = stocked.filter(r => r.min_days_of_cover < 30).length;
+  const rowTags = [...new Set(rows.map(r => r.data_tag).filter(Boolean))];
   let filter = "ALL", query = "";
 
-  const table = h("ui5-table", { "overflow-mode": "Popin", "accessible-name": "Watchlist" });
-  const header = h("ui5-table-header-row", { slot: "headerRow", sticky: true },
-    ...["Medicine", "Risk", "Main reason", "Our stock lasts", "Price cap (excl. GST)", "Makers on record", "Data"].map((t, i) =>
-      h("ui5-table-header-cell", { "min-width": i === 0 ? "220px" : i === 2 ? "220px" : "110px" }, t)));
+  // ---- hero: the problem in one sentence + where every medicine sits today (real margins)
+  const hero = h("section", { class: "hero" },
+    h("div", { style: "position: relative; min-width: 0" },
+      h("div", { class: "eyebrow" }, "Step 1 · Watch"),
+      h("h1", {}, "The first sign of a shortage isn't an empty shelf."),
+      h("p", { class: "sub" }, "It's a cost rising towards a price that isn't allowed to rise."),
+      h("div", { class: "versus", "aria-label": "Cost versus price cap" },
+        h("span", { class: "tok cost" }, svgMini("rise"), "COST"), h("span", { class: "vs" }, "VS"),
+        h("span", { class: "tok cap" }, svgMini("flat"), "PRICE CAP")),
+      h("p", { class: "lead" }, `What you are looking at: FlowForge's live check of ${rows.length} price-capped essential medicines. For each one it asks: is it still worth making under the government price cap, how many makers are left, and how long our own stock lasts.`),
+      h("div", { class: "why-hint" }, h("b", {}, "Why it matters"), h("span", {}, "When making a medicine stops paying, supply dries up quietly. Spotting the squeeze early gives the pharmacy months, not days."))),
+    squeeze(rows));
+
+  // ---- KPI cards
+  const kpis = h("div", { class: "kpis" },
+    kpiCard("red", "error", "ACT NOW", n("RED"), rows.length, "medicines need a decision now", rowTags),
+    kpiCard("amber", "alert", "WATCH CLOSELY", n("AMBER"), rows.length, "thin margin or concentrated supply", rowTags),
+    kpiCard("green", "sys-enter-2", "STABLE", n("GREEN"), rows.length, "no concern at the moment", rowTags),
+    kpiCard("navy", "inventory", "STOCK UNDER 30 DAYS", lowCover, stocked.length, "of the medicines we stock run out within a month", ["SYNTH"]));
+
+  // ---- risk mix + scenario banner
+  const shockBox = h("div", {});
+  const goBtn = h("button", { class: "go" }, svgIcon("next", 2.4), "Run the +30% scenario");
+  const runBox = h("div", {});
+  goBtn.addEventListener("click", () => runShock(shockBox, goBtn, runBox));
+  const banner = h("section", { class: "shock", "aria-label": "Import cost shock scenario" },
+    h("div", { class: "eyebrow" }, "Live scenario · stress test"),
+    h("h2", {}, "What if import costs rise 30%?"),
+    h("p", {}, "Tariffs, freight or a supply crisis can push the cost of imported ingredients up overnight. FlowForge re-checks every medicine's margin with ingredient costs 30% higher and shows which ones tip into danger."),
+    goBtn, runBox,
+    h("small", {}, "Nothing is saved or ordered. Takes about 30 seconds on SAP BTP."));
+  const mix = card("Risk mix today", `${rows.length} medicines by risk flag`, "pie-chart", donut(rows));
+  if (state.shock) showShock(shockBox, state.shock);
+
+  // ---- watchlist
+  const list = h("div", { class: "wl", role: "list" });
+  const head = h("div", { class: "wl-head", "aria-hidden": "true" },
+    h("span", {}, "Medicine"), h("span", {}, "Status"), h("span", {}, "Margin left"), h("span", { class: "c-cause" }, "Main reason"),
+    h("span", {}, "Our stock lasts"), h("span", {}, "Data"));
   function fill() {
     const q = query.toLowerCase();
     const shown = rows.filter(r => (filter === "ALL" || r.exit_risk_band === filter) && (!q || fmt.med(r).toLowerCase().includes(q)));
-    table.replaceChildren(header, ...shown.map(r => {
-      const c = CAUSE[r.cause_code];
-      const tr = h("ui5-table-row", { interactive: true, "row-key": r.form_id },
-        h("ui5-table-cell", {}, h("div", {}, h("b", {}, fmt.med(r)), h("div", { class: "small muted" }, r.therapeutic_class || ""))),
-        h("ui5-table-cell", {}, bandTag(r.exit_risk_band)),
-        h("ui5-table-cell", {}, c ? c[0] : "–"),
-        h("ui5-table-cell", {}, r.min_days_of_cover === null ? "not stocked" : `${fmt.n(r.min_days_of_cover)} days`),
-        h("ui5-table-cell", {}, fmt.inr(r.ceiling_price_inr) + " / unit"),
-        h("ui5-table-cell", {}, r.producers_label || "–"),
-        h("ui5-table-cell", {}, dataTag(r.data_tag)));
-      tr.dataset.form = r.form_id;
-      return tr;
-    }));
-    if (!shown.length) table.append(h("div", { slot: "noData", class: "pad muted" }, "No medicine matches."));
+    list.replaceChildren(head, ...shown.map(watchRow));
+    if (!shown.length) list.append(h("div", { class: "empty" }, "No medicine matches this filter or search."));
   }
-  table.addEventListener("row-click", e => { const id = e.detail.row.dataset.form; if (id) go("understand", id); });
-
   const seg = h("ui5-segmented-button", { "accessible-name": "Filter by risk" },
     h("ui5-segmented-button-item", { selected: true, "data-v": "ALL" }, `All (${rows.length})`),
     h("ui5-segmented-button-item", { "data-v": "RED" }, `Act now (${n("RED")})`),
     h("ui5-segmented-button-item", { "data-v": "AMBER" }, `Watch (${n("AMBER")})`),
     h("ui5-segmented-button-item", { "data-v": "GREEN" }, `Stable (${n("GREEN")})`));
   seg.addEventListener("selection-change", e => { filter = e.detail.selectedItems[0].dataset.v; fill(); });
-  const search = h("ui5-input", { placeholder: "Search a medicine", "show-clear-icon": true }, h("ui5-icon", { slot: "icon", name: "search" }));
+  const search = h("ui5-input", { placeholder: "Search a medicine", "show-clear-icon": true, "accessible-name": "Search a medicine" }, h("ui5-icon", { slot: "icon", name: "search" }));
   search.addEventListener("input", e => { query = e.target.value; fill(); });
   fill();
 
-  const shockBox = h("div", {});
-  const shockBtn = h("ui5-button", { design: "Emphasized", icon: "trend-up" }, "What if import costs rise 30%?");
-  shockBtn.addEventListener("click", () => runShock(shockBox, shockBtn));
-  if (state.shock) showShock(shockBox, state.shock);
-
-  $app.replaceChildren(h("div", { class: "stack" },
-    h("h1", { class: "page" }, "Which price-capped medicines are at risk?"),
-    h("p", { class: "lead muted" }, "FlowForge checks every tracked medicine: is it still worth making under the government price cap, how many makers are left, and how long our own stock lasts. Click a medicine to see why."),
-    h("div", { class: "grid g4" },
-      kpi(n("RED"), "Act now", "Supply could fail soon, or cost is already above the cap", "neg"),
-      kpi(n("AMBER"), "Watch closely", "Margin is thin or supply is concentrated", "crit"),
-      kpi(n("GREEN"), "Stable", "No concern now", "pos"),
-      kpi(lowCover, "Stock under 30 days", "Hospital stock of these medicines lasts less than a month", "")),
-    card("Stress test: import cost shock", "Tariffs, freight or a supply crisis can push ingredient costs up overnight.", "trend-up",
-      h("div", { class: "row spread" }, h("span", { class: "muted" }, "Re-checks every medicine's margin with ingredient costs 30% higher. Nothing is saved; takes about 30 seconds."), shockBtn), shockBox),
-    card("Watchlist", `${rows.length} medicines, most urgent first`, "activity-2",
-      h("div", { class: "row spread", style: "margin-bottom: 0.75rem" }, seg, search), table),
-  ));
+  showPage(hero, kpis,
+    h("div", { class: "mixrow" }, mix, banner), shockBox,
+    card("Medicine watchlist", `${rows.length} medicines · most urgent first · click a medicine to see why it is flagged`, "activity-2",
+      h("div", { class: "wl-tools" }, seg, search), list),
+    h("p", { class: "hint" }, "Every flag is a probabilistic risk flag for review, computed by fixed rules. It never states what a manufacturer intends to do. Producer counts are minimums from public records."));
 }
-function kpi(v, label, desc, cls) {
-  return h("ui5-card", {}, h("div", { class: "kpi" }, h("div", { class: "v " + cls }, String(v)), h("div", { class: "l" }, label), h("div", { class: "d" }, desc)));
+function svgMini(kind) {
+  const s = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  s.setAttribute("viewBox", "0 0 22 16"); s.setAttribute("aria-hidden", "true");
+  s.innerHTML = kind === "rise" ? '<path d="M1 14l6-4 4 2 9-10" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>'
+    : '<path d="M1 8h20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-dasharray="4 3" stroke-linecap="round"/>';
+  return s;
 }
-async function runShock(box, btn) {
-  btn.disabled = true; box.replaceChildren(busy("Re-checking every medicine with 30% higher ingredient costs… (about 30 s)"));
-  try { state.shock = await api("/scenario/shock", { method: "POST", body: { multiplier: 1.3 } }); showShock(box, state.shock); }
-  catch (e) { box.replaceChildren(strip("Negative", "The shock test failed: " + e.message)); }
+function kpiCard(tone, icon, label, value, of, desc, tags) {
+  const v = h("div", { class: "v" });
+  countUp(v, value);
+  const share = of ? Math.round(100 * value / of) : 0;
+  return h("div", { class: "kpi2 " + tone },
+    h("div", { class: "top" }, h("span", { class: "ib" }, h("ui5-icon", { name: icon })), label),
+    v, h("div", { class: "d" }, desc),
+    h("div", { class: "bar", role: "img", "aria-label": `${value} of ${of}` }, h("i", { style: `width: ${share}%` })),
+    h("div", { class: "foot" }, h("span", {}, `${fmt.n(value)} of ${fmt.n(of)}`), h("span", {}, ...tags.map(dataTag))));
+}
+// Real margins of every medicine on one axis: left of zero the cost is above what the maker earns under the cap.
+function squeeze(rows) {
+  const pts = rows.filter(r => r.headroom_pct !== null && r.headroom_pct !== undefined);
+  const noModel = rows.length - pts.length;
+  const box = h("div", { class: "squeeze" },
+    h("div", { class: "t" }, "Where every medicine stands today"),
+    h("div", { class: "s" }, "Each dot is one medicine, placed by its margin left (what the maker earns under the price cap minus the estimated cost)."));
+  if (!pts.length) { box.append(h("p", { class: "hint" }, "No margin estimates yet.")); return box; }
+  const vals = pts.map(r => r.headroom_pct);
+  const lo = Math.max(-0.5, Math.min(-0.1, ...vals)), hi = Math.min(0.5, Math.max(0.1, ...vals));
+  const W = 520, H = 170, L = 16, R = 16, top = 34, base = 128;
+  const x = v => L + (W - L - R) * ((Math.min(hi, Math.max(lo, v)) - lo) / (hi - lo));
+  const NS = "http://www.w3.org/2000/svg", svg = document.createElementNS(NS, "svg");
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`); svg.setAttribute("role", "img");
+  svg.setAttribute("aria-label", `Margins of ${pts.length} medicines; ${vals.filter(v => v <= 0).length} at or below zero`);
+  const el = (t, a, txt) => { const e = document.createElementNS(NS, t); for (const [k, v] of Object.entries(a)) e.setAttribute(k, v); if (txt !== undefined) e.textContent = txt; svg.append(e); return e; };
+  el("rect", { x: L, y: top - 6, width: x(0) - L, height: base - top + 12, rx: 10, fill: "#FDECEE" });
+  el("rect", { x: x(0), y: top - 6, width: W - R - x(0), height: base - top + 12, rx: 10, fill: "#E8F8F7" });
+  el("text", { x: L + 8, y: top + 8, style: "font-size: 10.5px; font-weight: 700; fill: #B63A43" }, "LOSING MONEY PER UNIT");
+  el("text", { x: W - R - 8, y: top + 8, "text-anchor": "end", style: "font-size: 10.5px; font-weight: 700; fill: #0B6F6D" }, "STILL PAYS TO MAKE");
+  el("line", { x1: x(0), x2: x(0), y1: top - 12, y2: base + 10, stroke: "#12355B", "stroke-width": 2, "stroke-dasharray": "5 4" });
+  el("text", { x: x(0), y: top - 16, "text-anchor": "middle", style: "font-size: 10.5px; font-weight: 700; fill: #12355B" }, "cost = what the maker earns");
+  pts.forEach((r, i) => {
+    const y = top + 22 + ((i * 37) % (base - top - 30));
+    const clipped = r.headroom_pct < lo || r.headroom_pct > hi;
+    const c = el("circle", { cx: x(r.headroom_pct), cy: y, r: 6.5, fill: clipped ? "#fff" : BAND_COLOR[r.exit_risk_band] || "#5B6B7B",
+      stroke: clipped ? BAND_COLOR[r.exit_risk_band] || "#5B6B7B" : "#fff", "stroke-width": 2, class: "clickable" });
+    const t = document.createElementNS(NS, "title"); t.textContent = `${fmt.med(r)}: margin ${fmt.pct(r.headroom_pct, 1)}`; c.append(t);
+    c.addEventListener("click", () => go("understand", r.form_id));
+  });
+  [lo, 0, hi].forEach(v => el("text", { x: x(v), y: H - 12, "text-anchor": v === lo ? "start" : v === hi ? "end" : "middle" },
+    (v > 0 ? "+" : "") + fmt.pct(v) + (v === lo && Math.min(...vals) < lo ? " or less" : v === hi && Math.max(...vals) > hi ? " or more" : "")));
+  box.append(svg, h("div", { class: "facts2" },
+    h("span", { class: "neg" }, h("b", {}, String(vals.filter(v => v <= 0).length)), "at or below zero margin"),
+    h("span", {}, h("b", {}, String(vals.filter(v => v > 0 && v < 0.05).length)), "under 5% margin"),
+    noModel ? h("span", {}, h("b", {}, String(noModel)), "without a cost model") : null));
+  return box;
+}
+function donut(rows) {
+  const parts = [["RED", "Act now"], ["AMBER", "Watch closely"], ["GREEN", "Stable"]].map(([b, t]) => [b, t, rows.filter(r => r.exit_risk_band === b).length]);
+  const total = parts.reduce((s, p) => s + p[2], 0);
+  const NS = "http://www.w3.org/2000/svg", svg = document.createElementNS(NS, "svg");
+  svg.setAttribute("viewBox", "0 0 120 120"); svg.setAttribute("role", "img");
+  svg.setAttribute("aria-label", parts.map(p => `${p[1]} ${p[2]}`).join(", "));
+  const C = 2 * Math.PI * 46; let off = 0;
+  const ring = document.createElementNS(NS, "circle");
+  for (const [k, v] of Object.entries({ cx: 60, cy: 60, r: 46, fill: "none", stroke: "#EDF2F6", "stroke-width": 16 })) ring.setAttribute(k, v);
+  svg.append(ring);
+  for (const [b, , v] of parts) {
+    if (!v) continue;
+    const c = document.createElementNS(NS, "circle"), len = C * v / total;
+    for (const [k, val] of Object.entries({ cx: 60, cy: 60, r: 46, fill: "none", stroke: BAND_COLOR[b], "stroke-width": 16,
+      "stroke-dasharray": `${Math.max(0, len - 2)} ${C}`, "stroke-dashoffset": -off, transform: "rotate(-90 60 60)" })) c.setAttribute(k, val);
+    svg.append(c); off += len;
+  }
+  const t1 = document.createElementNS(NS, "text"); t1.setAttribute("x", 60); t1.setAttribute("y", 60); t1.setAttribute("text-anchor", "middle");
+  t1.setAttribute("style", "font-size: 26px; font-weight: 800; fill: #12355B"); t1.textContent = String(total);
+  const t2 = document.createElementNS(NS, "text"); t2.setAttribute("x", 60); t2.setAttribute("y", 78); t2.setAttribute("text-anchor", "middle");
+  t2.setAttribute("style", "font-size: 10px; fill: #5B6B7B"); t2.textContent = "medicines";
+  svg.append(t1, t2);
+  return h("div", { class: "donutwrap" }, svg, h("div", { class: "donut-legend" },
+    ...parts.map(([b, t, v]) => h("div", { class: "li" }, h("i", { style: `background: ${BAND_COLOR[b]}` }), h("span", {}, t),
+      h("b", {}, `${v}${total ? ` · ${Math.round(100 * v / total)}%` : ""}`))),
+    h("div", { class: "hint", style: "margin-top: 0.2rem" }, "Share of the tracked medicines in each risk flag.")));
+}
+async function runShock(box, btn, runBox) {
+  btn.disabled = true; box.replaceChildren();
+  runBox.replaceChildren(h("div", { class: "run", role: "status" },
+    h("div", { class: "msg" }, h("ui5-busy-indicator", { active: true, size: "S" }), "Running the scenario…"),
+    h("ul", {}, h("li", {}, "Raising every imported ingredient cost by 30%"), h("li", {}, "Re-computing each medicine's margin (agent A1)"),
+      h("li", {}, "Comparing each risk flag before and after"))));
+  try { state.shock = await api("/scenario/shock", { method: "POST", body: { multiplier: 1.3 } }); runBox.replaceChildren(); showShock(box, state.shock); box.scrollIntoView({ behavior: REDUCED ? "auto" : "smooth", block: "start" }); }
+  catch (e) { runBox.replaceChildren(); box.replaceChildren(strip("Negative", "The scenario failed: " + e.message)); }
   finally { btn.disabled = false; }
 }
 function showShock(box, res) {
   const changed = res.rows.filter(r => r.band_changed);
-  const red = res.rows.filter(r => r.shocked.band === "RED").length;
-  const list = h("ui5-list", { "header-text": `${changed.length} medicines change band`, "no-data-text": "No medicine changes band." },
-    ...changed.map(r => h("ui5-li", { description: `margin ${fmt.pct(r.baseline.headroom_pct)} → ${fmt.pct(r.shocked.headroom_pct)}`,
-      "additional-text": `${BAND[r.baseline.band]?.text || r.baseline.band} → ${BAND[r.shocked.band]?.text || r.shocked.band}`,
-      "additional-text-state": r.shocked.band === "RED" ? "Negative" : "Critical", icon: "trend-down", type: "Active", "data-form": r.form_id },
-      [r.generic, r.strength].filter(Boolean).join(" "))));
-  list.addEventListener("item-click", e => go("understand", e.detail.item.dataset.form));
-  box.replaceChildren(h("div", { class: "stack", style: "margin-top: 0.75rem" },
-    strip(red >= 3 ? "Negative" : "Critical", `With 30% higher import costs, ${red} of ${res.rows.length} medicines would be unviable or close to it on margin (Act now).`),
-    list, h("p", { class: "hint" }, res.note)));
+  const count = (side, b) => res.rows.filter(r => r[side].band === b).length;
+  const chip = (b, t) => h("span", { class: "ba", title: `Margin flag ${t}: before → after` }, h("span", { class: "swatch " + { RED: "red", AMBER: "amber", GREEN: "green" }[b] }, h("i", {})),
+    h("span", { class: "lab" }, t), h("span", { class: "num" }, String(count("baseline", b))), h("span", { class: "arrow" }, "→"),
+    h("span", { class: "num", style: `color: ${b === "RED" ? "var(--red-ink)" : b === "AMBER" ? "var(--amber-ink)" : "var(--green-ink)"}` }, String(count("shocked", b))));
+  const rowsEl = changed.map(r => h("button", { class: "chg", onclick: () => go("understand", r.form_id), "aria-label": `${r.generic}: open details` },
+    h("div", { style: "min-width: 0" }, h("div", { style: "font-weight: 700; color: var(--navy)" }, [r.generic, r.strength].filter(Boolean).join(" ")),
+      h("div", { class: "small muted" }, "Margin left ", h("b", { style: "color: var(--text)" }, fmt.pct(r.baseline.headroom_pct, 1)), " → ",
+        h("b", { style: "color: var(--red-ink)" }, fmt.pct(r.shocked.headroom_pct, 1)))),
+    h("div", { class: "bands" }, bandTag(r.baseline.band), h("span", { class: "muted" }, "→"), bandTag(r.shocked.band))));
+  const red = count("shocked", "RED");
+  box.replaceChildren(card("Scenario result: import costs +30%", `Margin flag (agent A1) before → after · ${changed.length} of ${res.rows.length} medicines change`, "trend-up",
+    h("div", { class: "stack shock-res" },
+      h("p", { class: "hint", style: "margin: 0" }, "This scenario re-runs the margin check only: is each medicine still worth making? The watchlist's overall shortage flag also weighs the number of makers, ingredient origin and our stock, so its counts differ."),
+      h("div", { class: "chips" }, chip("RED", "Margin: Act now"), chip("AMBER", "Margin: Watch"), chip("GREEN", "Margin: OK")),
+      strip(red >= 3 ? "Negative" : "Critical", `With 30% higher import costs, ${red} of ${res.rows.length} medicines would be unviable or close to it on margin (Act now).`),
+      changed.length ? h("div", { class: "changes" }, ...rowsEl) : h("div", { class: "empty" }, "No medicine changes its risk flag."),
+      h("p", { class: "hint", style: "margin: 0" }, res.note))));
+}
+function watchRow(r) {
+  const c = CAUSE[r.cause_code];
+  const hp = r.headroom_pct;
+  let bar;
+  if (hp === null || hp === undefined) bar = h("div", { class: "mbar" }, h("span", { class: "hint" }, "no cost model"), h("span", {}));
+  else {
+    const w = Math.min(30, Math.abs(hp) * 100) / 30 * 50; // share of the track: a ±30% margin fills its half
+    const color = hp <= 0 ? "var(--red)" : hp < 0.05 ? "var(--amber)" : "var(--green)";
+    bar = h("div", { class: "mbar", title: `Margin left: ${fmt.pct(hp, 1)}` },
+      h("div", { class: "track" }, h("span", { class: "fill", style: `${hp < 0 ? `right: 50%` : `left: 50%`}; width: ${w}%; background: ${color}` })),
+      h("span", { class: "val", style: `color: ${hp <= 0 ? "var(--red-ink)" : hp < 0.05 ? "var(--amber-ink)" : "var(--green-ink)"}` }, (hp > 0 ? "+" : "") + fmt.pct(hp, 1)));
+  }
+  const days = r.min_days_of_cover;
+  const stock = days === null || days === undefined ? h("div", { class: "stockc" }, h("span", { class: "hint" }, "not stocked"))
+    : h("div", { class: "stockc " + (days < 30 ? "low" : "ok"), title: "Days our hospital stock lasts at the forecast use (SYNTH demo hospital)" },
+      h("span", { class: "d" }, h("ui5-icon", { name: days < 30 ? "alert" : "inventory" }), `${fmt.n(days)} days`),
+      h("span", { class: "sb" }, h("i", { style: `width: ${Math.min(100, days / 90 * 100)}%` })));
+  return h("button", { class: "wrow " + (r.exit_risk_band || ""), role: "listitem", "data-form": r.form_id,
+    "aria-label": `${fmt.med(r)}: ${BAND[r.exit_risk_band]?.text || "not assessed"}. Open details.`, onclick: () => go("understand", r.form_id) },
+    h("div", { style: "min-width: 0" }, h("div", { class: "nm" }, fmt.med(r)),
+      h("div", { class: "sub" }, `Price cap ${fmt.inr(r.ceiling_price_inr)}/unit · ${producersText(r.producer_count_min)}`)),
+    h("div", {}, bandTag(r.exit_risk_band)), bar,
+    h("div", { class: "cause" }, c ? c[0] : "–"), stock, h("div", {}, dataTag(r.data_tag)));
 }
 
 /* ============================================================ 2. UNDERSTAND */
 async function understand() {
-  if (!state.form) { $app.replaceChildren(strip("Information", "Pick a medicine on the Watch step first."), h("p"), h("ui5-button", { onclick: () => go("watch") }, "Open the watchlist")); return; }
-  $app.replaceChildren(busy("Loading the medicine's story…"));
+  if (!state.form) { await pickMedicine(); return; }
+  $app.replaceChildren(busy("Loading the medicine's story…", ["Margin check (agent A1)", "Supply map (agent A2)", "Shortage forecast (agent A3)", "Options and rule checks (agents A4, A5)"]));
   const [d, series] = await Promise.all([
     api(`/molecule/${encodeURIComponent(state.form)}`),
     api(`/molecule/${encodeURIComponent(state.form)}/margin-series?months=12&shock=1.3`).catch(() => null),
@@ -415,90 +1270,152 @@ async function understand() {
   if (d.run_id) { state.run = d.run_id; store.set("lastRun", d.run_id); }
   const cause = fc && CAUSE[fc.cause_code];
   const recBy = Object.fromEntries((d.recommendations || []).map(v => [v.recommendation.scenario_id, v.recommendation]));
+  const ftag = k => facts_[k] && facts_[k].tag ? dataTag(facts_[k].tag) : null;
+  const band = fc ? fc.exit_risk_band : null;
 
-  // header
-  const head = h("ui5-card", {}, h("div", { class: "pad" },
-    h("div", { class: "row spread" },
-      h("div", {}, h("h1", { class: "page" }, fmt.med(f)), h("div", { class: "muted" }, `${f.THERAPEUTIC_CLASS || ""} · ${nlemText(f.NLEM_LEVEL)}`)),
-      h("div", { class: "row" }, fc ? bandTag(fc.exit_risk_band, "Shortage risk: ") : tag("Not assessed", "Neutral"), dataTag(f.IS_PROXY))),
-    h("div", { class: "row", style: "margin-top: 0.75rem" },
-      h("span", {}, "Government price cap: ", h("b", {}, fmt.inr(f.CEILING_PRICE) + " per unit"), " excl. GST ", h("span", { class: "muted" }, `(${f.CEILING_SO_NUMBER || "NPPA order"})`))),
-    cause ? h("div", { class: "why", style: "margin-top: 0.75rem" }, h("b", {}, "Main reason: " + cause[0] + ". "), cause[1]) : null,
-    d.explanation ? h("p", { class: "small", style: "margin: 0.75rem 0 0" }, h("b", {}, "In plain words: "), d.explanation.text) : null));
+  // ---- verdict: medicine, status, the reason in one sentence
+  const expl = d.explanation;
+  const verdict = h("section", { class: "verdict " + (band || "") },
+    h("div", { class: "main" },
+      h("div", { class: "eyebrow" }, "Step 2 · Understand · why is this medicine flagged?"),
+      h("div", { class: "name" }, fmt.med(f)),
+      h("div", { class: "cls" }, `${f.THERAPEUTIC_CLASS || ""} · ${nlemText(f.NLEM_LEVEL)}`),
+      h("div", { class: "status" }, fc ? bandTag(band, "Shortage risk: ", true) : tag("Not assessed", "Neutral"),
+        fc && fc.exit_risk !== null ? h("span", { class: "score" }, "exit-risk score ", h("b", {}, fmt.pct(fc.exit_risk)),
+          info("The exit-risk score adds up the warning signs (thin margin, fast decline, few makers, one-country ingredient, quality alerts, late deliveries) with fixed weights from rules/weights.yaml. It is a flag for review, not a prediction of any company's decision.")) : null),
+      cause ? h("p", { class: "reason" }, cause[0] + ".") : h("p", { class: "reason" }, "No main reason recorded."),
+      cause ? h("p", { class: "reason-d" }, cause[1]) : null,
+      expl ? h("div", { class: "plain" }, h("div", { class: "who" }, h("ui5-icon", { name: expl.used_llm ? "lightbulb" : "document" }),
+        expl.used_llm ? "In plain words · written by the AI from the checked fact sheet" : "In plain words · generated from the rules (no AI model used)"), h("div", {}, expl.text)) : null),
+    h("div", { class: "side" },
+      h("div", { class: "capbox" }, h("div", { class: "k" }, "Price ceiling"),
+        h("div", { class: "v" }, fmt.inr(f.CEILING_PRICE), h("span", { style: "font-size: 0.9rem; color: var(--text-2); font-weight: 600" }, " / unit")),
+        h("div", { class: "d" }, "Maximum allowed selling price, excluding GST, set by NPPA ", dataTag(f.IS_PROXY)),
+        h("div", { class: "d" }, f.CEILING_SO_NUMBER || "")),
+      h("div", {}, h("div", { class: "capbox" }, h("div", { class: "k", style: "margin-bottom: 0.4rem" }, "What the AI agents checked")),
+        h("div", { class: "agents" }, ...["A1 Margin", "A2 Supply", "A3 Forecast", "A4 Options", "A5 Rules"].flatMap((t, i) => [i ? h("span", { class: "ar" }, "→") : null, h("span", { class: "ag" }, t)])),
+        h("div", { class: "d", style: "font-size: 0.8rem; color: var(--text-2); margin-top: 0.4rem" }, "Each agent answers one question below. A human decides in step 3.")),
+      h("div", { class: "why-hint", style: "margin: 0; border-radius: var(--r-md)" }, h("b", {}, "Why it matters"),
+        h("span", {}, "A flag is only useful if a pharmacist can check the reasoning. Every number below shows where it came from."))));
 
-  // Q1 margin
-  const q1 = card("1 · Is it still worth making?", "Margin check (agent A1)", AGENT.A1[2],
-    s ? h("div", { class: "stack" },
-      h("div", { class: "row" }, bandTag(s.band, "Margin: "), info("The maker earns the price cap minus the chemist's and wholesaler's margins. From that we subtract the estimated cost of making one unit (ingredient, conversion, packaging, freight). What is left is the margin (headroom). Below 5%, or running out within 6 months, is red.")),
+  // ---- Q1: margin
+  let q1body;
+  if (s) {
+    const cap = Number(f.CEILING_PRICE), earn = Number(s.realisation_inr), cost = Number(s.unit_cost_inr);
+    const mx = Math.max(cap || 0, earn || 0, cost || 0) || 1;
+    const hb = (label, v, color, t) => h("div", { class: "hb" }, h("span", { class: "muted" }, label),
+      h("span", { class: "tr" }, h("i", { style: `width: ${Math.max(2, 100 * v / mx)}%; background: ${color}` })), h("span", { class: "val" }, fmt.inr(v), t));
+    const hp = s.headroom_pct, tone = hp === null ? "navy" : hp <= 0 ? "red" : hp < 0.05 ? "amber" : "green";
+    const big = h("span", { class: "n " + tone });
+    countUp(big, hp === null ? null : hp * 100, v => v === null ? "–" : (v > 0 ? "+" : "") + fmt.n(v, 1) + "%");
+    q1body = [h("div", { class: "big" }, big, h("span", { class: "u" }, "margin left")),
+      h("div", { class: "bigcap" }, "of what the maker earns per unit, after the estimated cost of making it ", ftag("headroom_pct")),
+      h("div", { class: "hbars" },
+        hb("Price ceiling", cap, "var(--navy-2)", dataTag(s.data_quality.tags.ceiling_price || f.IS_PROXY)),
+        hb("Maker earns", earn, "var(--teal)", ftag("realisation_inr")),
+        hb("Cost to make", cost, "#E08A3C", ftag("estimated_unit_cost_inr") || dataTag(s.data_quality.tags.api_cost))),
       facts([
-        ["Maker earns per unit (est.)", fmt.inr(s.realisation_inr)],
-        ["Cost to make per unit (est.)", fmt.inr(s.unit_cost_inr)],
-        ["Margin left", fmt.pct(s.headroom_pct, 1)],
         ["Trend", s.headroom_trend === null ? "–" : (s.headroom_trend < 0 ? "shrinking " : "growing ") + fmt.pct(Math.abs(s.headroom_trend), 1) + " per month"],
-        ["Margin runs out in", s.months_to_breach === null ? "not on current trend" : `${fmt.n(s.months_to_breach, 1)} months`],
+        ["Margin runs out in", s.months_to_breach === null ? "not on the current trend" : `${fmt.n(s.months_to_breach, 1)} months`],
       ]),
-      chart(series), h("div", { class: "row small muted" }, "Data:", ...Object.entries(s.data_quality.tags).map(([k, t]) => h("span", {}, k.replace(/_/g, " "), " ", dataTag(t)))))
-      : h("p", { class: "muted" }, "No cost model for this medicine (for example a vaccine)."));
+      h("div", { class: "qfoot" }, "Sources:", ...Object.entries(s.data_quality.tags).map(([k, t]) => h("span", {}, k.replace(/_/g, " "), " ", dataTag(t))))];
+  } else q1body = [h("p", { class: "muted" }, "No cost model for this medicine (for example a vaccine).")];
+  const q1 = qCard(1, "Is it still worth making?", "Margin check · agent A1", "The maker earns the price ceiling minus the chemist's and wholesaler's margins. From that we subtract the estimated cost of making one unit (ingredient, conversion, packaging, freight). What is left is the margin. Below 5%, or running out within 6 months, is red.", q1body);
 
-  // Q2 supply
-  const q2 = card("2 · Who makes it, and where from?", "Supply map (agent A2)", AGENT.A2[2],
-    dep ? h("div", { class: "stack" },
+  // ---- Q2: makers and origin
+  let q2body;
+  if (dep) {
+    const nprod = dep.n_producers_min, conc = dep.concentration;
+    q2body = [h("div", { class: "big" }, h("span", { class: "pre" }, "at least"), h("span", { class: "n navy" }, fmt.n(nprod)),
+        h("span", { class: "u" }, `producer${Number(nprod) === 1 ? "" : "s"}`)),
+      h("div", { class: "bigcap" }, "on public quality records. This is a minimum: the real number can be higher."),
+      dep.top_origin_country ? h("div", { class: "note Information", style: "margin-bottom: 0.9rem" }, h("ui5-icon", { name: "globe" }),
+        h("div", {}, h("b", {}, fmt.pct(dep.top_origin_share)), " of the key ingredient is imported from ", h("b", {}, dep.top_origin_country), " ", ftag("top_origin_share"))) : null,
+      h("div", { class: "meter" }, h("div", { class: "lab" }, h("span", {}, "Supply concentration"), h("b", {}, conc === null ? "–" : fmt.pct(conc))),
+        h("div", { class: "tr", role: "img", "aria-label": `Supply concentration ${fmt.pct(conc)}` }, conc === null ? null : h("i", { style: `left: calc(${Math.round(conc * 100)}% - 2px)` })),
+        h("div", { class: "hint", style: "margin-top: 0.3rem" }, "Few makers or one dominant country means one failure can stop all supply.")),
+      h("div", { class: "small muted", style: "margin-bottom: 0.35rem" }, "Wards that use it"),
+      h("div", { class: "wards" }, ...((dep.affected_wards || []).length ? dep.affected_wards.map(w => h("span", {}, w)) : [h("span", {}, "–")])),
+      h("div", { class: "qfoot" }, "Sources:", ...Object.entries(dep.data_quality.tags || {}).map(([k, t]) => h("span", {}, k.replace(/_/g, " "), " ", dataTag(t))))];
+  } else q2body = [h("p", { class: "muted" }, "No supply data.")];
+  const q2 = qCard(2, "Who makes it and where from?", "Supply map · agent A2", "Concentration combines how few makers there are, how evenly the market is split between them (HHI) and how much of the ingredient comes from one country. Maker counts are minimums from public records.", q2body);
+
+  // ---- Q3: time
+  let q3body;
+  if (fc) {
+    const days = fc.days_of_cover, tone = days === null ? "navy" : days < 30 ? "red" : days < 60 ? "amber" : "green";
+    const big = h("span", { class: "n " + tone });
+    countUp(big, days, v => v === null ? "–" : fmt.n(v));
+    q3body = [h("div", { class: "big" }, big, h("span", { class: "u" }, "days")),
+      h("div", { class: "bigcap" }, "Our hospital stock lasts this long at the forecast daily use ", ftag("days_of_cover")),
       facts([
-        ["Makers on record", dep.n_producers_min ? `at least ${dep.n_producers_min}` : "none found in public quality records"],
-        ["Ingredient imported mainly from", dep.top_origin_country ? `${dep.top_origin_country} (${fmt.pct(dep.top_origin_share)} of imports)` : "–"],
-        ["Supply concentration", dep.concentration === null ? "–" : fmt.pct(dep.concentration)],
-        ["Wards that use it", (dep.affected_wards || []).join(", ") || "–"],
+        ["If supply stopped today, we run out on", fmt.date(fc.stockout_date_if_exit)],
+        ["Using per day (forecast)", facts_.daily_consumption ? h("span", {}, `${fmt.n(facts_.daily_consumption.value)} units `, ftag("daily_consumption")) : "–"],
+        ["Exit-risk window", fc.window_months_lo === null ? "not estimated (the margin is not falling)" : `${fmt.n(fc.window_months_lo, 0)}–${fmt.n(fc.window_months_hi, 0)} months`],
       ]),
-      h("ui5-progress-indicator", { value: Math.round((dep.concentration || 0) * 100), "value-state": (dep.concentration || 0) > 0.7 ? "Negative" : (dep.concentration || 0) > 0.4 ? "Critical" : "Positive",
-        "display-value": `Concentration ${fmt.pct(dep.concentration)}`, "accessible-name": "Supply concentration" }),
-      h("div", { class: "row small muted" }, "Few makers or one dominant country means one failure can stop all supply.",
-        info("Concentration combines how few makers there are, how evenly the market is split between them (HHI) and how much of the ingredient comes from one country. Maker counts are minimums from public records.")))
-      : h("p", { class: "muted" }, "No supply data."));
+      h("div", { style: "margin-top: 0.9rem" }, signals(s))];
+  } else q3body = [h("p", { class: "muted" }, "No forecast.")];
+  const q3 = qCard(3, "How much time do we have?", "Shortage forecast · agent A3", "Days of cover = usable stock divided by the forecast daily use. The exit-risk window is when the margin trend would reach zero; it is a flag for review, not a prediction of any company's decision.", q3body);
 
-  // Q3 time
-  const q3 = card("3 · How much time do we have?", "Shortage forecast (agent A3)", AGENT.A3[2],
-    fc ? h("div", { class: "stack" },
-      h("div", { class: "row" }, bandTag(fc.exit_risk_band, "Exit risk: "), h("b", {}, fc.exit_risk === null ? "" : fmt.pct(fc.exit_risk) + " score"),
-        info("The exit-risk score adds up the warning signs (thin margin, fast decline, few makers, one-country ingredient, quality alerts, late deliveries) with fixed weights from rules/weights.yaml. It is a flag for review, not a prediction of any company's decision.")),
-      facts([
-        ["Makers may stop within", fc.window_months_lo === null ? "not estimated (the margin is not falling)" : `${fmt.n(fc.window_months_lo, 0)}–${fmt.n(fc.window_months_hi, 0)} months`],
-        ["Our stock lasts", fc.days_of_cover === null ? "–" : `${fmt.n(fc.days_of_cover)} days`],
-        ["If supply stopped today we run out on", fmt.date(fc.stockout_date_if_exit)],
-        ["Using per day (forecast)", facts_.daily_consumption ? `${fmt.n(facts_.daily_consumption.value)} units` : "–"],
-      ]),
-      signals(s)) : h("p", { class: "muted" }, "No forecast."));
-
-  // Q4 options
+  // ---- options
   const scen = (d.scenarios || []).slice().sort((a, b) => (a.rank ?? 99) - (b.rank ?? 99));
-  const optTable = h("ui5-table", { "overflow-mode": "Popin", "accessible-name": "Options" },
-    h("ui5-table-header-row", { slot: "headerRow" }, ...["Option", "Quantity", "Cost", "Covers", "Rules (A5)", "Action"].map(t => h("ui5-table-header-cell", { "min-width": t === "Option" ? "320px" : "100px" }, t))),
-    ...scen.map(sc => {
-      const rec = recBy[sc.scenario_id], ov = rec && OVERALL[rec.overall];
-      const opt = OPTION[sc.option_type] || [sc.option_type, "product"];
-      const status = sc.rank === null
-        ? tag(sc.correlated_risk_flag ? "Rejected: same weak point" : "Rejected", "Negative", "decline")
-        : ov ? tag(ov[0], ov[1]) : tag("Not validated", "Neutral");
-      const act = rec && (rec.overall === "READY" || rec.overall === "NEEDS_CHANGES")
-        ? h("ui5-button", { design: rec.overall === "READY" ? "Emphasized" : "Default", onclick: () => go("decide", sc.scenario_id) }, "Review") : null;
-      return h("ui5-table-row", {},
-        h("ui5-table-cell", {}, h("div", {}, h("div", { class: "row", style: "gap: 0.4rem" }, h("ui5-icon", { name: opt[1] }), h("b", {}, opt[0])),
-          h("div", { class: "small muted" }, [sc.supplier ? "supplier " + sc.supplier : "", sc.substitute_formulation_id ? "substitute " + sc.substitute_formulation_id : "", sc.rank ? "rank " + sc.rank : ""].filter(Boolean).join(" · ")),
-          sc.correlated_risk_reason ? h("div", { class: "small", style: "color: var(--sapNegativeTextColor)" }, "Why rejected: " + sc.correlated_risk_reason) : null)),
-        h("ui5-table-cell", {}, fmt.n(sc.qty)),
-        h("ui5-table-cell", {}, fmt.inr(sc.cost, 0)),
-        h("ui5-table-cell", {}, `${fmt.n(sc.coverage_days)} days`),
-        h("ui5-table-cell", {}, status),
-        h("ui5-table-cell", {}, act));
-    }));
-  const q4 = card("4 · What can we do?", "Options (agent A4), each checked against the rules (agent A5)", AGENT.A4[2],
+  const recId = (scen.find(sc => sc.rank !== null && recBy[sc.scenario_id]?.overall === "READY") || scen.find(sc => sc.rank !== null) || {}).scenario_id;
+  const optCards = scen.map(sc => {
+    const rec = recBy[sc.scenario_id], ov = rec && OVERALL[rec.overall];
+    const opt = OPTION[sc.option_type] || [sc.option_type, "product"];
+    const rejected = sc.rank === null;
+    const status = rejected ? tag(sc.correlated_risk_flag ? "Rejected: same weak point" : "Rejected", "Negative", "decline")
+      : ov ? tag(ov[0], ov[1], rec.overall === "READY" ? "sys-enter-2" : rec.overall === "BLOCKED" ? "error" : "alert") : tag("Not validated", "Neutral");
+    const act = rec && (rec.overall === "READY" || rec.overall === "NEEDS_CHANGES")
+      ? h("ui5-button", { design: rec.overall === "READY" ? "Emphasized" : "Default", "end-icon": "slim-arrow-right", onclick: () => go("decide", sc.scenario_id) }, "Review") : null;
+    const reason = sc.correlated_risk_reason ? String(sc.correlated_risk_reason).split(f.FORM_ID).join("this medicine") : "";
+    return h("div", { class: "opt" + (rejected ? " rej" : "") + (sc.scenario_id === recId ? " rec" : "") },
+      sc.scenario_id === recId ? h("span", { class: "ribbon" }, "RECOMMENDED") : null,
+      h("div", { class: "oh" }, h("span", { class: "ico" }, h("ui5-icon", { name: opt[1] })),
+        h("div", { style: "min-width: 0" }, h("div", { class: "ot" }, opt[0]),
+          h("div", { class: "od" }, [sc.supplier ? "supplier " + sc.supplier : "", sc.substitute_formulation_id ? "substitute " + sc.substitute_formulation_id : "", sc.rank ? "rank " + sc.rank : "not ranked"].filter(Boolean).join(" · ")))),
+      h("div", { class: "ostats" },
+        h("div", {}, h("div", { class: "k" }, "Quantity"), h("div", { class: "v" }, fmt.n(sc.qty))),
+        h("div", {}, h("div", { class: "k" }, "Cost"), h("div", { class: "v" }, fmt.inr(sc.cost, 0))),
+        h("div", {}, h("div", { class: "k" }, "Covers"), h("div", { class: "v" }, `${fmt.n(sc.coverage_days)} d`))),
+      reason ? h("div", { class: "why-rej" }, h("b", {}, "Why rejected: "), reason) : null,
+      h("div", { class: "oact" }, status, act));
+  });
+  const q4 = card("What can we do?", "Options from agent A4, each checked against the price law and hospital rules by agent A5", AGENT.A4[2],
     scen.length ? h("div", { class: "stack" },
-      h("p", { class: "small muted", style: "margin:0" }, "Options that share the same weak point as today's supply (same ingredient country or starting material) are rejected: they would fail together. Quantities are sized so nothing expires before use."),
-      optTable) : strip("Positive", "No action needed: our stock covers the risk window."));
+      h("p", { class: "hint", style: "margin: 0" }, "Options that share the same weak point as today's supply (same ingredient country or starting material) are rejected: they would fail together. Quantities are sized so nothing expires before use."),
+      h("div", { class: "opts" }, ...optCards)) : strip("Positive", "No action needed: our stock covers the risk window."));
 
-  $app.replaceChildren(h("div", { class: "stack" },
-    h("div", { class: "row" }, h("ui5-button", { icon: "navigation-left-arrow", design: "Transparent", onclick: () => go("watch") }, "Back to watchlist")),
-    head, h("div", { class: "grid g3" }, q1, q2, q3), q4,
-    h("p", { class: "hint" }, d.disclaimer)));
+  showPage(
+    h("div", {}, h("button", { class: "backlink", onclick: () => go("watch") }, svgIcon("back"), "Back to the watchlist")),
+    verdict,
+    h("div", { class: "grid g3" }, q1, q2, q3),
+    chartCard(series, s),
+    q4,
+    h("p", { class: "hint" }, d.disclaimer));
+}
+function qCard(num, q, by, infoText, body) {
+  return h("section", { class: "card qcard" },
+    h("div", { class: "qhead" }, h("span", { class: "qnum" }, String(num)),
+      h("div", { style: "min-width: 0; flex: 1" }, h("div", { class: "q" }, q), h("div", { class: "by" }, by)), info(infoText)),
+    ...body);
+}
+// No medicine chosen yet: offer the most urgent ones instead of a dead end.
+async function pickMedicine() {
+  $app.replaceChildren(busy("Finding the most urgent medicines…"));
+  if (!state.watch) state.watch = await api("/watchlist?limit=200&assessed_only=true");
+  const top = state.watch.filter(r => r.exit_risk_band === "RED").slice(0, 6);
+  const list = top.length ? top : state.watch.slice(0, 6);
+  showPage(
+    pageHead("Step 2 · Understand", "Why is a medicine at risk?", "Pick a medicine to see FlowForge's reasoning: its margin, its makers and our stock, each answered with real numbers.",
+      "The most urgent medicines are shown first, so you can start where it matters."),
+    h("div", { class: "pick-grid" }, ...list.map(r => h("button", { class: "pick", onclick: () => go("understand", r.form_id) },
+      h("div", { class: "row spread" }, bandTag(r.exit_risk_band), dataTag(r.data_tag)),
+      h("div", { class: "nm" }, fmt.med(r)),
+      h("div", { class: "small muted" }, CAUSE[r.cause_code] ? CAUSE[r.cause_code][0] : "–"),
+      h("div", { class: "small" }, "Margin left ", h("b", {}, r.headroom_pct === null ? "–" : fmt.pct(r.headroom_pct, 1)), " · stock ",
+        h("b", {}, r.min_days_of_cover === null ? "not stocked" : `${fmt.n(r.min_days_of_cover)} days`))))),
+    h("div", {}, h("ui5-button", { icon: "activity-2", onclick: () => go("watch") }, "Open the watchlist")));
 }
 function signals(s) {
   const sec = (s && s.secondary_signals) || [];
@@ -511,43 +1428,82 @@ function signals(s) {
     if (x.kind === "NSQ") return `${fmt.n(x.value)} CDSCO quality alert${x.value === 1 ? "" : "s"} for this medicine or its makers recently.`;
     return x.note || "";
   };
-  return h("div", { class: "stack" }, h("b", {}, "Other warning signs"),
-    ...sec.map(x => h("div", { class: "row small", style: "flex-wrap: nowrap; align-items: flex-start" },
-      tag(label[x.kind] || x.kind, "Critical", "alert"), h("span", {}, say(x), " ", dataTag(x.tag)))));
+  return h("div", { class: "stack", style: "--gap: 0.5rem" }, h("div", { class: "small", style: "font-weight: 700" }, "Other warning signs"),
+    ...sec.map(x => h("div", { class: "sig" }, h("ui5-icon", { name: "alert" }),
+      h("div", {}, h("b", {}, (label[x.kind] || x.kind) + ": "), say(x), " ", dataTag(x.tag)))));
 }
-function chart(series) {
+// Large price-ceiling vs cost chart with the closest point annotated (real API values only).
+function chartCard(series, s) {
   if (!series || !series.points) return null;
   const pts = series.points.filter(p => p.realisation_inr !== null || p.unit_cost_inr !== null);
-  if (pts.length < 2) return h("p", { class: "small muted" }, "Not enough monthly history for a chart yet (NPPA prices are recorded from April 2026).");
-  const W = 560, H = 210, L = 46, R = 10, T = 12, B = 28;
-  const ys = pts.flatMap(p => [p.realisation_inr, p.unit_cost_inr, p.shocked_unit_cost_inr]).filter(v => v !== null);
-  ys.push(series.ceiling_price_inr);
-  const ymax = Math.max(...ys) * 1.1, ymin = Math.min(0, ...ys);
-  const x = i => L + (W - L - R) * (i / (pts.length - 1)), y = v => T + (H - T - B) * (1 - (v - ymin) / (ymax - ymin));
-  const NS = "http://www.w3.org/2000/svg";
-  const svg = document.createElementNS(NS, "svg");
-  svg.setAttribute("viewBox", `0 0 ${W} ${H}`); svg.setAttribute("width", "100%"); svg.setAttribute("role", "img");
-  svg.setAttribute("aria-label", "Price cap, what the maker earns and the estimated cost per unit, by month");
-  const el = (t, a) => { const e = document.createElementNS(NS, t); for (const [k, v] of Object.entries(a)) e.setAttribute(k, v); svg.append(e); return e; };
-  for (let k = 0; k <= 4; k++) { const v = ymin + (ymax - ymin) * k / 4; el("line", { x1: L, x2: W - R, y1: y(v), y2: y(v), stroke: "#d9d9d9", "stroke-width": 1 }); el("text", { x: L - 6, y: y(v) + 4, "text-anchor": "end" }).textContent = "₹" + v.toFixed(v < 10 ? 2 : 0); }
-  pts.forEach((p, i) => { if (i % Math.ceil(pts.length / 6) === 0 || i === pts.length - 1) el("text", { x: x(i), y: H - 8, "text-anchor": "middle" }).textContent = p.month; });
-  const line = (key, color, dash) => { const d = pts.map((p, i) => p[key] === null ? null : `${x(i)},${y(p[key])}`).filter(Boolean); if (d.length > 1) el("polyline", { points: d.join(" "), fill: "none", stroke: color, "stroke-width": 2.5, "stroke-dasharray": dash || "" }); };
-  el("line", { x1: L, x2: W - R, y1: y(series.ceiling_price_inr), y2: y(series.ceiling_price_inr), stroke: "#5b738b", "stroke-width": 2, "stroke-dasharray": "6 4" });
-  line("realisation_inr", "#0070f2"); line("unit_cost_inr", "#e76500"); line("shocked_unit_cost_inr", "#aa0808", "4 3");
-  return h("div", {},
-    h("div", { class: "small", style: "font-weight:700; margin-bottom: 0.25rem" }, "Price cap vs what it costs to make (per unit)"),
-    svg,
-    h("div", { class: "legend" },
-      h("span", {}, h("span", { class: "sw", style: "border-color:#5b738b; border-top-style:dashed" }), "Price cap"),
-      h("span", {}, h("span", { class: "sw", style: "border-color:#0070f2" }), "Maker earns"),
-      h("span", {}, h("span", { class: "sw", style: "border-color:#e76500" }), "Cost to make (est.)"),
-      h("span", {}, h("span", { class: "sw", style: "border-color:#aa0808; border-top-style:dashed" }), "Cost if imports +30%")),
-    h("p", { class: "hint", style: "margin: 0.25rem 0 0" }, "When the orange line reaches the blue line, making the medicine stops paying. " + (series.note || "")));
+  const tags = series.data_tags || {};
+  if (pts.length < 2) return card("Price ceiling vs cost to make", "Month by month", "chart-axis",
+    h("p", { class: "hint" }, "Not enough monthly history for a chart yet (NPPA prices are recorded from April 2026)."));
+  const W = 1000, H = 330, L = 62, R = 205, T = 24, B = 40;
+  const ys = pts.flatMap(p => [p.realisation_inr, p.unit_cost_inr, p.shocked_unit_cost_inr]).filter(v => v !== null).map(Number);
+  ys.push(Number(series.ceiling_price_inr));
+  // y axis zoomed to the data (labelled), so the gap between the lines is readable
+  const span = Math.max(...ys) - Math.min(...ys) || Math.max(...ys) || 1;
+  const ymax = Math.max(...ys) + span * 0.18, ymin = Math.max(0, Math.min(...ys) - span * 0.35);
+  const x = i => L + (W - L - R) * (i / (pts.length - 1)), y = v => T + (H - T - B) * (1 - (Number(v) - ymin) / (ymax - ymin));
+  const NS = "http://www.w3.org/2000/svg", svg = document.createElementNS(NS, "svg");
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`); svg.setAttribute("class", "main-chart"); svg.setAttribute("role", "img");
+  svg.setAttribute("aria-label", "Price ceiling, what the maker earns and the estimated cost per unit, by month");
+  const el = (t, a, txt) => { const e = document.createElementNS(NS, t); for (const [k, v] of Object.entries(a)) e.setAttribute(k, v); if (txt !== undefined) e.textContent = txt; svg.append(e); return e; };
+  const money = v => "₹" + Number(v).toFixed(Number(v) < 10 ? 2 : 0);
+  for (let k = 0; k <= 4; k++) { const v = ymin + (ymax - ymin) * k / 4; el("line", { x1: L, x2: W - R, y1: y(v), y2: y(v), stroke: "#E3EAF0", "stroke-width": 1 }); el("text", { x: L - 10, y: y(v) + 4, "text-anchor": "end", style: "font-size: 12px" }, money(v)); }
+  pts.forEach((p, i) => { if (i % Math.ceil(pts.length / 8) === 0 || i === pts.length - 1) el("text", { x: x(i), y: H - 12, "text-anchor": "middle", style: "font-size: 12px" }, p.month); });
+  // margin area: between what the maker earns and the cost to make
+  const both = pts.map((p, i) => [i, p]).filter(([, p]) => p.realisation_inr !== null && p.unit_cost_inr !== null);
+  if (both.length > 1) el("polygon", { points: [...both.map(([i, p]) => `${x(i)},${y(p.realisation_inr)}`), ...both.slice().reverse().map(([i, p]) => `${x(i)},${y(p.unit_cost_inr)}`)].join(" "), fill: "rgba(15, 157, 154, 0.10)" });
+  const line = (key, color, dash, w = 3) => { const d = pts.map((p, i) => p[key] === null ? null : `${x(i)},${y(p[key])}`).filter(Boolean); if (d.length > 1) el("polyline", { points: d.join(" "), fill: "none", stroke: color, "stroke-width": w, "stroke-dasharray": dash || "", "stroke-linejoin": "round", "stroke-linecap": "round" }); };
+  el("line", { x1: L, x2: W - R, y1: y(series.ceiling_price_inr), y2: y(series.ceiling_price_inr), stroke: "#12355B", "stroke-width": 2.5, "stroke-dasharray": "8 6" });
+  line("realisation_inr", "#0F9D9A"); line("unit_cost_inr", "#E08A3C"); line("shocked_unit_cost_inr", "#E8636B", "5 5", 2.5);
+  // end labels
+  const last = key => { for (let i = pts.length - 1; i >= 0; i--) if (pts[i][key] !== null) return [i, pts[i][key]]; return null; };
+  const labels = [["Price ceiling", [pts.length - 1, series.ceiling_price_inr], "#12355B"], ["Maker earns", last("realisation_inr"), "#0B6F6D"],
+    ["Cost to make", last("unit_cost_inr"), "#A2530C"], ["If imports +30%", last("shocked_unit_cost_inr"), "#B63A43"]].filter(l => l[1]);
+  const placed = [];
+  labels.sort((a, b) => y(a[1][1]) - y(b[1][1])).forEach(([t, [, v], c]) => {
+    let ly = y(v) + 4; while (placed.some(p => Math.abs(p - ly) < 17)) ly += 17; placed.push(ly);
+    el("text", { x: W - R + 10, y: ly, style: `font-size: 12.5px; font-weight: 700; fill: ${c}` }, `${t} ${money(v)}`);
+  });
+  // closest approach between earnings and cost
+  let note = "When the orange cost line reaches the teal earnings line, making the medicine stops paying.";
+  if (both.length) {
+    const [ci, cp] = both.reduce((m, cur) => (Number(cur[1].realisation_inr) - Number(cur[1].unit_cost_inr) < Number(m[1].realisation_inr) - Number(m[1].unit_cost_inr) ? cur : m));
+    const gap = Number(cp.realisation_inr) - Number(cp.unit_cost_inr);
+    el("line", { x1: x(ci), x2: x(ci), y1: y(cp.realisation_inr), y2: y(cp.unit_cost_inr), stroke: "#12355B", "stroke-width": 2 });
+    el("circle", { cx: x(ci), cy: y(cp.unit_cost_inr), r: 6, fill: "#fff", stroke: "#E08A3C", "stroke-width": 3 });
+    el("circle", { cx: x(ci), cy: y(cp.realisation_inr), r: 6, fill: "#fff", stroke: "#0F9D9A", "stroke-width": 3 });
+    note = gap <= 0
+      ? `In ${cp.month} the estimated cost (${fmt.inr(cp.unit_cost_inr)}) was above what the maker earns (${fmt.inr(cp.realisation_inr)}): every unit made loses money. That is why this medicine is flagged.`
+      : `Closest point: ${cp.month}, when the maker kept only ${fmt.inr(gap)} per unit (${fmt.inr(cp.realisation_inr)} earned vs ${fmt.inr(cp.unit_cost_inr)} cost). When the orange cost line reaches the teal line, making the medicine stops paying.`;
+  }
+  return h("section", { class: "card chartcard" },
+    h("div", { class: "card-h" }, h("span", { class: "ico" }, h("ui5-icon", { name: "chart-axis" })),
+      h("div", {}, h("div", { class: "t" }, "Price ceiling vs cost to make, month by month"), h("div", { class: "s" }, "Per unit. The shaded band is the maker's margin."))),
+    h("div", { class: "chartwrap" }, svg),
+    h("div", { class: "legend", style: "margin-top: 0.4rem" },
+      h("span", {}, h("span", { class: "sw", style: "border-color:#12355B; border-top-style:dashed" }), "Price ceiling ", dataTag(tags.ceiling_price)),
+      h("span", {}, h("span", { class: "sw", style: "border-color:#0F9D9A" }), "Maker earns ", dataTag(tags.ceiling_price)),
+      h("span", {}, h("span", { class: "sw", style: "border-color:#E08A3C" }), "Cost to make (est.) ", dataTag(tags.api_cost), " ", dataTag(tags.bom)),
+      h("span", {}, h("span", { class: "sw", style: "border-color:#E8636B; border-top-style:dashed" }), "Cost if imports +30%")),
+    h("div", { class: "chart-note" }, h("ui5-icon", { name: "hint" }), h("div", {}, note, " ", h("span", { class: "muted" }, series.note || ""))));
 }
 
 /* ============================================================ 3. DECIDE */
+const SHORT = { BUFFER: "Buy extra stock", ALT_SUPPLIER: "Buy from another maker", THERAPEUTIC_ALT: "Alternative medicine", REBALANCE: "Move stock between locations" };
+function flow3() {
+  const labels = [["REVIEW", "Read the recommendation"], ["CHECKS", "Rules + your checklist"], ["APPROVE", "Record the decision"]];
+  const el = h("div", { class: "flow3", role: "list", "aria-label": "Decision progress" });
+  el.setStage = k => el.replaceChildren(...labels.map(([t, d], i) => h("div", { class: "st " + (i < k ? "done" : i === k ? "now" : ""), role: "listitem",
+    "aria-current": i === k ? "step" : null }, h("span", { class: "c" }, i < k ? svgIcon("check", 3) : String(i + 1)), h("span", { style: "min-width: 0" }, t, h("small", {}, d)))));
+  el.setStage(0);
+  return el;
+}
 async function decide() {
-  $app.replaceChildren(busy("Loading the approval queue… (about 10 seconds on SAP BTP)"));
+  $app.replaceChildren(busy("Loading the approval queue…", ["Collecting every recommendation waiting for a human", "About 10 seconds on SAP BTP"]));
   if (!state.pending) state.pending = await api("/approvals/pending");
   const all = state.pending;
   const rank = p => (p.scenario && p.scenario.rank) || 99;
@@ -558,59 +1514,124 @@ async function decide() {
   }, {})).sort((a, b) => (a.overall === "READY" ? 0 : 1) - (b.overall === "READY" ? 0 : 1) || (a.generic || "").localeCompare(b.generic || ""));
   let mode = "best";
   if (state.rec && !best.some(p => p.rec_id === state.rec) && all.some(p => p.rec_id === state.rec)) mode = "all";
+  const stage = flow3();
 
-  const listBox = h("div", { class: "qlist" }), detail = h("div", {});
+  const listBox = h("div", { class: "qlist2", role: "listbox", "aria-label": "Recommendations waiting for a decision" }), detail = h("div", { class: "stack" });
   function fillList() {
     const items = mode === "best" ? best : all.slice().sort((a, b) => (a.generic || "").localeCompare(b.generic || "") || rank(a) - rank(b));
-    const list = h("ui5-list", { "selection-mode": "Single", "no-data-text": "Nothing is waiting for a decision.", "accessible-name": "Approval queue" },
-      ...items.map(p => { const o = OVERALL[p.overall] || [p.overall, "Neutral"]; const opt = OPTION[p.scenario?.option_type] || ["", "product"];
-        const short = { BUFFER: "Buy extra stock", ALT_SUPPLIER: "Buy from another maker", THERAPEUTIC_ALT: "Alternative medicine", REBALANCE: "Move stock between locations" }[p.scenario?.option_type] || "";
-        return h("ui5-li", { description: `${short}${p.scenario ? " · " + fmt.inr(p.scenario.cost, 0) : ""}`, "additional-text": p.overall === "READY" ? "Ready" : p.overall === "BLOCKED" ? "Blocked" : "Warnings", "additional-text-state": o[1] === "Positive" ? "Positive" : "Critical",
-          icon: opt[1], selected: p.rec_id === state.rec, "data-rec": p.rec_id }, p.generic || p.form_id); }));
-    const pick = li => { if (li && li.dataset.rec !== state.rec) { state.rec = li.dataset.rec; showRec(); } };
-    list.addEventListener("selection-change", e => pick(e.detail.selectedItems[0]));
-    list.addEventListener("item-click", e => pick(e.detail.item));
-    listBox.replaceChildren(list);
+    if (!items.length) { listBox.replaceChildren(h("div", { class: "empty" }, "Nothing is waiting for a decision.")); return; }
+    listBox.replaceChildren(...items.map(p => {
+      const opt = OPTION[p.scenario?.option_type] || ["", "product"];
+      const st = p.overall === "READY" ? tag("Ready", "Positive", "sys-enter-2") : p.overall === "BLOCKED" ? tag("Blocked", "Negative", "error") : tag("Warnings", "Critical", "alert");
+      return h("button", { class: "ritem", role: "option", "aria-selected": p.rec_id === state.rec ? "true" : "false", "data-rec": p.rec_id,
+        onclick: () => { if (p.rec_id !== state.rec) { state.rec = p.rec_id; markSelected(); showRec(); } } },
+        h("span", { class: "ico" }, h("ui5-icon", { name: opt[1] })),
+        h("span", { style: "min-width: 0" }, h("div", { class: "nm" }, p.generic || p.form_id),
+          h("div", { class: "ds" }, `${SHORT[p.scenario?.option_type] || ""}${p.scenario ? " · " + fmt.inr(p.scenario.cost, 0) : ""}`)), st);
+    }));
   }
+  const markSelected = () => listBox.querySelectorAll(".ritem").forEach(b => b.setAttribute("aria-selected", b.dataset.rec === state.rec ? "true" : "false"));
   function showRec() {
     const p = all.find(x => x.rec_id === state.rec);
-    if (!p) { detail.replaceChildren(card("Pick a recommendation", "", "workflow-tasks", h("p", { class: "muted" }, "Choose a medicine on the left. Green items are ready: every rule check passed."))); return; }
-    detail.replaceChildren(recDetail(p));
+    if (!p) {
+      stage.setStage(0);
+      detail.replaceChildren(h("section", { class: "rhero" }, h("div", { class: "top" }, h("span", { class: "ico" }, h("ui5-icon", { name: "workflow-tasks" })),
+        h("div", {}, h("div", { class: "ttl" }, "Pick a recommendation"), h("div", { class: "muted small" }, "Choose a medicine on the left to start the review."))),
+        h("p", { class: "sentence" }, "Items marked Ready passed every automatic rule check. You will read the proposed action, see the rule checks, tick your own checklist and then approve, edit, reject or snooze.")));
+      return;
+    }
+    detail.replaceChildren(...recDetail(p, stage));
   }
   const seg = h("ui5-segmented-button", { "accessible-name": "Show" },
-    h("ui5-segmented-button-item", { selected: mode === "best", "data-v": "best" }, `Best option per medicine (${best.length})`),
+    h("ui5-segmented-button-item", { selected: mode === "best", "data-v": "best" }, `Best per medicine (${best.length})`),
     h("ui5-segmented-button-item", { selected: mode === "all", "data-v": "all" }, `All options (${all.length})`));
   seg.addEventListener("selection-change", e => { mode = e.detail.selectedItems[0].dataset.v; fillList(); });
   fillList(); showRec();
-  $app.replaceChildren(h("div", { class: "stack" },
-    h("h1", { class: "page" }, "The Chief Pharmacist decides"),
-    h("p", { class: "lead muted" }, "Nothing is bought by the system. Each recommended action has already passed the DPCO price rule and the hospital's SOP checks. The pharmacist reviews it, ticks the checklist and approves; only then is a purchase requisition created."),
-    h("div", { class: "split" }, h("div", { class: "stack" }, seg, listBox), detail)));
+  showPage(
+    pageHead("Step 3 · Decide", "The Chief Pharmacist decides",
+      "What you are looking at: every action FlowForge recommends, waiting for a person. Each one already passed the automatic price-law and hospital-rule checks.",
+      "Nothing is bought by the AI. A named pharmacist reviews, ticks a checklist and approves; only then is a purchase requisition created."),
+    stage,
+    h("div", { class: "cockpit" },
+      h("div", { class: "queue" }, h("section", { class: "card" },
+        h("div", { class: "card-h", style: "margin-bottom: 0.7rem" }, h("span", { class: "ico" }, h("ui5-icon", { name: "workflow-tasks" })),
+          h("div", {}, h("div", { class: "t" }, "Waiting for a decision"), h("div", { class: "s" }, `${best.filter(p => p.overall === "READY").length} medicines have a ready option`))),
+        seg, listBox)),
+      detail));
 }
-function recDetail(p) {
+function recDetail(p, stage) {
   const sc = p.scenario || {}, pr = p.draft_pr, opt = OPTION[sc.option_type] || [sc.option_type, "product"];
   const o = OVERALL[p.overall] || [p.overall, "Neutral"];
   const sentence = sc.option_type === "REBALANCE"
     ? `Move ${fmt.n(sc.qty)} units of ${p.generic} between our pharmacy locations. This covers about ${fmt.n(sc.coverage_days)} days; no purchase needed.`
     : `${opt[0]}: ${fmt.n(sc.qty)} units of ${p.generic}${sc.supplier ? " from supplier " + sc.supplier : ""} at ${fmt.inr(sc.unit_rate_inr)} per unit incl. GST, ${fmt.inr(sc.cost, 0)} in total. This covers about ${fmt.n(sc.coverage_days)} days.`;
-  const checks = h("div", { class: "stack" }, ...p.checks.map(c => {
+
+  // ---- 1. the recommendation
+  const hero = h("section", { class: "rhero" },
+    h("div", { class: "top" }, h("span", { class: "ico" }, h("ui5-icon", { name: opt[1] })),
+      h("div", { style: "min-width: 0" }, h("div", { class: "eyebrow", style: "margin: 0" }, "Recommended action"), h("div", { class: "ttl" }, p.generic),
+        h("div", { class: "small muted" }, p.awaiting_level === 2 ? "Waiting for the second approver (Procurement / Director)" : "Waiting for the Chief Pharmacist"))),
+    h("p", { class: "sentence" }, sentence),
+    pr ? h("div", { class: "prbox" },
+      h("div", {}, h("div", { class: "k" }, "Material / plant"), h("div", { class: "v" }, `${pr.Material} / ${pr.Plant}`)),
+      h("div", {}, h("div", { class: "k" }, "Delivery date"), h("div", { class: "v" }, fmt.date(pr.DeliveryDate))),
+      h("div", {}, h("div", { class: "k" }, "Purchasing group"), h("div", { class: "v" }, pr.PurchasingGroup))) : null,
+    h("div", { class: "row" }, tag(o[0], o[1], p.overall === "READY" ? "sys-enter-2" : p.overall === "BLOCKED" ? "error" : "alert"),
+      p.needs_second_approver ? tag("Needs a second approver", "Information", "customer") : null,
+      h("ui5-button", { design: "Transparent", icon: "activity-2", onclick: () => go("understand", p.form_id) }, "Why is this medicine at risk?")));
+
+  // ---- 2. automatic rule checks (A5): summary first, details on demand
+  const cnt = s => p.checks.filter(c => c.status === s).length;
+  const nPass = cnt("PASS"), nWarn = cnt("WARN"), nBlock = cnt("BLOCK"), nAll = p.checks.length;
+  const chkRow = c => {
     const d = c.status === "PASS" ? "Positive" : c.status === "WARN" ? "Critical" : "Negative";
     const ev = c.evidence || {};
     const extra = c.check_id === "PRICE_COMPLIANCE" && ev.max_allowed_inr !== undefined
       ? ` ${fmt.inr(ev.unit_rate_incl_gst_inr)} vs max ${fmt.inr(ev.max_allowed_inr)} (cap ${fmt.inr(ev.ceiling_excl_gst_inr)} + ${fmt.pct(ev.gst_rate)} GST).` : "";
-    return h("div", { class: "row small", style: "flex-wrap: nowrap; align-items: flex-start" }, tag(c.status, d),
-      h("div", {}, h("b", {}, CHECK[c.check_id] || c.name), extra, h("div", { class: "muted" }, `${c.rule_source || ""}${ev.note ? " · " + ev.note : ""}`)));
-  }));
+    return h("div", { class: "chkrow" }, tag(c.status, d, c.status === "PASS" ? "sys-enter-2" : c.status === "WARN" ? "alert" : "error"),
+      h("div", {}, h("b", {}, CHECK[c.check_id] || c.name), extra, h("div", { class: "src" }, `${c.rule_source || ""}${ev.note ? " · " + ev.note : ""}`)));
+  };
+  const notPass = p.checks.filter(c => c.status !== "PASS"), pass = p.checks.filter(c => c.status === "PASS");
+  const checksCard = card("Automatic rule checks", "Agent A5 checks the price law (DPCO) and the hospital's SOP before anyone sees the option", AGENT.A5[2],
+    h("div", { class: "chk-sum" }, h("div", { class: "n" }, `${nPass} `, h("small", {}, `of ${nAll} passed`)),
+      h("div", { class: "row" }, tag(`${nPass} pass`, "Positive", "sys-enter-2"), nWarn ? tag(`${nWarn} warning${nWarn > 1 ? "s" : ""}`, "Critical", "alert") : null,
+        nBlock ? tag(`${nBlock} blocked`, "Negative", "error") : null)),
+    h("div", { class: "segbar", role: "img", "aria-label": `${nPass} passed, ${nWarn} warnings, ${nBlock} blocked` },
+      nPass ? h("i", { style: `flex: ${nPass}; background: var(--green)` }) : null, nWarn ? h("i", { style: `flex: ${nWarn}; background: var(--amber)` }) : null,
+      nBlock ? h("i", { style: `flex: ${nBlock}; background: var(--red)` }) : null),
+    notPass.length ? h("div", { style: "margin-top: 0.6rem" }, ...notPass.map(chkRow)) : null,
+    pass.length ? h("details", { class: "more" }, h("summary", {}, `Show the ${pass.length} passed check${pass.length > 1 ? "s" : ""}`), ...pass.map(chkRow)) : null);
+
+  // ---- 3. the human checklist and decision
   const ticks = {};
   const boxes = CHECKLIST.map(([k, label]) => { const cb = h("ui5-checkbox", { text: label, "wrapping-type": "Normal" }); ticks[k] = cb; cb.addEventListener("change", update); return cb; });
-  const user = h("ui5-input", { value: store.get("user", p.awaiting_level === 2 ? "director" : "chief.pharmacist"), "accessible-name": "Approver" });
+  const user = h("ui5-input", { value: store.get("user", p.awaiting_level === 2 ? "director" : "chief.pharmacist"), "accessible-name": "Approver name", placeholder: "Your name or user id" });
   user.addEventListener("input", update);
   const approve = h("ui5-button", { design: "Emphasized", icon: "accept", disabled: true }, p.awaiting_level === 2 ? "Approve (level 2)" : "Approve");
   const edit = h("ui5-button", { icon: "edit", disabled: true }, "Edit & approve");
   const reject = h("ui5-button", { design: "Negative", icon: "decline" }, "Reject");
   const snooze = h("ui5-button", { design: "Transparent", icon: "history" }, "Snooze");
   const result = h("div", {});
-  function update() { const ok = Object.values(ticks).every(c => c.checked) && user.value.trim(); approve.disabled = !ok; edit.disabled = !ok; }
+  const cnt6 = h("span", { class: "cnt" }), fill = h("i", { style: "width: 0%" }), lock = h("div", { class: "lockmsg" });
+  const readyCard = h("section", { class: "card ready" },
+    h("div", { class: "card-h" }, h("span", { class: "ico" }, h("ui5-icon", { name: "workflow-tasks" })),
+      h("div", {}, h("div", { class: "t" }, "Approval readiness"), h("div", { class: "s" }, "Your own checks. Approve unlocks when all 6 are ticked and your name is entered."))),
+    h("div", { class: "readybar" }, cnt6, h("span", { class: "tr", role: "progressbar", "aria-label": "Checklist progress" }, fill)),
+    h("div", { class: "checks" }, ...boxes),
+    h("div", { class: "apprv" }, h("div", { class: "who" }, h("ui5-label", { "show-colon": true }, "Approver"), user),
+      h("div", { class: "btns" }, approve, edit, reject, snooze)),
+    lock, result);
+  let decided = false;
+  function update() {
+    const k = Object.values(ticks).filter(c => c.checked).length, named = !!user.value.trim(), ok = k === CHECKLIST.length && named;
+    cnt6.replaceChildren(`${k} `, h("small", {}, `of ${CHECKLIST.length} ticked`));
+    fill.style.width = `${100 * k / CHECKLIST.length}%`;
+    readyCard.classList.toggle("go", ok);
+    if (!decided) { approve.disabled = !ok; edit.disabled = !ok; }
+    lock.replaceChildren(h("ui5-icon", { name: ok ? "sys-enter-2" : "locked" }),
+      ok ? "Ready: you can approve now." : `Approve is locked: ${k < CHECKLIST.length ? `${CHECKLIST.length - k} checklist item${CHECKLIST.length - k > 1 ? "s" : ""} left` : ""}${k < CHECKLIST.length && !named ? " and " : ""}${named ? "" : "enter the approver name"}.`);
+    if (!decided) stage.setStage(ok ? 2 : 1);
+  }
   const checklist = () => Object.fromEntries(Object.entries(ticks).map(([k, c]) => [k, c.checked]));
   async function send(decision, extra = {}) {
     for (const b of [approve, edit, reject, snooze]) b.disabled = true;
@@ -618,7 +1639,8 @@ function recDetail(p) {
     try {
       store.set("user", user.value.trim());
       const r = await api("/approval", { method: "POST", body: { rec_id: p.rec_id, decision, user: user.value.trim(), checklist: checklist(), level: p.awaiting_level, ...extra } });
-      state.pending = null; state.run = p.run_id; store.set("lastRun", p.run_id);
+      state.pending = null; state.run = p.run_id; store.set("lastRun", p.run_id); decided = true;
+      if (r.status === "ACTIONED" || r.status === "APPROVED_NO_PR") stage.setStage(3);
       result.replaceChildren(outcome(r, p));
     } catch (e) { result.replaceChildren(strip("Negative", "Not recorded: " + e.message)); update(); reject.disabled = false; snooze.disabled = false; }
   }
@@ -627,30 +1649,28 @@ function recDetail(p) {
     v => send("EDIT_APPROVE", { edits: { qty: v.qty ? Number(v.qty) : undefined, supplier: v.supplier || undefined } })));
   reject.addEventListener("click", () => ask("Reject this recommendation", [["reason", "Reason (required)", ""]], v => v.reason ? send("REJECT", { reason: v.reason }) : toast("A reason is required.")));
   snooze.addEventListener("click", () => ask("Snooze: look at it again later", [["days", "Days", "7"]], v => send("SNOOZE", { snooze_days: Number(v.days) || 7 })));
-
-  return h("div", { class: "stack" },
-    card(`${p.generic}: recommended action`, p.awaiting_level === 2 ? "Waiting for the second approver (Procurement / Director)" : "Waiting for the Chief Pharmacist", opt[1],
-      h("div", { class: "stack" },
-        h("div", { class: "row" }, tag(o[0], o[1]), p.needs_second_approver ? tag("Needs a second approver", "Information", "customer") : null),
-        h("p", { class: "answer" }, sentence),
-        pr ? facts([["Material / plant", `${pr.Material} / ${pr.Plant}`], ["Delivery date", fmt.date(pr.DeliveryDate)], ["Purchasing group", pr.PurchasingGroup]]) : null,
-        h("ui5-button", { design: "Transparent", icon: "activity-2", onclick: () => go("understand", p.form_id) }, "Why is this medicine at risk?"))),
-    card("Rule checks (agent A5)", "Run automatically before anyone sees the option", AGENT.A5[2], checks),
-    card("Manual verification", "Tick every item to enable Approve", "workflow-tasks",
-      h("div", { class: "stack" }, h("div", { class: "checks" }, ...boxes),
-        h("div", {}, h("ui5-label", { "show-colon": true }, "Approver"), h("div", {}, user)),
-        h("div", { class: "row" }, approve, edit, reject, snooze), result)));
+  update();
+  return [hero, checksCard, readyCard];
 }
 function outcome(r, p) {
-  if (r.status === "ACTIONED") return h("div", { class: "stack" },
-    strip("Positive", `Approved. Purchase requisition ${r.banfn} was created in SAP S/4HANA format (API_PURCHASEREQ_PROCESS_SRV). This is a mock posting into the hospital's requisition table, not a live S/4 system.`),
-    h("ui5-panel", { "header-text": "Purchase requisition payload (S/4 OData format)", collapsed: true }, h("pre", { class: "json" }, JSON.stringify(r.payload, null, 2))),
-    h("div", { class: "row" }, h("ui5-button", { design: "Emphasized", icon: "chain-link", onclick: () => go("prove", p.run_id) }, "See the audit trail")));
-  if (r.status === "AWAITING_SECOND_APPROVER") return h("div", { class: "stack" },
-    strip("Critical", "Approved at level 1. Because of the order value or a substitute medicine, a second person (Procurement / Director) must now approve."),
-    h("ui5-button", { onclick: () => go("decide", p.rec_id) }, "Open for the second approver"));
-  if (r.status === "APPROVED_NO_PR") return strip("Positive", "Approved. This is an internal stock move, so no purchase requisition is needed.");
-  return strip("Information", `Recorded: ${r.status.toLowerCase().replace(/_/g, " ")}.`);
+  const tick = h("span", { class: "tick" }, svgIcon("check", 3));
+  if (r.status === "ACTIONED") return h("div", {},
+    h("div", { class: "success", role: "status" }, tick, h("div", {},
+      h("div", { class: "t" }, "Approved. Purchase requisition created"),
+      h("div", { class: "pr" }, r.banfn),
+      h("div", { class: "small" }, "Created in SAP S/4HANA format (API_PURCHASEREQ_PROCESS_SRV). This is a mock posting into the hospital's requisition table, not a live S/4 system."))),
+    h("details", { class: "more" }, h("summary", {}, "Show the purchase requisition payload (S/4 OData format)"), h("pre", { class: "json" }, JSON.stringify(r.payload, null, 2))),
+    h("div", { class: "row", style: "margin-top: 0.6rem" }, h("ui5-button", { design: "Emphasized", icon: "chain-link", onclick: () => go("prove", p.run_id) }, "See the audit trail")));
+  if (r.status === "AWAITING_SECOND_APPROVER") return h("div", {},
+    h("div", { class: "success amber", role: "status" }, h("span", { class: "tick" }, svgIcon("next", 3)), h("div", {},
+      h("div", { class: "t" }, "Approved at level 1: a second approver is needed"),
+      h("div", { class: "small" }, "Because of the order value or a substitute medicine, a second person (Procurement / Director) must now approve."))),
+    h("div", { class: "row", style: "margin-top: 0.6rem" }, h("ui5-button", { onclick: () => go("decide", p.rec_id) }, "Open for the second approver")));
+  if (r.status === "APPROVED_NO_PR") return h("div", {},
+    h("div", { class: "success", role: "status" }, tick, h("div", {},
+      h("div", { class: "t" }, "Approved"), h("div", { style: "font-size: 1.1rem; font-weight: 700; color: var(--navy)" }, "Internal stock move, no purchase requisition needed"))),
+    h("div", { class: "row", style: "margin-top: 0.6rem" }, h("ui5-button", { design: "Emphasized", icon: "chain-link", onclick: () => go("prove", p.run_id) }, "See the audit trail")));
+  return strip("Information", `Recorded: ${String(r.status).toLowerCase().replace(/_/g, " ")}.`);
 }
 function ask(title, fields, onOk) {
   const dlg = document.getElementById("askDlg"); dlg.setAttribute("header-text", title);
@@ -664,80 +1684,147 @@ function ask(title, fields, onOk) {
 
 /* ============================================================ 4. PROVE */
 async function prove() {
-  const runInput = h("ui5-input", { value: state.run || "", placeholder: "Run id, e.g. ff-…", "accessible-name": "Run id", style: "width: 20rem" });
+  const runInput = h("ui5-input", { value: state.run || "", placeholder: "Run id, e.g. ff-…", "accessible-name": "Run id", style: "width: min(20rem, 100%)" });
   const box = h("div", {});
   const load = async () => {
     const id = runInput.value.trim(); if (!id) { box.replaceChildren(strip("Information", "Open a medicine first, or type a run id.")); return; }
-    state.run = id; store.set("lastRun", id); box.replaceChildren(busy("Loading the audit trail…"));
+    state.run = id; store.set("lastRun", id); box.replaceChildren(busy("Loading the audit trail…", ["Reading every recorded step of this run", "Re-computing the fingerprint chain to check nothing was altered"]));
     try { box.replaceChildren(auditView(await api(`/audit/${encodeURIComponent(id)}`))); }
     catch (e) { box.replaceChildren(strip("Negative", "Could not load the audit trail: " + e.message)); }
   };
-  $app.replaceChildren(h("div", { class: "stack" },
-    h("h1", { class: "page" }, "Proof: every step is recorded"),
-    h("p", { class: "lead muted" }, "Each agent's input and output is fingerprinted (hashed) and chained to the previous step, like a ledger. Changing any past record breaks the chain, so tampering is visible. This is the evidence an NABH auditor can check."),
-    h("div", { class: "row" }, h("ui5-label", { "show-colon": true }, "Run"), runInput, h("ui5-button", { icon: "refresh", onclick: load }, "Load")), box));
+  showPage(
+    pageHead("Step 4 · Prove", "Show me why I should trust this decision",
+      "What you are looking at: the tamper-evident record of one FlowForge run. Each agent's input and output is fingerprinted (hashed) and linked to the step before, like a ledger.",
+      "Change any past record and the chain breaks, visibly. This is the evidence an NABH hospital auditor can check."),
+    h("div", { class: "runbar" }, h("ui5-label", { "show-colon": true }, "Run"), runInput, h("ui5-button", { icon: "refresh", onclick: load }, "Load"),
+      h("span", { class: "hint" }, "The latest run is filled in for you.")),
+    box);
   if (runInput.value) load();
+}
+function shieldSvg(ok) {
+  const s = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  s.setAttribute("viewBox", "0 0 86 96"); s.setAttribute("aria-hidden", "true");
+  s.innerHTML = '<path d="M43 4l36 13v26c0 25-16 42-36 49C23 85 7 68 7 43V17z" fill="rgba(255,255,255,0.18)" stroke="#fff" stroke-width="4" stroke-linejoin="round"/>' +
+    (ok ? '<path d="M27 49l11 11 22-24" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>'
+      : '<path d="M31 36l24 24M55 36L31 60" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round"/>');
+  return s;
 }
 function auditView(a) {
   const run = a.run || {}, ok = a.chain.ok;
-  const report = h("ui5-button", { icon: "document", design: "Emphasized" }, "Open the NABH evidence report");
+  const report = h("button", { class: "docbtn" }, h("span", { class: "page" }, h("ui5-icon", { name: "document" })),
+    h("span", {}, h("div", { class: "tt" }, "Open the NABH evidence report"), h("div", { class: "sb" }, "Every step, its sources and fingerprints, in one printable page (opens in a new tab)")),
+    svgIcon("next", 2.2));
+  report.querySelector("svg:last-child").style.cssText = "width: 20px; height: 20px; color: var(--teal-ink)";
   report.addEventListener("click", async () => {
-    report.disabled = true;
+    report.setAttribute("aria-busy", "true");
     try { const html = await api(`/audit/${encodeURIComponent(a.run_id)}/report`, { raw: true });
       const url = URL.createObjectURL(new Blob([html], { type: "text/html" })); window.open(url, "_blank", "noopener"); }
-    catch (e) { toast("Report unavailable: " + e.message); } finally { report.disabled = false; }
+    catch (e) { toast("Report unavailable: " + e.message); } finally { report.removeAttribute("aria-busy"); }
   });
-  const items = a.events.map(e => {
+  const trigger = run.TRIGGER_TYPE === "SHOCK" ? ["Stress test", "import costs +30%"] : [run.TRIGGER_TYPE || "–", "on demand or nightly"];
+  const trust = h("div", { class: "trust" },
+    h("section", { class: "shieldbox" + (ok ? "" : " bad"), role: "status" }, h("span", { class: "sh" }, shieldSvg(ok)),
+      h("div", {}, h("div", { class: "big1" }, ok ? "CHAIN INTACT" : "CHAIN BROKEN"),
+        h("div", { class: "sub1" }, ok ? `${a.chain.n_rows} linked records. Every fingerprint matches: nothing was altered after it was written.`
+          : `The chain breaks at record ${a.chain.broken_at}: ${a.chain.reason}. A past record was changed after it was written.`))),
+    h("div", { class: "runfacts" },
+      h("div", { class: "rf" }, h("div", { class: "k" }, "Steps recorded"), h("div", { class: "v" }, String(a.events.length)), h("div", { class: "d" }, "agents, the human decision and the action")),
+      h("div", { class: "rf" }, h("div", { class: "k" }, "Why it ran"), h("div", { class: "v" }, trigger[0]), h("div", { class: "d" }, trigger[1])),
+      h("div", { class: "rf" }, h("div", { class: "k" }, "Started"), h("div", { class: "v", style: "font-size: 1.05rem" }, fmt.ts(run.STARTED_AT)), h("div", { class: "d" }, `as of ${fmt.date(run.AS_OF_DATE)}`)),
+      h("div", { class: "rf" }, h("div", { class: "k" }, "Status"), h("div", { class: "v", style: "font-size: 1.05rem" }, String(run.STATUS || "–").toLowerCase().replace(/_/g, " ")), h("div", { class: "d" }, a.run_id)),
+      report));
+  const blocks = a.events.map(e => {
     const ag = AGENT[e.agent] || [e.agent, "", "notes"];
     const srcs = e.data_sources || [];
     const counts = srcs.reduce((m, s) => (m[s.is_proxy] = (m[s.is_proxy] || 0) + 1, m), {});
-    return h("ui5-timeline-item", { "title-text": `${e.seq + 1}. ${ag[0]} (${e.agent})`, "subtitle-text": fmt.ts(e.ts), icon: ag[2] },
-      h("div", { class: "small stack" }, h("div", {}, ag[1]),
-        h("div", { class: "muted" }, `fingerprint in ${fmt.hash(e.input_hash)} · out ${fmt.hash(e.output_hash)} · linked to previous ${fmt.hash(e.prev_hash)}`),
-        srcs.length ? h("div", { class: "row" }, `${srcs.length} data sources:`, ...Object.entries(counts).map(([t, n]) => h("span", {}, dataTag(t), " ×" + n))) : null));
+    return h("div", { class: "blk" },
+      h("div", { class: "rail" }, h("span", { class: "dot", title: e.agent }, h("ui5-icon", { name: ag[2] })), h("span", { class: "link", "aria-hidden": "true" })),
+      h("div", { class: "body" },
+        h("div", { class: "bh" }, h("div", { class: "bt" }, `${e.seq + 1}. ${ag[0]} `, h("small", {}, `(${e.agent})`)), h("div", { class: "time" }, fmt.ts(e.ts))),
+        h("div", { class: "q" }, ag[1]),
+        h("div", { class: "hashes" }, h("span", {}, "in ", h("b", {}, fmt.hash(e.input_hash))), h("span", {}, "out ", h("b", {}, fmt.hash(e.output_hash))),
+          h("span", {}, "linked to ", h("b", {}, e.prev_hash ? fmt.hash(e.prev_hash) : "start of chain"))),
+        srcs.length ? h("div", { class: "srcs" }, `${srcs.length} data source${srcs.length > 1 ? "s" : ""}:`, ...Object.entries(counts).map(([t, n]) => h("span", {}, dataTag(t), " ×" + n))) : null));
   });
-  return h("div", { class: "stack" },
-    h("div", { class: "grid g4" },
-      kpi(ok ? "Intact" : "Broken", "Audit chain", ok ? `${a.chain.n_rows} linked records, none altered` : `broken at record ${a.chain.broken_at}: ${a.chain.reason}`, ok ? "pos" : "neg"),
-      kpi(a.events.length, "Steps recorded", "agents A1–A5, the human decision and A6", ""),
-      kpi(run.TRIGGER_TYPE === "SHOCK" ? "Shock" : (run.TRIGGER_TYPE || "–"), "Why it ran", run.TRIGGER_TYPE === "SHOCK" ? "stress test: import costs +30%" : "on demand or nightly", ""),
-      kpi(fmt.ts(run.STARTED_AT), "Started", `status ${String(run.STATUS || "").toLowerCase().replace(/_/g, " ")}`, "")),
-    h("div", { class: "row" }, report),
-    card("What happened, step by step", a.run_id, "history", h("ui5-timeline", { layout: "Vertical", "accessible-name": "Audit trail" }, ...items)));
+  return h("div", { class: "stack enter" }, trust,
+    card("What happened, step by step", "Every decision has evidence: each block is fingerprinted and linked to the one before", "history", h("div", { class: "chain" }, ...blocks)));
 }
 
 /* ============================================================ 5. RECALL */
+const EXAMPLE_ALERT = "NSQ-3F40E3F8B095";
 async function recall() {
-  const idInput = h("ui5-input", { value: store.get("alert", "NSQ-3F40E3F8B095"), "accessible-name": "CDSCO NSQ alert id", style: "width: 18rem" });
+  const idInput = h("ui5-input", { value: store.get("alert", EXAMPLE_ALERT), "accessible-name": "CDSCO NSQ alert id", style: "width: min(18rem, 100%)" });
   const box = h("div", {});
   const load = async () => {
-    const id = idInput.value.trim(); if (!id) return; store.set("alert", id); box.replaceChildren(busy("Searching every pharmacy location…"));
+    const id = idInput.value.trim(); if (!id) return; store.set("alert", id);
+    box.replaceChildren(busy("Searching every pharmacy location…", ["Matching the batch number, maker and medicine", "Checking stock in every store room and ward"]));
     try { box.replaceChildren(recallView(await api(`/recall/${encodeURIComponent(id)}`))); }
     catch (e) { box.replaceChildren(strip("Negative", "Could not trace the alert: " + e.message)); }
   };
-  $app.replaceChildren(h("div", { class: "stack" },
-    h("h1", { class: "page" }, "Recall: where is the failed batch?"),
-    h("p", { class: "lead muted" }, "When CDSCO reports a batch as Not of Standard Quality, the pharmacist must find it everywhere in the hospital (SOP control CP-14). FlowForge matches the alert against batch stock in every location in one click."),
-    h("div", { class: "row" }, h("ui5-label", { "show-colon": true }, "CDSCO alert"), idInput, h("ui5-button", { design: "Emphasized", icon: "locate-me", onclick: load }, "Find the batch")), box));
+  const eyebrow = h("div", { class: "eyebrow alert" }, "Step 5 · Recall · quality emergency");
+  const head = pageHead("", "Recall: where is the failed batch?",
+    "What you are looking at: when CDSCO, India's drug regulator, reports a batch as Not of Standard Quality (NSQ), the pharmacy must find it everywhere in the hospital.",
+    "One click replaces a manual search of every store room and ward (hospital SOP control CP-14).");
+  head.querySelector(".eyebrow").replaceWith(eyebrow);
+  showPage(head,
+    h("div", { class: "searchcard" }, h("span", { class: "lbl" }, "CDSCO alert"), idInput,
+      h("ui5-button", { design: "Emphasized", icon: "locate-me", onclick: load }, "Find the batch"),
+      h("span", { class: "hint" }, "Example:"), h("button", { class: "example", onclick: () => { idInput.value = EXAMPLE_ALERT; load(); } }, EXAMPLE_ALERT)),
+    box);
   load();
 }
 function recallView(r) {
   const a = r.alert || {}, m = r.matches || [];
   const total = m.reduce((s, x) => s + Number(x.CLABS || 0) + Number(x.CINSM || 0), 0);
-  const MATCH = { "BATCH+MFR+FORM": "Strong match: batch, maker and medicine", "BATCH+MFR": "Batch and maker match", "BATCH+FORM": "Batch and medicine match", BATCH_ONLY: "Batch number only: verify" };
-  return h("div", { class: "stack" },
-    card(a.DRUG || r.alert_id, `Batch ${a.BATCH || "–"} · reported ${fmt.date(a.MONTH)}`, "lab",
-      h("div", { class: "stack" },
-        facts([["What failed", a.REASON || "–"], ["Reported by", a.SOURCE || "–"], ["Maker (as named)", a.MANUFACTURER_ID || "–"]]),
-        h("div", { class: "row small" }, dataTag(a.IS_PROXY), a.SOURCE_URL ? h("ui5-link", { href: a.SOURCE_URL, target: "_blank" }, "CDSCO public NSQ list") : null))),
-    m.length ? strip("Negative", `Found in ${new Set(m.map(x => x.LGORT)).size} locations: ${fmt.n(total)} units. Quarantine them and stop issuing this batch (CP-14).`)
-      : strip("Positive", "This batch is not in the hospital's stock."),
-    h("div", { class: "grid g4" }, ...m.map(x => h("ui5-card", {}, h("div", { class: "loc" },
-      h("div", { class: "row spread" }, h("b", {}, LOCATION[x.LGORT] || x.LGORT), tag(x.LGORT, "Information")),
-      h("div", { class: "big" }, `${fmt.n(x.CLABS)} units`), h("div", { class: "small muted" }, `available · expires ${fmt.date(x.VFDAT)}`),
-      Number(x.CINSM) ? h("div", { class: "small" }, `${fmt.n(x.CINSM)} already in quality inspection`) : null,
-      h("div", { class: "small", style: "margin-top: 0.4rem" }, MATCH[x.MATCH_LEVEL] || x.MATCH_LEVEL))))),
+  const nLoc = new Set(m.map(x => x.LGORT)).size;
+  const maxQ = Math.max(1, ...m.map(x => Number(x.CLABS || 0) + Number(x.CINSM || 0)));
+  const MATCH = { "BATCH+MFR+FORM": ["Strong match: batch, maker and medicine", "Positive"], "BATCH+MFR": ["Batch and maker match", "Information"], "BATCH+FORM": ["Batch and medicine match", "Information"], BATCH_ONLY: ["Batch number only: verify", "Critical"] };
+  const alertCard = h("section", { class: "card alertcard" }, h("span", { class: "ico" }, h("ui5-icon", { name: "lab" })),
+    h("div", { style: "min-width: 0" },
+      h("div", { class: "row spread" }, h("div", { class: "drug" }, a.DRUG || r.alert_id), h("div", { class: "row" }, dataTag(a.IS_PROXY),
+        a.SOURCE_URL ? h("ui5-link", { href: a.SOURCE_URL, target: "_blank" }, "CDSCO public NSQ list") : null)),
+      h("div", { class: "fail" }, h("b", {}, "What failed: "), a.REASON || "–"),
+      h("div", { class: "small muted", style: "margin-top: 0.25rem" }, `Batch ${a.BATCH || "–"} · reported ${fmt.date(a.MONTH)} · ${a.SOURCE || ""} · maker as named: ${a.MANUFACTURER_ID || "–"}`)));
+  if (!m.length) return h("div", { class: "stack enter" }, alertCard,
+    h("section", { class: "rsum clear", role: "status" }, h("div", {}, h("div", { class: "k" }, "All clear"), h("div", { class: "v sm" }, "This batch is not in the hospital's stock."))),
     h("p", { class: "hint" }, r.note));
+  const cards = m.map(x => {
+    const q = Number(x.CLABS || 0) + Number(x.CINSM || 0), mt = MATCH[x.MATCH_LEVEL] || [x.MATCH_LEVEL, "Neutral"];
+    return h("div", { class: "loc2" },
+      h("div", { class: "ln" }, h("b", {}, LOCATION[x.LGORT] || x.LGORT), h("span", { class: "code" }, x.LGORT)),
+      h("div", { class: "qty" }, fmt.n(x.CLABS), h("small", {}, " units available")),
+      h("div", { class: "qb", role: "img", "aria-label": `${fmt.n(q)} of ${fmt.n(total)} units` }, h("i", { style: `width: ${100 * q / maxQ}%` })),
+      h("div", { class: "meta" },
+        Number(x.CINSM) ? h("div", {}, `${fmt.n(x.CINSM)} more already in quality inspection`) : null,
+        h("div", {}, "Expires ", h("b", {}, fmt.date(x.VFDAT))),
+        h("div", {}, tag(mt[0], mt[1], mt[1] === "Positive" ? "sys-enter-2" : "hint"))));
+  });
+  const qBtn = h("button", { class: "qbtn" }, h("ui5-icon", { name: "locked" }), "Quarantine these");
+  qBtn.addEventListener("click", () => openQuarantine(a, m, total, nLoc, cards));
+  return h("div", { class: "stack enter" }, alertCard,
+    h("section", { class: "rsum", role: "status", "aria-label": "Recall summary" },
+      h("div", {}, h("div", { class: "k" }, "Total units"), h("div", { class: "v" }, fmt.n(total))),
+      h("div", {}, h("div", { class: "k" }, "Locations"), h("div", { class: "v" }, String(nLoc))),
+      h("div", {}, h("div", { class: "k" }, "Batch"), h("div", { class: "v sm" }, a.BATCH || "–")),
+      h("div", {}, h("div", { class: "k" }, "Medicine"), h("div", { class: "v sm" }, a.DRUG || "–")),
+      h("div", { class: "act" }, qBtn)),
+    h("div", { class: "locs" }, ...cards),
+    strip("Critical", r.note || "Batch matches on the hospital's stock; verify physically before quarantine."));
+}
+// Visual only: confirms the intent on screen; nothing is sent to the backend and no stock changes.
+function openQuarantine(a, m, total, nLoc, cards) {
+  const dlg = document.getElementById("qDlg");
+  document.getElementById("qBody").replaceChildren(
+    h("p", { style: "margin-top: 0" }, `Stop issuing batch `, h("b", {}, a.BATCH || "–"), ` of ${a.DRUG || "this medicine"} and move ${fmt.n(total)} units in ${nLoc} location${nLoc > 1 ? "s" : ""} to quarantine.`),
+    h("ul", { style: "margin: 0 0 0.8rem; padding-left: 1.2rem" }, ...m.map(x => h("li", {}, `${LOCATION[x.LGORT] || x.LGORT}: ${fmt.n(Number(x.CLABS || 0) + Number(x.CINSM || 0))} units`))),
+    strip("Information", "Demo view only: this marks the locations on screen. It does not change any stock or send anything to SAP. Verify physically before quarantine."));
+  document.getElementById("qOk").onclick = () => {
+    dlg.open = false;
+    cards.forEach(c => { if (!c.classList.contains("marked")) { c.classList.add("marked"); c.append(h("div", { style: "margin-top: 0.6rem" }, tag("Marked for quarantine (demo view)", "Critical", "locked"))); } });
+    toast("Marked for quarantine on screen only. No stock was changed.");
+  };
+  document.getElementById("qCancel").onclick = () => { dlg.open = false; };
+  dlg.open = true;
 }
 
 /* ============================================================ start */
