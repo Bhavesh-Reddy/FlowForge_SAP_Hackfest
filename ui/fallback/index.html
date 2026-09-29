@@ -995,6 +995,7 @@ const producersText = n => n === null || n === undefined ? "producers not assess
 async function watch() {
   $app.replaceChildren(busy("Loading the watchlist from the database…", ["Reading every tracked price-capped medicine", "Fetching each one's latest risk flag and stock cover"]));
   const rows = await api("/watchlist?limit=200&assessed_only=true");
+  if (state.step !== "watch") return; // the user moved on while this loaded
   state.watch = rows;
   if (rows[0] && rows[0].run_id) { state.run = state.run || rows[0].run_id; }
   const n = b => rows.filter(r => r.exit_risk_band === b).length;
@@ -1219,6 +1220,7 @@ async function understand() {
     api(`/molecule/${encodeURIComponent(state.form)}`),
     api(`/molecule/${encodeURIComponent(state.form)}/margin-series?months=12&shock=1.3`).catch(() => null),
   ]);
+  if (state.step !== "understand") return;
   const f = d.formulation, s = d.signal, dep = d.dependency, fc = d.forecast, facts_ = fc ? fc.cause_facts : {};
   if (d.run_id) { state.run = d.run_id; store.set("lastRun", d.run_id); }
   const cause = fc && CAUSE[fc.cause_code];
@@ -1381,6 +1383,7 @@ function qCard(num, q, by, infoText, body) {
 async function pickMedicine() {
   $app.replaceChildren(busy("Finding the most urgent medicines…"));
   if (!state.watch) state.watch = await api("/watchlist?limit=200&assessed_only=true");
+  if (state.step !== "understand") return;
   const top = state.watch.filter(r => r.exit_risk_band === "RED").slice(0, 6);
   const list = top.length ? top : state.watch.slice(0, 6);
   showPage(
@@ -1482,6 +1485,7 @@ function flow3() {
 async function decide() {
   $app.replaceChildren(busy("Loading the approval queue…", ["Collecting every recommendation waiting for a human", "About 10 seconds on SAP BTP"]));
   if (!state.pending) state.pending = await api("/approvals/pending");
+  if (state.step !== "decide") return;
   const all = state.pending;
   const rank = p => (p.scenario && p.scenario.rank) || 99;
   const best = Object.values(all.reduce((m, p) => {
@@ -1665,6 +1669,10 @@ function ask(title, fields, onOk) {
 
 /* ============================================================ 4. PROVE */
 async function prove() {
+  if (!state.run) { // opened first: take the latest run from the watchlist
+    try { const w = state.watch || await api("/watchlist?limit=1"); if (w[0] && w[0].run_id) state.run = w[0].run_id; } catch { /* the user can type a run id */ }
+    if (state.step !== "prove") return;
+  }
   const runInput = h("ui5-input", { value: state.run || "", placeholder: "Run id, e.g. ff-…", "accessible-name": "Run id", style: "width: min(20rem, 100%)" });
   const box = h("div", {});
   const load = async () => {
@@ -1692,16 +1700,6 @@ function shieldSvg(ok) {
 }
 function auditView(a) {
   const run = a.run || {}, ok = a.chain.ok;
-  const report = h("button", { class: "docbtn" }, h("span", { class: "page" }, h("ui5-icon", { name: "document" })),
-    h("span", {}, h("div", { class: "tt" }, "Open the NABH evidence report"), h("div", { class: "sb" }, "Every step, its sources and fingerprints, in one printable page (opens in a new tab)")),
-    svgIcon("next", 2.2));
-  report.querySelector("svg:last-child").style.cssText = "width: 20px; height: 20px; color: var(--teal-ink)";
-  report.addEventListener("click", async () => {
-    report.setAttribute("aria-busy", "true");
-    try { const html = await api(`/audit/${encodeURIComponent(a.run_id)}/report`, { raw: true });
-      const url = URL.createObjectURL(new Blob([html], { type: "text/html" })); window.open(url, "_blank", "noopener"); }
-    catch (e) { toast("Report unavailable: " + e.message); } finally { report.removeAttribute("aria-busy"); }
-  });
   const trigger = run.TRIGGER_TYPE === "SHOCK" ? ["Stress test", "import costs +30%"] : [run.TRIGGER_TYPE || "–", "on demand or nightly"];
   const trust = h("div", { class: "trust" },
     h("section", { class: "shieldbox" + (ok ? "" : " bad"), role: "status" }, h("span", { class: "sh" }, shieldSvg(ok)),
@@ -1712,8 +1710,7 @@ function auditView(a) {
       h("div", { class: "rf" }, h("div", { class: "k" }, "Steps recorded"), h("div", { class: "v" }, String(a.events.length)), h("div", { class: "d" }, "agents, the human decision and the action")),
       h("div", { class: "rf" }, h("div", { class: "k" }, "Why it ran"), h("div", { class: "v" }, trigger[0]), h("div", { class: "d" }, trigger[1])),
       h("div", { class: "rf" }, h("div", { class: "k" }, "Started"), h("div", { class: "v", style: "font-size: 1.05rem" }, fmt.ts(run.STARTED_AT)), h("div", { class: "d" }, `as of ${fmt.date(run.AS_OF_DATE)}`)),
-      h("div", { class: "rf" }, h("div", { class: "k" }, "Status"), h("div", { class: "v", style: "font-size: 1.05rem" }, String(run.STATUS || "–").toLowerCase().replace(/_/g, " ")), h("div", { class: "d" }, a.run_id)),
-      report));
+      h("div", { class: "rf" }, h("div", { class: "k" }, "Status"), h("div", { class: "v", style: "font-size: 1.05rem" }, String(run.STATUS || "–").toLowerCase().replace(/_/g, " ")), h("div", { class: "d" }, a.run_id))));
   const blocks = a.events.map(e => {
     const ag = AGENT[e.agent] || [e.agent, "", "notes"];
     const srcs = e.data_sources || [];
