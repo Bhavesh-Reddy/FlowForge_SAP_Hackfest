@@ -11,6 +11,7 @@ import json
 import logging
 import math
 import os
+import re
 import uuid
 from datetime import datetime, timedelta, timezone
 from decimal import Decimal
@@ -256,6 +257,19 @@ def fallback_ui() -> FileResponse:
     if not FALLBACK_UI.exists():
         raise HTTPException(404, "ui/fallback/index.html is not deployed")
     return FileResponse(FALLBACK_UI, media_type="text/html")
+
+
+_ASSET_TYPES = {".js": "text/javascript", ".css": "text/css", ".woff2": "font/woff2", ".woff": "font/woff",
+                ".svg": "image/svg+xml", ".png": "image/png"}
+
+
+@public.get("/ui/assets/{name}", include_in_schema=False)
+def fallback_asset(name: str) -> FileResponse:
+    """Static files of the fallback UI (the bundled SAP UI5 Web Components), so the UI also works offline."""
+    path = FALLBACK_UI.parent / "assets" / name
+    if not re.fullmatch(r"[A-Za-z0-9_-][A-Za-z0-9._-]*", name) or path.suffix not in _ASSET_TYPES or not path.is_file():
+        raise HTTPException(404, "not found")
+    return FileResponse(path, media_type=_ASSET_TYPES[path.suffix], headers={"Cache-Control": "public, max-age=3600"})
 
 
 @secured.get("/watchlist", response_model=list[WatchlistRow])

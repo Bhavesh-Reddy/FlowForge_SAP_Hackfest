@@ -1,0 +1,12 @@
+{
+  "name": "flowforge-ui5-bundle",
+  "private": true,
+  "description": "Builds ui/fallback/assets/ui5.js: the SAP UI5 Web Components the fallback UI uses, bundled so it works offline.",
+  "scripts": { "build": "node build.mjs" },
+  "dependencies": {
+    "@ui5/webcomponents": "2.27.2",
+    "@ui5/webcomponents-fiori": "2.27.2",
+    "@ui5/webcomponents-icons": "2.27.2"
+  },
+  "devDependencies": { "esbuild": "0.28.2" }
+}
