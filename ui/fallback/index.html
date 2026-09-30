@@ -1544,6 +1544,22 @@ async function decide() {
         seg, dsearch, listBox)),
       detail));
 }
+// Report for exactly this recommendation (the medicine being discussed), opened with the Save-as-PDF dialog.
+function pdfButton(p, label = "Download report (PDF)") {
+  const b = h("ui5-button", { icon: "document", design: "Default" }, label);
+  b.addEventListener("click", async () => {
+    const win = window.open("", "_blank"); // open now, while the click still counts, so pop-up blockers allow it
+    b.disabled = true;
+    try {
+      const html = await api(`/audit/${encodeURIComponent(p.run_id)}/report?rec_id=${encodeURIComponent(p.rec_id)}`, { raw: true });
+      const auto = html.replace("</body>", "<script>window.addEventListener('load', () => setTimeout(() => window.print(), 300));<\/script></body>");
+      const url = URL.createObjectURL(new Blob([auto], { type: "text/html" }));
+      if (win) win.location.href = url; else window.open(url, "_blank");
+    } catch (e) { if (win) win.close(); toast("Report unavailable: " + e.message); }
+    finally { b.disabled = false; }
+  });
+  return b;
+}
 function recDetail(p, stage) {
   const sc = p.scenario || {}, pr = p.draft_pr, opt = OPTION[sc.option_type] || [sc.option_type, "product"];
   const o = OVERALL[p.overall] || [p.overall, "Neutral"];
@@ -1563,7 +1579,8 @@ function recDetail(p, stage) {
       h("div", {}, h("div", { class: "k" }, "Purchasing group"), h("div", { class: "v" }, pr.PurchasingGroup))) : null,
     h("div", { class: "row" }, tag(o[0], o[1], p.overall === "READY" ? "sys-enter-2" : p.overall === "BLOCKED" ? "error" : "alert"),
       p.needs_second_approver ? tag("Needs a second approver", "Information", "customer") : null,
-      h("ui5-button", { design: "Transparent", icon: "activity-2", onclick: () => go("understand", p.form_id) }, "Why is this medicine at risk?")));
+      h("ui5-button", { design: "Transparent", icon: "activity-2", onclick: () => go("understand", p.form_id) }, "Why is this medicine at risk?"),
+      pdfButton(p, `Download ${p.generic} report (PDF)`)));
 
   // ---- 2. automatic rule checks (A5): summary first, details on demand
   const cnt = s => p.checks.filter(c => c.status === s).length;
@@ -1645,7 +1662,7 @@ function outcome(r, p) {
       h("div", { class: "pr" }, r.banfn),
       h("div", { class: "small" }, "Created in SAP S/4HANA format (API_PURCHASEREQ_PROCESS_SRV). This is a mock posting into the hospital's requisition table, not a live S/4 system."))),
     h("details", { class: "more" }, h("summary", {}, "Show the purchase requisition payload (S/4 OData format)"), h("pre", { class: "json" }, JSON.stringify(r.payload, null, 2))),
-    h("div", { class: "row", style: "margin-top: 0.6rem" }, h("ui5-button", { design: "Emphasized", icon: "chain-link", onclick: () => go("prove", p.run_id) }, "See the audit trail")));
+    h("div", { class: "row", style: "margin-top: 0.6rem" }, h("ui5-button", { design: "Emphasized", icon: "chain-link", onclick: () => go("prove", p.run_id) }, "See the audit trail"), pdfButton(p, "Download the decision report (PDF)")));
   if (r.status === "AWAITING_SECOND_APPROVER") return h("div", {},
     h("div", { class: "success amber", role: "status" }, h("span", { class: "tick" }, svgIcon("next", 3)), h("div", {},
       h("div", { class: "t" }, "Approved at level 1: a second approver is needed"),
@@ -1654,7 +1671,7 @@ function outcome(r, p) {
   if (r.status === "APPROVED_NO_PR") return h("div", {},
     h("div", { class: "success", role: "status" }, tick, h("div", {},
       h("div", { class: "t" }, "Approved"), h("div", { style: "font-size: 1.1rem; font-weight: 700; color: var(--navy)" }, "Internal stock move, no purchase requisition needed"))),
-    h("div", { class: "row", style: "margin-top: 0.6rem" }, h("ui5-button", { design: "Emphasized", icon: "chain-link", onclick: () => go("prove", p.run_id) }, "See the audit trail")));
+    h("div", { class: "row", style: "margin-top: 0.6rem" }, h("ui5-button", { design: "Emphasized", icon: "chain-link", onclick: () => go("prove", p.run_id) }, "See the audit trail"), pdfButton(p, "Download the decision report (PDF)")));
   return strip("Information", `Recorded: ${String(r.status).toLowerCase().replace(/_/g, " ")}.`);
 }
 function ask(title, fields, onOk) {
