@@ -1,7 +1,8 @@
 # STATUS (keep < 60 lines; overwrite, don't append history)
 
 Finale: South & East Region, SRM Chennai, date: ____ (D0)
-Updated: 2026-09-26 by Bhavesh
+Updated: 2026-10-06
+Latest: Added reproducible synthetic F001 S1-S4 sensitivity runner and CSV output.
 
 ## Owners
 - B1 Data & HANA: ____
