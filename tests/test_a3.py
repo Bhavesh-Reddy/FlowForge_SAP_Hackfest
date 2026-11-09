@@ -13,6 +13,7 @@ from agents.common import load_fixture_db
 from agents.contracts import (
     CauseCode, DataQuality, DataTag, DependencyProfile, RiskSignal, RunContext, SecondarySignal, SignalBand,
 )
+from scripts.f001_sensitivity import run_scenario
 
 AS_OF = date(2026, 9, 26)
 REQUIRED_FACTS = {"headroom_pct", "ceiling_price_inr", "estimated_unit_cost_inr", "n_producers_min",
@@ -147,6 +148,20 @@ def test_ma90_on_fixtures_and_fefo_usable_stock(db, rules):
     assert h.consumption.daily == pytest.approx(9120 / 90)
     assert h.usable_qty == 8000  # B2603 expired, B2604 quarantined
     assert h.ved == "V"
+
+
+def test_f001_sensitivity_s1_values(rules):
+    result = run_scenario("S1", rules)
+
+    assert result["headroom"] == pytest.approx(0.135388)
+    assert result["concentration"] == pytest.approx(0.455167)
+    assert result["a3_risk"] == pytest.approx(0.493866)
+    assert result["a1_band"] == "AMBER"
+    assert result["days_of_cover"] == pytest.approx(78.9474)
+    assert result["daily_consumption"] == pytest.approx(101.333333)
+    assert result["usable_stock"] == pytest.approx(8000)
+    assert result["cover_ratio_before_clamp"] == pytest.approx(1.14)
+    assert result["exposure"] == pytest.approx(0.675609)
 
 
 def test_ets_with_long_history(rules):
